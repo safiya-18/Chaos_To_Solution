@@ -1,23 +1,18 @@
 # Project State: Chaos to Solution Backend
 
-## Current Phase: Phase 2 - Challenge Bank Design & Curated Dataset (COMPLETED)
+## Current Phase: Phase 3 - AI Challenge Generation Engine & Fallback Routing (DISCUSSED & READY TO PLAN)
 - **Current Milestone**: Milestone 1 - Backend MVP & API Integration
-- **Active Phase**: Phase 2 (Challenge Bank Design & Curated Dataset) - Finished
-- **Status**: Completed & Verified. All 17 unit and integration tests passing.
+- **Active Phase**: Phase 3 (AI Generation Engine & Fallback Routing)
+- **Status**: Revised AI-powered architecture approved. Planning documents updated. Ready for Phase 3 planning.
 
-## Key Decisions
-- **Decision 1**: No LLM API. Challenges are selected from curated JSON banks using a deterministic, rule-based compatibility engine.
-- **Decision 2**: Keep persistence in-memory (sliding window cache) for anti-repeat logic. Supabase is deferred unless team registration or challenge logging persistence is specifically requested.
-- **Decision 3**: WhatsApp handoff handled client-side by Imadulla using backend-provided `shareText` (encoded into `https://wa.me/?text=...`).
-- **Decision 4**: Test runner is Vitest with Supertest for fast ES module native testing.
-- **Decision 5**: Backend lives in `backend/` directory to allow clear separation from frontend code.
-- **Decision 6**: Combined Difficulty scoring (target composite window 4–6). Offline fallback mocks provided for external APIs.
-
-## Phase 2 Verification & Metrics
-- Curated Datasets: 20 problems (4 per 5 categories), 15 restrictions, 15 resources.
-- Combinatorial Coverage: 3,318 valid combinations within composite difficulty range 4–6 (exceeds 1,000 requirement).
-- Offline Fallback Mocks: 5 public API mock payloads served via `/api/mock/:dataset`.
-- Automated Test Suite: 17 passed across 3 test files (health, dataValidation, mock).
+## Key Approved Decisions
+- **Decision 1 (Themes)**: 8 approved themes (`EdTech`, `FinTech`, `HealthTech`, `Sustainability`, `Smart Cities`, `Accessibility`, `E-commerce`, `Open Innovation`). No difficulty tiers.
+- **Decision 2 (AI Integration)**: Official `@google/genai` SDK with backend-only key management (`GEMINI_API_KEY` in `backend/.env`). Native structured JSON output.
+- **Decision 3 (Challenge Triad)**: Problem, Restriction, Resource (with usage guidance), and concrete Deliverable generated together for ~3-hour prototype feasibility.
+- **Decision 4 (Validation & Fairness)**: `challengeValidator.js` validates structure, text lengths, theme validity, and rejects banned paid services or credentials.
+- **Decision 5 (Graceful Fallback)**: Timeouts ($\le 5000$ms) and rate limits (429) automatically trigger curated Phase 2 fallbacks with explicit source indicator (`source: "curated-fallback"` vs `"source: "ai"`).
+- **Decision 6 (Reuse & Preserved Work)**: Phase 1 scaffolding, Phase 2 data banks, mock endpoints (`/api/mock/*`), and regression tests preserved.
+- **Decision 7 (Anti-Repeat)**: In-memory sliding window cache tracking recent fingerprints/titles.
 
 ## Next Action
-Proceed to Phase 3: Generation Logic, Compatibility Engine & Anti-Repeat Buffer via `/gsd-plan-phase 3`.
+Run `/gsd-plan-phase 3` to create the atomic execution plan for the Gemini client, challenge validator, and fallback service.
