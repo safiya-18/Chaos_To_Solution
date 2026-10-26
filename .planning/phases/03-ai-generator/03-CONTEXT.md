@@ -1,8 +1,8 @@
-# Phase 3 Context: AI Challenge Generation Engine & Fallback Routing
+# Phase 3 Context: AI Challenge Generation Engine & Fallback Routing (Refined)
 
 ## Metadata
 - **Phase**: 3 - AI Challenge Generation Engine & Fallback Routing
-- **Status**: Context & Architecture Finalized
+- **Status**: Context & Architecture Refined & Locked
 - **Date**: 2026-10-26
 - **Target Event**: IEEE Computer Society Hackathon, SJC Institute of Technology
 
@@ -10,7 +10,7 @@
 
 ## 1. Locked Architecture Decisions
 
-### A. Approved Themes (8 Themes)
+### A. Approved Themes (8 Themes) & Strict Validation
 1. `EdTech`
 2. `FinTech`
 3. `HealthTech`
@@ -20,42 +20,32 @@
 7. `E-commerce`
 8. `Open Innovation`
 
+- **Theme Rule**: Falsy, missing, or unapproved themes strictly throw a descriptive `ValidationError`. No silent conversion into Open Innovation.
+
 ### B. Gemini SDK & Structured Schema
-- **SDK**: `@google/genai` (official Google Gen AI Node.js SDK).
-- **Environment**: `GEMINI_API_KEY` configured in `backend/.env` (and `.env.example`).
-- **Generation Model**: `gemini-2.5-flash` (or `gemini-1.5-flash`).
-- **Structured Schema**: Enforces output JSON matching:
-  - `theme`: String
+- **SDK**: Official `@google/genai` Node.js SDK.
+- **Model**: `gemini-2.5-flash` (or `gemini-1.5-flash`).
+- **Configuration**: Loaded strictly via `backend/src/config/env.js` from `backend/.env`.
+- **System Prompt**: Anchors generation to a functional prototype achievable by 2–4 students in ~3 hours (180 minutes). Disallows authentication, databases, payment gateways, and hardware sensors.
+- **Output Schema**: Native JSON mode with strict properties:
+  - `theme`: string
   - `problem`: `{ title: string, statement: string }`
   - `restriction`: `{ name: string, rule: string }`
   - `resource`: `{ name: string, type: string, guidance: string, docsUrl: string }`
-  - `deliverable`: `string`
+  - `deliverable`: string
 
-### C. Validation & Fairness Rules (`challengeValidator.js`)
-- Validates that theme is one of the 8 approved themes.
-- Validates required fields are non-empty and within reasonable character/word bounds (e.g. statement $< 500$ chars, title $< 100$ chars).
-- Validates resource type (`browser-api`, `public-api`, or `local-dataset`) and docsUrl format.
-- Banned Service Guardrail: Checks that resource does not require paid subscriptions, proprietary tokens (e.g. OpenAI, AWS, Twilio, Stripe), or hardware peripherals.
-- Feasibility Guardrail: Rejects prompts demanding full-scale multi-user production systems.
+### C. Multi-Pillar Challenge Validator (`challengeValidator.js`)
+- Validates approved theme.
+- Validates text field string lengths (title 3-100, statement 10-500, deliverable 10-500, guidance 10-500).
+- Validates resource type (`browser-api`, `public-api`, `local-dataset`) and docsUrl syntax (`^https?:\/\/.+`).
+- Scans full text for banned paid services, proprietary tokens, or hardware (OpenAI, Stripe, AWS, Twilio, Raspberry Pi).
+- Checks holistic cohesion between problem, restriction, and resource guidance.
 
-### D. Fallback Engine (`fallbackService.js`)
-- If Gemini call times out (> 5000ms), errors with 429/500, or returns invalid structure:
-  - Fallback service selects a curated triplet from `problems.json`, `restrictions.json`, and `resources.json` matching the theme category.
-  - Returns challenge payload with `"source": "curated-fallback"`.
-- Never displays an unhandled error to hackathon participants.
+### D. Audited Curated Fallback Service (`fallbackService.js`)
+- Maps all 8 themes to audited Phase 2 problems, restrictions, and resources.
+- Avoids recent signatures when candidates exist. Recycles gracefully if all candidates exhausted.
+- 100% of fallback outputs pass `challengeValidator`.
+- Explicitly flags `"source": "curated-fallback"`.
 
 ### E. Anti-Repeat Memory
-- In-memory sliding window cache (last 30 generations) tracking problem titles / hashes.
-- Injects a brief negative prompt or random seed to discourage Gemini from repeating the same headline.
-
----
-
-## 2. Phase 3 Scope & Deliverables
-1. Install `@google/genai` in `backend/package.json`.
-2. Update `backend/src/config/env.js` and `backend/.env.example` with `GEMINI_API_KEY`.
-3. Create `backend/src/services/geminiService.js`.
-4. Create `backend/src/services/fallbackService.js`.
-5. Create `backend/src/utils/challengeValidator.js`.
-6. Create `backend/src/services/challengeService.js` (orchestrator + anti-repeat cache).
-7. Create unit test suite `backend/tests/unit/challengeService.test.js`.
-8. Ensure all existing Phase 1 & 2 tests continue passing (zero regressions).
+- In-memory ring buffer (capacity: 30) of `${theme}:${title}` signatures.
