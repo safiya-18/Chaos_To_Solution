@@ -20,14 +20,34 @@ backend/
 │   ├── server.js            # Server entrypoint and port listener
 │   ├── config/
 │   │   └── env.js           # Environment configuration validator
+│   ├── data/
+│   │   ├── problems.json    # 20 curated hackathon problems across 5 categories
+│   │   ├── restrictions.json # 15 meaningful constraints
+│   │   ├── resources.json   # 15 keyless resources (browser, public API, local)
+│   │   ├── mock/            # Offline mock fallbacks for public APIs
+│   │   │   ├── weather.json
+│   │   │   ├── products.json
+│   │   │   ├── countries.json
+│   │   │   ├── books.json
+│   │   │   └── quotes.json
+│   │   └── local/           # Curated offline reference datasets
+│   │       ├── campus_map.json
+│   │       ├── waste_taxonomy.json
+│   │       └── nutrition.json
 │   ├── middlewares/
 │   │   ├── errorHandler.js  # Centralized JSON error handler
 │   │   └── notFoundHandler.js # Standardized 404 handler
-│   └── routes/
-│       └── health.routes.js # GET /api/health route
+│   ├── routes/
+│   │   ├── health.routes.js # GET /api/health route
+│   │   └── mock.routes.js   # GET /api/mock/:dataset (offline fallbacks)
+│   └── utils/
+│       └── dataValidator.js # Schema validation & combinatorial calculator
 ├── tests/
-│   └── integration/
-│       └── health.test.js   # Supertest integration tests
+│   ├── integration/
+│   │   ├── health.test.js   # Health check integration tests
+│   │   └── mock.test.js     # Mock fallback endpoints integration tests
+│   └── unit/
+│       └── dataValidation.test.js # Data bank integrity & combinatorial tests
 ├── .env.example             # Environment variable template
 ├── package.json             # NPM package specification & scripts
 ├── vitest.config.js         # Vitest test runner configuration
@@ -94,6 +114,18 @@ npm run test:watch
     "timestamp": "2026-10-26T14:48:00.000Z",
     "version": "1.0.0"
   }
+}
+```
+
+### Offline Fallback Mock Datasets
+- **Endpoint**: `GET /api/mock/:dataset`
+- **Description**: Serves local JSON fallbacks for public APIs to protect teams from spotty venue Wi-Fi.
+- **Supported Datasets**: `weather`, `products`, `countries`, `books`, `quotes`, `campus-map`, `waste-taxonomy`, `nutrition`.
+- **Response** (`200 OK`):
+```json
+{
+  "success": true,
+  "data": { ... }
 }
 ```
 

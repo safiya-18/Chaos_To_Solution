@@ -1,0 +1,24 @@
+{
+  "categories": [
+    {
+      "id": "ewaste",
+      "name": "Electronic Waste",
+      "hazardLevel": "high",
+      "items": [
+        { "name": "Lithium-Ion Phone Battery", "degradationYears": 100, "recyclable": true, "instructions": "Drop in sealed e-bin; do not puncture." },
+        { "name": "Motherboard / PCB", "degradationYears": 500, "recyclable": true, "instructions": "Extract precious metals at certified smelter." },
+        { "name": "Broken LCD / LED Screen", "degradationYears": 1000, "recyclable": true, "instructions": "Handle with gloves; contains mercury traces." }
+      ]
+    },
+    {
+      "id": "dry_recyclable",
+      "name": "Dry Recyclable Packaging",
+      "hazardLevel": "low",
+      "items": [
+        { "name": "Cardboard Box", "degradationYears": 0.5, "recyclable": true, "instructions": "Flatten and keep dry." },
+        { "name": "Aluminum Beverage Can", "degradationYears": 200, "recyclable": true, "instructions": "Rinse and crush." },
+        { "name": "PET Plastic Water Bottle", "degradationYears": 450, "recyclable": true, "instructions": "Remove cap and compress." }
+      ]
+    }
+  ]
+}

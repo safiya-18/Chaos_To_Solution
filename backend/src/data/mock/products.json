@@ -1,0 +1,47 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "title": "Ergonomic Student Backpack",
+      "description": "Weather-resistant laptop backpack with USB charging port and modular compartment dividers.",
+      "price": 34.99,
+      "rating": 4.8,
+      "stock": 42,
+      "category": "luggage",
+      "tags": ["campus", "accessories"]
+    },
+    {
+      "id": 2,
+      "title": "Noise-Cancelling Study Earplugs",
+      "description": "High-attenuation reusable silicone earplugs designed for library focus and sleep.",
+      "price": 12.50,
+      "rating": 4.6,
+      "stock": 120,
+      "category": "lifestyle",
+      "tags": ["productivity", "study"]
+    },
+    {
+      "id": 3,
+      "title": "USB-C Rechargeable Desk Reading Light",
+      "description": "Touch-dimmable LED reading clip with 3 color temperatures for nocturnal dorm study.",
+      "price": 18.00,
+      "rating": 4.5,
+      "stock": 65,
+      "category": "electronics",
+      "tags": ["dorm", "study"]
+    },
+    {
+      "id": 4,
+      "title": "Reusable Insulated Stainless Bottle (750ml)",
+      "description": "Double-wall vacuum insulated flask keeping beverages cold for 24 hours.",
+      "price": 15.99,
+      "rating": 4.9,
+      "stock": 88,
+      "category": "hydration",
+      "tags": ["sustainability", "campus"]
+    }
+  ],
+  "total": 4,
+  "skip": 0,
+  "limit": 10
+}

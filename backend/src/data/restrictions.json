@@ -1,0 +1,152 @@
+[
+  {
+    "id": "rest_css_01",
+    "name": "Zero External CSS",
+    "rule": "No CSS frameworks (Bootstrap, Tailwind) or external stylesheets allowed. All styling must use semantic HTML, inline attributes, or Canvas/SVG styling.",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "categoryTag": "ui-styling",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_css_02",
+    "name": "High-Contrast Dark Mode Only",
+    "rule": "The interface must strictly operate in high-contrast dark theme (#121212 base) with neon accenting and no pure white backgrounds.",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "categoryTag": "ui-styling",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_ui_01",
+    "name": "Mobile-Only Form Factor",
+    "rule": "The application must be designed specifically for a mobile screen constraint (max-width: 420px) and operate comfortably one-handed.",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "categoryTag": "layout",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_ui_02",
+    "name": "Zero Scrollbars / 100vh Viewport",
+    "rule": "The entire application must fit within 100vh without vertical or horizontal scrollbars. All secondary options must collapse or tab neatly.",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "categoryTag": "layout",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_ui_03",
+    "name": "Two-Click Maximum Rule",
+    "rule": "Any primary task (creating, filtering, checking status) must be achievable in two clicks or fewer from the initial load screen.",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "categoryTag": "ux-interaction",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_ui_04",
+    "name": "Keyboard-Only Navigation",
+    "rule": "The application must be 100% operable via keyboard controls (Tab, Enter, Space, Arrow keys) with visible focus outlines and no mouse dependency.",
+    "difficulty": "hard",
+    "difficultyWeight": 3,
+    "categoryTag": "accessibility",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_lib_01",
+    "name": "Pure Vanilla JavaScript",
+    "rule": "Zero external libraries, CDNs, or frameworks (no jQuery, React, Lodash, or chart libs). Code must be authored in pure standard Web APIs.",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "categoryTag": "architecture",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_lib_02",
+    "name": "Micro-Footprint (<100KB Total)",
+    "rule": "The entire frontend bundle (HTML, CSS, JS, assets) must remain under 100KB uncompressed, prioritizing extreme code efficiency.",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "categoryTag": "performance",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_net_01",
+    "name": "Offline-First Operation",
+    "rule": "Once loaded, the application must function completely without internet connectivity. If remote resources fail, local fallbacks must seamlessly engage.",
+    "difficulty": "hard",
+    "difficultyWeight": 3,
+    "categoryTag": "network",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_net_02",
+    "name": "Zero Local Storage / Ephemeral State",
+    "rule": "No localStorage, sessionStorage, or cookies allowed. All data must reside either in reactive runtime memory or in URL parameters/hashes.",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "categoryTag": "storage",
+    "incompatibleResources": ["res_browser_storage"],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_data_01",
+    "name": "URL Hash State Sync",
+    "rule": "All user actions and filters must serialize into the window URL hash (`#state=...`) allowing any view to be shared and restored via URL.",
+    "difficulty": "hard",
+    "difficultyWeight": 3,
+    "categoryTag": "data-sync",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_logic_01",
+    "name": "Zero Text-Input Fields",
+    "rule": "No `<input type='text'>` or `<textarea>` tags permitted. All input must be driven by range sliders, toggle buttons, dials, or presets.",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "categoryTag": "ux-interaction",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_logic_02",
+    "name": "Single View / No Modals",
+    "rule": "No modal popups, dialog boxes, or multi-page routing. All details, previews, and feedback must expand seamlessly inline within the single view.",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "categoryTag": "layout",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_logic_03",
+    "name": "Multi-Modal Audio-Visual Feedback",
+    "rule": "Every button click, state change, and status alert must produce both a visible micro-animation and an audible tone or synthetic voice cue.",
+    "difficulty": "hard",
+    "difficultyWeight": 3,
+    "categoryTag": "feedback",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  },
+  {
+    "id": "rest_logic_04",
+    "name": "Reversible Actions / 5-Step Undo",
+    "rule": "The application must maintain an interactive history stack allowing users to undo and redo their last 5 state operations seamlessly.",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "categoryTag": "logic",
+    "incompatibleResources": [],
+    "requiresNetwork": false
+  }
+]

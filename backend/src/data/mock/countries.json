@@ -1,0 +1,54 @@
+[
+  {
+    "name": {
+      "common": "India",
+      "official": "Republic of India"
+    },
+    "cca2": "IN",
+    "capital": ["New Delhi"],
+    "region": "Asia",
+    "population": 1408044253,
+    "languages": {
+      "hin": "Hindi",
+      "eng": "English"
+    },
+    "currencies": {
+      "INR": { "name": "Indian Rupee", "symbol": "₹" }
+    },
+    "flag": "🇮🇳"
+  },
+  {
+    "name": {
+      "common": "Japan",
+      "official": "Japan"
+    },
+    "cca2": "JP",
+    "capital": ["Tokyo"],
+    "region": "Asia",
+    "population": 125124989,
+    "languages": {
+      "jpn": "Japanese"
+    },
+    "currencies": {
+      "JPY": { "name": "Japanese Yen", "symbol": "¥" }
+    },
+    "flag": "🇯🇵"
+  },
+  {
+    "name": {
+      "common": "Germany",
+      "official": "Federal Republic of Germany"
+    },
+    "cca2": "DE",
+    "capital": ["Berlin"],
+    "region": "Europe",
+    "population": 83190556,
+    "languages": {
+      "deu": "German"
+    },
+    "currencies": {
+      "EUR": { "name": "Euro", "symbol": "€" }
+    },
+    "flag": "🇩🇪"
+  }
+]

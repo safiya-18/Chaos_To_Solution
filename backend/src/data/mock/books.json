@@ -1,0 +1,30 @@
+{
+  "numFound": 3,
+  "start": 0,
+  "docs": [
+    {
+      "key": "/works/OL45804W",
+      "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
+      "author_name": ["Robert C. Martin"],
+      "first_publish_year": 2008,
+      "isbn": ["9780132350884"],
+      "subject": ["Computer programming", "Software engineering", "Agile"]
+    },
+    {
+      "key": "/works/OL15358655W",
+      "title": "The Pragmatic Programmer: Your Journey to Mastery",
+      "author_name": ["David Thomas", "Andrew Hunt"],
+      "first_publish_year": 1999,
+      "isbn": ["9780201616224"],
+      "subject": ["Software development", "Programming techniques"]
+    },
+    {
+      "key": "/works/OL27479W",
+      "title": "Structure and Interpretation of Computer Programs",
+      "author_name": ["Harold Abelson", "Gerald Jay Sussman"],
+      "first_publish_year": 1984,
+      "isbn": ["9780262010771"],
+      "subject": ["Computer science", "Scheme", "LISP"]
+    }
+  ]
+}
