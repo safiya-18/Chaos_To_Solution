@@ -1,0 +1,15 @@
+{
+  "mode": "interactive",
+  "workflow": {
+    "gitCommitPrefix": "feat(backend):",
+    "requireTests": true,
+    "requireDocs": true
+  },
+  "project": {
+    "name": "Chaos to Solution: Challenge Generator",
+    "event": "IEEE Computer Society - SJCIT",
+    "developer": "Safiya",
+    "role": "Backend",
+    "partner": "Imadulla (Frontend)"
+  }
+}
