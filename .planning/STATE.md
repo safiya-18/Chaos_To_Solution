@@ -1,9 +1,9 @@
 # Project State: Chaos to Solution Backend
 
-## Current Phase: Phase 1 - Project Scaffolding & Tooling Setup (COMPLETED)
+## Current Phase: Phase 2 - Challenge Bank Design & Curated Dataset (CONTEXT READY)
 - **Current Milestone**: Milestone 1 - Backend MVP & API Integration
-- **Active Phase**: Phase 1 (Scaffolding & Tooling Setup) - Finished
-- **Status**: Completed & Verified. All 4 Vitest integration tests passing.
+- **Active Phase**: Phase 2 (Challenge Bank Design & Curated Dataset)
+- **Status**: Strategy discussion complete. Decisions locked in `.planning/phases/02-challenge-bank/02-CONTEXT.md`. Awaiting plan creation.
 
 ## Key Decisions
 - **Decision 1**: No LLM API. Challenges are selected from curated JSON banks using a deterministic, rule-based compatibility engine.
@@ -11,14 +11,7 @@
 - **Decision 3**: WhatsApp handoff handled client-side by Imadulla using backend-provided `shareText` (encoded into `https://wa.me/?text=...`).
 - **Decision 4**: Test runner is Vitest with Supertest for fast ES module native testing.
 - **Decision 5**: Backend lives in `backend/` directory to allow clear separation from frontend code.
-
-## Verification & Test Results
-- Integration test suite: `backend/tests/integration/health.test.js`
-- Test run: 4 passed in 90ms (Vitest v3.2.7)
-  - `GET /api/health` returns HTTP 200 with `{ success: true, data: { status: "ok", ... } }`
-  - Helmet security headers verified (`x-content-type-options: nosniff`, `x-frame-options: SAMEORIGIN`)
-  - CORS header propagation verified for allowed frontend origin (`http://localhost:5173`)
-  - 404 handler returns standardized error JSON envelope `{ success: false, error: { code: "NOT_FOUND", ... } }`
+- **Decision 6**: Combined Difficulty scoring (target composite window 4–6). Offline fallback mocks provided for external APIs.
 
 ## Next Action
-Proceed to Phase 2: Challenge Bank Design & Curated Dataset via `/gsd-plan-phase 2`.
+Run `/gsd-plan-phase 2` to create the atomic execution plan for the challenge bank and dataset.
