@@ -2,12 +2,12 @@ import React from 'react';
 
 export function GeometricIllustration({ className = '' }) {
   return (
-    <div className={`relative w-full max-w-[440px] mx-auto select-none ${className}`} aria-hidden="true">
+    <div className={`relative w-full max-w-[310px] sm:max-w-[350px] xl:max-w-[390px] mx-auto select-none ${className}`} aria-hidden="true">
       <svg
         viewBox="0 0 460 320"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="w-full h-auto drop-shadow-sm"
+        className="w-full h-auto max-h-[135px] sm:max-h-[165px] xl:max-h-[195px] drop-shadow-xs object-contain"
       >
         {/* Dot grid - top left */}
         <g opacity="0.45" fill="#8C8477">

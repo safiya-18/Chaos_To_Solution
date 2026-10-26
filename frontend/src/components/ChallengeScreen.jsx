@@ -55,17 +55,17 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
   };
 
   return (
-    <div className="w-full max-w-[1240px] mx-auto py-2 sm:py-4 animate-fade-in flex flex-col justify-between">
+    <div className="w-full max-w-[1240px] mx-auto py-1 sm:py-2 animate-fade-in flex flex-col justify-between">
       {/* ======================================================== */}
       {/* TOP HEADER ROW: Back Button + Theme Pill + Source Badge */}
       {/* ======================================================== */}
-      <header className="flex items-center justify-between gap-4 mb-6 sm:mb-8">
+      <header className="flex items-center justify-between gap-4 mb-3 sm:mb-4">
         {/* Left: Back to Themes Button */}
         <button
           type="button"
           onClick={onBackToThemes}
           id="back-to-themes-btn"
-          className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-white hover:bg-[#F2ECE1] text-[#111820] border border-[#11151C]/15 font-bold text-xs sm:text-sm shadow-xs transition-all cursor-pointer active:scale-95"
+          className="group flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white hover:bg-[#F2ECE1] text-[#111820] border border-[#11151C]/15 font-bold text-xs sm:text-[13px] shadow-xs transition-all cursor-pointer active:scale-95"
           aria-label="Back to Themes selection"
         >
           <ChevronLeft className="w-4 h-4 stroke-[2.5] group-hover:-translate-x-0.5 transition-transform" />
@@ -73,24 +73,24 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
         </button>
 
         {/* Right: Theme Pill & Source Indicator */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Theme Pill Badge */}
           <div
-            className="flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full border border-[#11151C]/15 text-xs sm:text-sm font-extrabold text-[#111820] shadow-xs select-none"
+            className="flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full border border-[#11151C]/15 text-xs sm:text-[13px] font-extrabold text-[#111820] shadow-xs select-none"
             style={{ backgroundColor: themeConfig?.bgColor || '#F3E8FF' }}
           >
             <div
-              className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+              className="w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shrink-0"
               style={{ backgroundColor: themeConfig?.iconBg || '#E9D5FF' }}
             >
-              <ThemeIcon className="w-3 h-3 text-[#111820] stroke-[2.4]" aria-hidden="true" />
+              <ThemeIcon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#111820] stroke-[2.4]" aria-hidden="true" />
             </div>
             <span>{theme} Challenge</span>
           </div>
 
           {/* Discreet Source Indicator */}
           <div
-            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border select-none ${
+            className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-bold border select-none ${
               source === 'ai'
                 ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                 : 'bg-amber-50 text-amber-900 border-amber-300'
@@ -115,11 +115,11 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
       {/* ======================================================== */}
       {/* PAGE HEADING */}
       {/* ======================================================== */}
-      <div className="mb-6 sm:mb-8 select-none">
-        <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-[#111820] tracking-tight leading-tight">
+      <div className="mb-2 sm:mb-2.5 select-none">
+        <h1 className="text-xl sm:text-2xl lg:text-[28px] font-black text-[#111820] tracking-tight leading-tight">
           Your Challenge
         </h1>
-        <p className="text-sm sm:text-base text-[#6B6358] font-normal mt-1 leading-normal">
+        <p className="text-[11px] sm:text-xs text-[#6B6358] font-normal mt-0.5 leading-tight">
           Click on each card to reveal your challenge elements.
         </p>
       </div>
@@ -127,7 +127,7 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
       {/* ======================================================== */}
       {/* THREE INTERACTIVE FLIP CARDS */}
       {/* ======================================================== */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 lg:gap-5 items-stretch">
         {/* CARD 01: PROBLEM STATEMENT */}
         <ChallengeFlipCard
           step="01"
@@ -231,7 +231,7 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
       {/* ======================================================== */}
       {/* BOTTOM SECTION: SHARE YOUR MISSION VIA WHATSAPP */}
       {/* ======================================================== */}
-      <div className="mt-8">
+      <div className="mt-3.5 sm:mt-4.5">
         <WhatsAppShareForm challengeData={challengeData} />
       </div>
     </div>

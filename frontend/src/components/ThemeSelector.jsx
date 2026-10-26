@@ -6,14 +6,14 @@ export function ThemeSelector({ selectedTheme, onSelectTheme, isDisabled }) {
   return (
     <div className="w-full">
       {/* Step Header */}
-      <div className="mb-3.5 sm:mb-4 select-none">
-        <span className="text-[11px] font-black uppercase tracking-[0.18em] text-[#304DB4] block">
+      <div className="mb-2 sm:mb-2.5 select-none">
+        <span className="text-[10px] sm:text-[10.5px] font-black uppercase tracking-[0.18em] text-[#304DB4] block">
           STEP 1
         </span>
-        <h2 className="text-2xl sm:text-[26px] font-black text-[#111820] tracking-tight mt-0.5">
+        <h2 className="text-xl sm:text-[22px] xl:text-[25px] font-black text-[#111820] tracking-tight">
           Select a Theme
         </h2>
-        <p className="text-xs sm:text-[13px] text-[#6B6358] font-normal mt-1 leading-snug">
+        <p className="text-[11px] sm:text-xs text-[#6B6358] font-normal mt-0.5 leading-tight">
           Choose a domain you're excited about. Each challenge is unique and AI-generated.
         </p>
       </div>
@@ -22,7 +22,7 @@ export function ThemeSelector({ selectedTheme, onSelectTheme, isDisabled }) {
       <div
         role="radiogroup"
         aria-label="Hackathon Challenge Themes"
-        className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3"
+        className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5"
       >
         {THEMES.map((theme) => (
           <ThemeCard

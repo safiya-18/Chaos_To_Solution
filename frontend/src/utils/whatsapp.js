@@ -119,7 +119,7 @@ export function formatChallengeForWhatsApp(challengeData) {
     deliverable,
     '━━━━━━━━━━━━━━━━━━━━',
     '',
-    '💡 *Sprint Time:* ~3 hours',
+    '💡 *Sprint Time:* ~4 hours',
     'Ready to build? Turn chaos into solution!'
   ];
 
