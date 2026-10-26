@@ -37,9 +37,7 @@ export function App() {
       });
       setChallenge(result);
       setStatus('success');
-      // Navigate to Screen 2
       setCurrentScreen('challenge');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       setError(err.message || 'Failed to generate challenge. Please try again.');
       setStatus('error');
@@ -52,7 +50,6 @@ export function App() {
 
   const handleBackToThemes = () => {
     setCurrentScreen('selection');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Developer console hook to toggle mock mode without occupying participant UI
@@ -67,63 +64,59 @@ export function App() {
   }, []);
 
   return (
-    <div className="min-h-[100dvh] bg-[#F7F3EA] text-[#111820] flex flex-col justify-center selection:bg-yellow-300 selection:text-black font-sans">
-      {/* Main Viewport Container */}
-      <div className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 md:py-4 flex-1 flex flex-col justify-center">
-        {/* ======================================================== */}
-        {/* SCREEN 1: THEME SELECTION & BRAND HERO */}
-        {/* ======================================================== */}
-        {currentScreen === 'selection' ? (
-          <main className="w-full my-auto">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 lg:gap-8 items-stretch">
-              {/* Left Column: Brand Hero, Condensed Headline, Illustration, Features */}
-              <div className="md:col-span-5 flex flex-col justify-between py-1">
-                <Hero />
+    <div className="min-h-screen lg:h-[100dvh] bg-[#F7F3EA] text-[#111820] overflow-x-hidden lg:overflow-hidden font-sans selection:bg-yellow-300 selection:text-black">
+
+      {/* ======================================================== */}
+      {/* SCREEN 1: THEME SELECTION — Responsive: stacked on mobile, 2-col on desktop */}
+      {/* ======================================================== */}
+      {currentScreen === 'selection' ? (
+        <div className="flex flex-col lg:flex-row h-auto lg:h-full">
+          {/* LEFT COLUMN: Hero on cream bg */}
+          <div className="w-full lg:w-[44%] shrink-0 lg:h-full flex flex-col px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-8 xl:px-14 xl:py-10 2xl:px-16 2xl:py-12">
+            <Hero />
+          </div>
+
+          {/* RIGHT COLUMN: White elevated panel */}
+          <div className="flex-1 min-w-0 w-full lg:h-full p-4 sm:p-5 xl:p-6 2xl:p-8">
+            <div className="relative min-h-[480px] lg:h-full bg-white rounded-[24px] sm:rounded-[28px] flex flex-col p-5 sm:p-6 xl:p-7 2xl:p-9 border border-[#11151C]/10 shadow-sm overflow-hidden">
+              <ThemeSelector
+                selectedTheme={selectedTheme}
+                onSelectTheme={handleSelectTheme}
+                isDisabled={status === 'loading'}
+              />
+
+              <div className="mt-3 xl:mt-4 shrink-0">
+                <GenerateButton
+                  onClick={handleGenerate}
+                  isLoading={status === 'loading'}
+                  selectedTheme={selectedTheme}
+                  hasExistingChallenge={Boolean(challenge)}
+                />
               </div>
 
-              {/* Right Column: Elevated Theme Selection Panel & Generate Button */}
-              <div className="md:col-span-7 flex flex-col justify-center">
-                <div className="bg-white rounded-[22px] sm:rounded-[26px] p-3.5 sm:p-4.5 lg:p-5 border border-[#11151C]/12 shadow-sm flex flex-col justify-between">
-                  <div>
-                    <ThemeSelector
-                      selectedTheme={selectedTheme}
-                      onSelectTheme={handleSelectTheme}
-                      isDisabled={status === 'loading'}
-                    />
+              {status === 'loading' && <LoadingState theme={selectedTheme} />}
 
-                    <GenerateButton
-                      onClick={handleGenerate}
-                      isLoading={status === 'loading'}
-                      selectedTheme={selectedTheme}
-                      hasExistingChallenge={Boolean(challenge)}
-                    />
-                  </div>
-
-                  {status === 'loading' && <LoadingState theme={selectedTheme} />}
-
-                  {status === 'error' && (
-                    <ErrorState
-                      error={error}
-                      onRetry={handleRetry}
-                      isRetrying={status === 'loading'}
-                    />
-                  )}
-                </div>
-              </div>
+              {status === 'error' && (
+                <ErrorState
+                  error={error}
+                  onRetry={handleRetry}
+                  isRetrying={status === 'loading'}
+                />
+              )}
             </div>
-          </main>
-        ) : (
-          /* ======================================================== */
-          /* SCREEN 2: GENERATED CHALLENGE REVEAL EXPERIENCE */
-          /* ======================================================== */
-          <main className="w-full my-auto">
-            <ChallengeScreen
-              challengeData={challenge}
-              onBackToThemes={handleBackToThemes}
-            />
-          </main>
-        )}
-      </div>
+          </div>
+        </div>
+      ) : (
+        /* ======================================================== */
+        /* SCREEN 2: CHALLENGE REVEAL — Responsive flex-col         */
+        /* ======================================================== */
+        <div className="min-h-screen lg:h-full flex flex-col px-4 py-4 sm:px-8 sm:py-5 xl:px-12 xl:py-7 2xl:px-14 2xl:py-9">
+          <ChallengeScreen
+            challengeData={challenge}
+            onBackToThemes={handleBackToThemes}
+          />
+        </div>
+      )}
     </div>
   );
 }

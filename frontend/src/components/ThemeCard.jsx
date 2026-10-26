@@ -5,7 +5,7 @@ import {
   HeartPulse,
   Leaf,
   Building2,
-  Accessibility,
+  PersonStanding,
   ShoppingCart,
   Lightbulb,
   ArrowRight
@@ -17,59 +17,63 @@ const ICON_MAP = {
   HeartPulse,
   Leaf,
   Building2,
-  Accessibility,
+  Accessibility: PersonStanding,
+  PersonStanding,
   ShoppingCart,
   Lightbulb,
 };
 
 export function ThemeCard({ theme, isSelected, isDisabled, onSelect }) {
-  const IconComponent = ICON_MAP[theme.iconName] || Lightbulb;
+  const IconComponent = ICON_MAP[theme.iconName] || ICON_MAP[theme.name] || Lightbulb;
 
   return (
     <button
       type="button"
       role="radio"
       aria-checked={isSelected}
+      aria-label={`${theme.name}: ${theme.shortDesc}`}
       disabled={isDisabled}
       onClick={() => onSelect(theme.name)}
       style={{ backgroundColor: theme.bgColor || '#F5F5F4' }}
-      className={`relative w-full text-left p-2 sm:p-2.5 xl:p-3 rounded-2xl transition-all duration-200 group flex items-center justify-between gap-2 sm:gap-2.5 border ${
+      className={`h-full w-full min-h-[52px] sm:min-h-0 text-left p-3 xl:p-3.5 rounded-2xl transition-all duration-150 group flex items-center gap-2.5 xl:gap-3 border touch-manipulation select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#111820] ${
         isSelected
-          ? 'border-[#111820] ring-2 ring-[#111820] shadow-md scale-[1.01]'
+          ? 'border-[#111820] ring-2 ring-[#111820] shadow-md'
           : 'border-transparent hover:border-[#111820]/20 hover:shadow-xs'
       } ${
-        isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-[0.99]'
+        isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer active:scale-[0.98]'
       }`}
     >
-      {/* Left: Circular icon badge */}
+      {/* Left: Icon circle — sized relative to card height */}
       <div
         style={{ backgroundColor: theme.iconBg || '#E7E5E4' }}
-        className="w-8 h-8 sm:w-8.5 sm:h-8.5 xl:w-9.5 xl:h-9.5 rounded-full flex items-center justify-center text-[#111820] shrink-0 border border-[#111820]/10 shadow-xs"
+        className="w-9 h-9 xl:w-10 xl:h-10 2xl:w-11 2xl:h-11 rounded-full flex items-center justify-center text-[#111820] shrink-0 border border-[#111820]/10"
       >
-        <IconComponent className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2]" aria-hidden="true" />
+        <IconComponent className="w-4.5 h-4.5 xl:w-5 xl:h-5 stroke-[1.9]" aria-hidden="true" />
       </div>
 
-      {/* Center: Title & concise description */}
-      <div className="flex-1 min-w-0 pr-1">
-        <h3 className="text-xs sm:text-[13px] xl:text-[13.5px] font-black text-[#111820] tracking-tight leading-snug truncate">
+      {/* Center: Title + short description */}
+      <div className="flex-1 min-w-0">
+        <h3 className="text-[13px] xl:text-[14px] 2xl:text-[15px] font-black text-[#111820] tracking-tight leading-snug">
           {theme.name}
         </h3>
-        <p className="text-[9.5px] sm:text-[10.5px] xl:text-[11px] text-[#524B43] leading-[1.25] mt-0.5 font-normal line-clamp-1 sm:line-clamp-2">
+        <p className="text-[11px] xl:text-[11.5px] text-[#524B43] leading-snug mt-0.5 font-medium line-clamp-2">
           {theme.shortDesc}
         </p>
       </div>
 
-      {/* Right: Circular arrow */}
+      {/* Right: Arrow circle */}
       <div
-        className={`w-5.5 h-5.5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+        className={`w-6 h-6 xl:w-7 xl:h-7 rounded-full flex items-center justify-center shrink-0 border transition-all ${
           isSelected
-            ? 'bg-[#111820] text-white border border-[#111820]'
-            : 'border border-[#111820]/35 text-[#111820] group-hover:border-[#111820] group-hover:bg-[#111820]/5'
+            ? 'bg-[#111820] text-white border-[#111820]'
+            : 'border-[#111820]/30 text-[#111820] group-hover:border-[#111820] group-hover:bg-[#111820]/5'
         }`}
         aria-hidden="true"
       >
-        <ArrowRight className="w-3 h-3 stroke-[2.4]" />
+        <ArrowRight className="w-3 h-3 xl:w-3.5 xl:h-3.5 stroke-[2.5]" />
       </div>
     </button>
   );
 }
+
+export default ThemeCard;

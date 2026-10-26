@@ -7,6 +7,8 @@ export function WhatsAppShareForm({ challengeData }) {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [hasShared, setHasShared] = useState(false);
 
+  const [isOpening, setIsOpening] = useState(false);
+
   if (!challengeData) return null;
 
   // Phone Validation
@@ -21,22 +23,26 @@ export function WhatsAppShareForm({ challengeData }) {
   };
 
   const handleShareClick = () => {
+    if (isOpening || !isInputValid) return;
+    setIsOpening(true);
     setHasInteracted(true);
     const { url, error } = buildWhatsAppShareUrl(phoneNumber, challengeData);
 
     if (error || !url) {
+      setIsOpening(false);
       return;
     }
 
     // Open WhatsApp in a new tab upon explicit user click
     window.open(url, '_blank', 'noopener,noreferrer');
     setHasShared(true);
+    setTimeout(() => setIsOpening(false), 800);
   };
 
   return (
     <section
       id="whatsapp-share-section"
-      className="w-full mt-2 sm:mt-3 p-3.5 sm:p-4.5 rounded-2xl sm:rounded-3xl bg-white border border-[#11151C]/12 shadow-sm relative overflow-hidden"
+      className="w-full p-4 sm:p-4.5 px-6 sm:px-7 rounded-2xl sm:rounded-3xl bg-white border border-[#11151C]/12 shadow-xs relative overflow-hidden"
       aria-labelledby="whatsapp-share-heading"
     >
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 sm:gap-4">
@@ -44,39 +50,49 @@ export function WhatsAppShareForm({ challengeData }) {
         <div className="max-w-md">
           <h3
             id="whatsapp-share-heading"
-            className="text-base sm:text-lg font-black text-[#111820] tracking-tight leading-snug"
+            className="text-base sm:text-[17px] font-black text-[#111820] tracking-tight leading-snug"
           >
             Share Your Mission
           </h3>
-          <p className="text-xs text-[#6B6358] font-medium mt-0.5 leading-tight">
+          <p className="text-xs sm:text-[13px] text-[#6B6358] font-medium mt-0.5 leading-tight">
             Send this challenge to your team via WhatsApp.
           </p>
+          {hasShared && (
+            <span className="mt-1 text-[#059669] text-xs font-bold flex items-center gap-1">
+              <Check className="w-3.5 h-3.5" /> Chat initiated in new tab
+            </span>
+          )}
         </div>
 
         {/* Right: Phone input and Green WhatsApp Button */}
         <div className="w-full lg:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
-          <div className="flex-1 sm:w-68">
-            <div className="relative flex items-center rounded-full border-2 border-[#11151C]/15 bg-[#F7F3EA] focus-within:border-[#304DB4] focus-within:ring-2 focus-within:ring-[#304DB4]/20 transition-all overflow-hidden">
-              {/* India Country Code Pill */}
-              <div className="flex items-center gap-1 pl-3 pr-2 py-2 border-r border-[#11151C]/15 text-xs font-bold text-[#111820] select-none shrink-0 bg-black/5">
+          <div className="flex-1 sm:w-64">
+            <div className="relative h-11 sm:h-12 flex items-center rounded-full border border-[#11151C]/18 bg-[#EDE8DF] focus-within:bg-[#F2EDE4] focus-within:border-[#304DB4] focus-within:ring-2 focus-within:ring-[#304DB4]/20 transition-all overflow-hidden shadow-2xs">
+              {/* India Country Code Pill - seamlessly integrated without boxy background */}
+              <div className="h-full flex items-center gap-1.5 pl-4 pr-2.5 text-xs sm:text-[13px] font-black text-[#111820] select-none shrink-0">
                 <span>+91</span>
-                <ChevronDown className="w-3.5 h-3.5 opacity-60" aria-hidden="true" />
+                <ChevronDown className="w-3.5 h-3.5 stroke-[2.5] text-[#111820]/60" aria-hidden="true" />
               </div>
 
-              {/* Number Input */}
+              {/* Clean vertical divider */}
+              <div className="h-5 w-px bg-[#11151C]/15 shrink-0" aria-hidden="true" />
+
+              {/* Number Input with mobile numeric keypad support */}
               <input
                 type="tel"
+                inputMode="tel"
+                pattern="[0-9]*"
                 id="whatsapp-phone-input"
                 name="phoneNumber"
                 value={phoneNumber}
                 onChange={handlePhoneChange}
                 onBlur={() => setHasInteracted(true)}
                 placeholder="Enter 10-digit mobile number"
-                className="w-full px-2.5 py-1.5 bg-transparent text-xs sm:text-sm text-[#111820] font-semibold placeholder-[#8C8477] focus:outline-none"
+                className="w-full h-full px-3 bg-transparent text-xs sm:text-sm text-[#111820] font-bold placeholder-[#8C8477] focus:outline-none touch-manipulation"
                 aria-label="10-digit Indian mobile number"
                 aria-invalid={showError}
                 aria-describedby={showError ? 'phone-error-msg' : undefined}
-                autoComplete="off"
+                autoComplete="tel-national"
               />
             </div>
 
@@ -106,29 +122,19 @@ export function WhatsAppShareForm({ challengeData }) {
             type="button"
             id="whatsapp-share-btn"
             onClick={handleShareClick}
-            disabled={!isInputValid}
-            className={`py-2.5 px-5 rounded-full font-black text-xs sm:text-[13px] tracking-wide uppercase flex items-center justify-center gap-2 transition-all shadow-md shrink-0 cursor-pointer ${
-              isInputValid
-                ? 'bg-[#10B981] hover:bg-[#059669] text-white active:scale-95 shadow-[#10B981]/25'
-                : 'bg-[#11151C]/15 text-[#111820]/40 cursor-not-allowed shadow-none'
+            disabled={!isInputValid || isOpening}
+            className={`min-h-[44px] h-11 sm:h-12 px-5 sm:px-6 rounded-full font-black text-xs sm:text-[13px] tracking-wide uppercase flex items-center justify-center gap-2.5 transition-all shadow-sm shrink-0 select-none touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#10B981] ${
+              isInputValid && !isOpening
+                ? 'bg-[#10B981] hover:bg-[#059669] text-white active:scale-95 shadow-[#10B981]/30 cursor-pointer'
+                : 'bg-[#10B981] opacity-75 hover:opacity-75 text-white cursor-not-allowed'
             }`}
-            aria-disabled={!isInputValid}
+            aria-disabled={!isInputValid || isOpening}
           >
-            <MessageSquare className="w-3.5 h-3.5 fill-current stroke-none" aria-hidden="true" />
-            <span>SHARE VIA WHATSAPP</span>
-            <ArrowRight className="w-3.5 h-3.5 stroke-[2.8]" aria-hidden="true" />
+            <MessageSquare className="w-4 h-4 fill-current stroke-none" aria-hidden="true" />
+            <span className="tracking-wider">SHARE VIA WHATSAPP</span>
+            <ArrowRight className="w-3.5 h-3.5 stroke-[3]" aria-hidden="true" />
           </button>
         </div>
-      </div>
-
-      {/* Explanatory note */}
-      <div className="mt-2.5 pt-2 border-t border-[#11151C]/10 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] sm:text-xs text-[#78716C] gap-1.5 font-medium">
-        <span>WhatsApp will open for you to confirm sending.</span>
-        {hasShared && (
-          <span className="text-[#059669] font-bold flex items-center gap-1">
-            <Check className="w-3 h-3" /> Chat initiated in new tab
-          </span>
-        )}
       </div>
     </section>
   );

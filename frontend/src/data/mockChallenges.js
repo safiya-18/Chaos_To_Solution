@@ -53,7 +53,7 @@ export const THEMES = [
     id: 'Accessibility',
     name: 'Accessibility',
     shortDesc: 'Technology for everyone',
-    iconName: 'Accessibility',
+    iconName: 'PersonStanding',
     bgColor: '#FFEDD5',
     iconBg: '#FED7AA',
     badgeColor: '#F97316',
