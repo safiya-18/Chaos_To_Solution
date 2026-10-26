@@ -18,8 +18,8 @@ export const config = Object.freeze({
   corsOrigins: parseCorsOrigins(process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:3000'),
   isProduction: process.env.NODE_ENV === 'production',
   geminiApiKey: process.env.GEMINI_API_KEY || '',
-  geminiModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || '5000', 10)
+  geminiModel: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
+  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || '10000', 10)
 });
 
 export default config;
