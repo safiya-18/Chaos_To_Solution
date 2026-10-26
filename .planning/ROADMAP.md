@@ -8,8 +8,9 @@
 - **Goal**: Build curated reference datasets and local mock endpoints to serve as the offline fallback reservoir.
 - **Status**: Completed & Verified. 20 problems, 15 restrictions, 15 resources, 5 mock endpoints, 17/17 tests passing.
 
-## Phase 3: AI Challenge Generation Engine & Fallback Routing (ACTIVE)
+## Phase 3: AI Challenge Generation Engine & Fallback Routing (COMPLETED)
 - **Goal**: Integrate the official `@google/genai` SDK to generate theme-tailored, coherent challenge triads with structured outputs, validation, and curated fallback routing.
+- **Status**: Completed & Verified. All 32 automated tests passing (15 challengeService, 7 dataValidation, 6 mock, 4 health).
 - **Deliverables**:
   - Install `@google/genai` dependency and configure `GEMINI_API_KEY` in `env.js` and `.env.example`.
   - Implement `src/services/geminiService.js` with structured system prompt and schema.

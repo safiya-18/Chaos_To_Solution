@@ -7,6 +7,7 @@ Backend REST API service for the **Chaos to Solution: Challenge Generator** even
 ## 🛠️ Tech Stack
 - **Runtime**: Node.js (`v24.x` LTS)
 - **Framework**: Express.js (JavaScript ES Modules `"type": "module"`)
+- **AI Engine**: Google Gemini (`@google/genai` SDK, `gemini-2.5-flash`)
 - **Testing**: Vitest + Supertest
 - **Security & Networking**: Helmet, CORS, Dotenv
 
@@ -19,7 +20,7 @@ backend/
 │   ├── app.js               # Express app instance, middleware & route binding
 │   ├── server.js            # Server entrypoint and port listener
 │   ├── config/
-│   │   └── env.js           # Environment configuration validator
+│   │   └── env.js           # Environment configuration validator (ports, CORS, Gemini)
 │   ├── data/
 │   │   ├── problems.json    # 20 curated hackathon problems across 5 categories
 │   │   ├── restrictions.json # 15 meaningful constraints
@@ -40,13 +41,19 @@ backend/
 │   ├── routes/
 │   │   ├── health.routes.js # GET /api/health route
 │   │   └── mock.routes.js   # GET /api/mock/:dataset (offline fallbacks)
+│   ├── services/
+│   │   ├── geminiService.js # @google/genai integration, structured JSON schema
+│   │   ├── fallbackService.js # Curated Phase 2 fallback selector for 8 themes
+│   │   └── challengeService.js # AI orchestrator with anti-repeat ring buffer
 │   └── utils/
+│       ├── challengeValidator.js # 8-theme validation, schema bounds & banned-term check
 │       └── dataValidator.js # Schema validation & combinatorial calculator
 ├── tests/
 │   ├── integration/
 │   │   ├── health.test.js   # Health check integration tests
 │   │   └── mock.test.js     # Mock fallback endpoints integration tests
 │   └── unit/
+│       ├── challengeService.test.js # Theme validation, fallback, and AI orchestrator tests
 │       └── dataValidation.test.js # Data bank integrity & combinatorial tests
 ├── .env.example             # Environment variable template
 ├── package.json             # NPM package specification & scripts
@@ -74,10 +81,13 @@ Copy the template to `.env`:
 ```bash
 cp .env.example .env
 ```
-Default settings in `.env`:
+Settings in `.env`:
 - `PORT=5000`
 - `NODE_ENV=development`
 - `CORS_ORIGIN=http://localhost:5173,http://localhost:3000`
+- `GEMINI_API_KEY=` *(Optional in dev/offline mode. If omitted, the engine transparently serves curated fallbacks.)*
+- `GEMINI_MODEL=gemini-2.5-flash`
+- `GEMINI_TIMEOUT_MS=5000`
 
 ### 4. Running the Dev Server
 Uses Node 24 native watch mode (auto-reloads on file changes):
@@ -96,6 +106,23 @@ To run tests in watch mode:
 ```bash
 npm run test:watch
 ```
+
+---
+
+## 🧠 AI Generation & Fallback Engine (Phase 3)
+
+The service layer generates cohesive, theme-tailored challenge triads (**Problem**, **Restriction**, **Resource**, and **Deliverable**) targeted for a 3-hour student hackathon prototype.
+
+### Approved Themes (8)
+`EdTech`, `FinTech`, `HealthTech`, `Sustainability`, `Smart Cities`, `Accessibility`, `E-commerce`, `Open Innovation`.
+
+### Resilient Orchestration Pipeline
+1. **Theme Validation**: Throws `ValidationError` if the requested theme is missing or unapproved.
+2. **AI Generation (`geminiService`)**: Requests structured JSON via `@google/genai` with `gemini-2.5-flash` and strict response schema.
+3. **Multi-Pillar Validation (`challengeValidator`)**: Checks character bounds, URL syntax, deliverable feasibility, and rejects banned paid services (`openai`, `stripe`, `aws`, etc.) or hardware requirements.
+4. **Curated Fallback Routing (`fallbackService`)**: If Gemini is unconfigured, times out (>5000ms), encounters a 429 quota limit, or produces invalid output, it seamlessly returns a pre-vetted triplet from Phase 2 curated datasets.
+5. **Anti-Repeat Ring Buffer**: An in-memory cache of 30 recent challenges avoids immediate repetition per theme.
+6. **Transparent Source Stamping**: Challenges return `"source": "ai"` or `"source": "curated-fallback"` for observability.
 
 ---
 

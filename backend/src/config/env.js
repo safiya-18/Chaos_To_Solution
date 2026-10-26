@@ -16,7 +16,10 @@ export const config = Object.freeze({
   port: parseInt(process.env.PORT || '5000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
   corsOrigins: parseCorsOrigins(process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:3000'),
-  isProduction: process.env.NODE_ENV === 'production'
+  isProduction: process.env.NODE_ENV === 'production',
+  geminiApiKey: process.env.GEMINI_API_KEY || '',
+  geminiModel: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || '5000', 10)
 });
 
 export default config;
