@@ -86,8 +86,8 @@ Settings in `.env`:
 - `NODE_ENV=development`
 - `CORS_ORIGIN=http://localhost:5173,http://localhost:3000`
 - `GEMINI_API_KEY=` *(Optional in dev/offline mode. If omitted, the engine transparently serves curated fallbacks.)*
-- `GEMINI_MODEL=gemini-2.5-flash`
-- `GEMINI_TIMEOUT_MS=5000`
+- `GEMINI_MODEL=gemini-3.8-flash`
+- `GEMINI_TIMEOUT_MS=10000`
 
 ### 4. Running the Dev Server
 Uses Node 24 native watch mode (auto-reloads on file changes):
