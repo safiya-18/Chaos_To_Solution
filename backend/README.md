@@ -39,23 +39,27 @@ backend/
 │   │   ├── errorHandler.js  # Centralized JSON error handler
 │   │   └── notFoundHandler.js # Standardized 404 handler
 │   ├── routes/
+│   │   ├── challenge.routes.js # POST /api/challenges/generate route
 │   │   ├── health.routes.js # GET /api/health route
 │   │   └── mock.routes.js   # GET /api/mock/:dataset (offline fallbacks)
 │   ├── services/
-│   │   ├── geminiService.js # @google/genai integration, structured JSON schema
+│   │   ├── challengeService.js # AI orchestrator with anti-repeat ring buffer
 │   │   ├── fallbackService.js # Curated Phase 2 fallback selector for 8 themes
-│   │   └── challengeService.js # AI orchestrator with anti-repeat ring buffer
+│   │   ├── geminiService.js # @google/genai integration, structured JSON schema
+│   │   └── shareTextFormatter.js # WhatsApp message formatter & ID generator
 │   └── utils/
 │       ├── challengeValidator.js # 8-theme validation, schema bounds & banned-term check
 │       └── dataValidator.js # Schema validation & combinatorial calculator
 ├── tests/
 │   ├── integration/
+│   │   ├── challenge.test.js # Challenge generation API integration tests
 │   │   ├── health.test.js   # Health check integration tests
 │   │   └── mock.test.js     # Mock fallback endpoints integration tests
 │   └── unit/
 │       ├── challengeService.test.js # Theme validation, fallback, and AI orchestrator tests
 │       └── dataValidation.test.js # Data bank integrity & combinatorial tests
 ├── .env.example             # Environment variable template
+├── API.md                   # Full REST API documentation for frontend
 ├── package.json             # NPM package specification & scripts
 ├── vitest.config.js         # Vitest test runner configuration
 └── README.md                # Documentation
@@ -117,16 +121,48 @@ The service layer generates cohesive, theme-tailored challenge triads (**Problem
 `EdTech`, `FinTech`, `HealthTech`, `Sustainability`, `Smart Cities`, `Accessibility`, `E-commerce`, `Open Innovation`.
 
 ### Resilient Orchestration Pipeline
-1. **Theme Validation**: Throws `ValidationError` if the requested theme is missing or unapproved.
-2. **AI Generation (`geminiService`)**: Requests structured JSON via `@google/genai` with `gemini-2.5-flash` and strict response schema.
+1. **Theme Validation**: Throws `ValidationError` (HTTP 400) if the requested theme is missing or unapproved.
+2. **AI Generation (`geminiService`)**: Requests structured JSON via `@google/genai` with `gemini-3.8-flash` and strict response schema.
 3. **Multi-Pillar Validation (`challengeValidator`)**: Checks character bounds, URL syntax, deliverable feasibility, and rejects banned paid services (`openai`, `stripe`, `aws`, etc.) or hardware requirements.
-4. **Curated Fallback Routing (`fallbackService`)**: If Gemini is unconfigured, times out (>5000ms), encounters a 429 quota limit, or produces invalid output, it seamlessly returns a pre-vetted triplet from Phase 2 curated datasets.
+4. **Curated Fallback Routing (`fallbackService`)**: If Gemini is unconfigured, times out (>10000ms), encounters a 429 quota limit, or produces invalid output, it seamlessly returns a pre-vetted triplet from Phase 2 curated datasets.
 5. **Anti-Repeat Ring Buffer**: An in-memory cache of 30 recent challenges avoids immediate repetition per theme.
 6. **Transparent Source Stamping**: Challenges return `"source": "ai"` or `"source": "curated-fallback"` for observability.
 
 ---
 
 ## 📡 API Reference
+
+### Challenge Generation
+- **Endpoint**: `POST /api/challenges/generate`
+- **Description**: Generates an integrated hackathon challenge for a selected theme (AI or curated fallback) with pre-formatted WhatsApp text.
+- **Request Body**:
+```json
+{
+  "theme": "EdTech"
+}
+```
+- **Supported Themes**: `EdTech`, `FinTech`, `HealthTech`, `Sustainability`, `Smart Cities`, `Accessibility`, `E-commerce`, `Open Innovation`.
+- **Response** (`200 OK`):
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cts-edtech-m3f9g1k",
+    "theme": "EdTech",
+    "generatedAt": "2026-10-27T05:45:00.000Z",
+    "source": "ai",
+    "challenge": {
+      "theme": "EdTech",
+      "problem": { "title": "...", "statement": "..." },
+      "restriction": { "name": "...", "rule": "..." },
+      "resource": { "name": "...", "type": "browser-api", "guidance": "...", "docsUrl": "https://..." },
+      "deliverable": "..."
+    },
+    "shareText": "⚡ *CHAOS TO SOLUTION — AI Challenge* ⚡\n..."
+  }
+}
+```
+*(For complete request/response schemas, error status codes, and WhatsApp click-to-chat integration, see [`API.md`](./API.md).)*
 
 ### Health Check
 - **Endpoint**: `GET /api/health`
@@ -162,8 +198,8 @@ All non-200 responses return a consistent JSON envelope:
 {
   "success": false,
   "error": {
-    "code": "NOT_FOUND",
-    "message": "Cannot GET /api/unknown"
+    "code": "INVALID_THEME",
+    "message": "Invalid theme 'Crypto'. Must be one of: EdTech, FinTech, ..."
   }
 }
 ```

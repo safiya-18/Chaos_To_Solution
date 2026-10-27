@@ -19,12 +19,14 @@
   - Implement `src/services/challengeService.js` orchestrating generation, validation, fallback handling, and in-memory anti-repeat buffer.
   - Unit tests covering prompt construction, schema validation, rate-limit fallback routing, and anti-repeat cache.
 
-## Phase 4: REST API Endpoints, WhatsApp Formatter & Integration Tests
+## Phase 4: REST API Endpoints, WhatsApp Formatter & Integration Tests (COMPLETED)
 - **Goal**: Expose `POST /api/challenges/generate` with standardized JSON response envelopes, CORS, and full integration test coverage.
+- **Status**: Completed & Verified. All 48 automated tests passing (16 challenge integration, 15 challengeService, 7 dataValidation, 6 mock, 4 health).
 - **Deliverables**:
-  - Implement `src/routes/challenge.routes.js` supporting `POST /api/challenges/generate` (and optional `GET` fallback).
-  - Implement `src/services/shareTextFormatter.js` formatting WhatsApp copy containing theme, problem, restriction, resource, and deliverable.
-  - Supertest integration tests verifying AI generation path, theme validation, and graceful fallback on simulated AI provider failure.
+  - Implemented `src/routes/challenge.routes.js` supporting `POST /api/challenges/generate`.
+  - Implemented `src/services/shareTextFormatter.js` formatting WhatsApp copy containing theme, problem, restriction, resource docs, and deliverable.
+  - Implemented comprehensive Supertest integration tests in `tests/integration/challenge.test.js`.
+  - Documented full API contract in `backend/API.md`.
 
 ## Phase 5: Frontend Integration Docs, UAT & Readiness
 - **Goal**: Provide frontend documentation for Imadulla and verify complete end-to-end readiness.
