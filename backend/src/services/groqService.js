@@ -71,7 +71,8 @@ STRICT CONSTRAINTS:
 3. COHESION: The Resource MUST directly enable solving the Problem Statement while adhering to the creative constraint in Restriction.
 4. RESOURCE RULES: Must be a free browser API (e.g. Web Speech, Canvas, Web Audio, Geolocation, LocalStorage), a free keyless public REST API (e.g. Open-Meteo, DummyJSON, REST Countries, Open Library, Quotable), or a structured local JSON dataset.
 5. DOCUMENTATION: Provide a valid HTTP/HTTPS documentation URL. Never require API keys or paid accounts.
-6. DELIVERABLE: Specify a concrete, achievable prototype scope.
+6. DELIVERABLE: Specify a concrete, achievable prototype scope. Keep description concise (under 400 characters).
+7. LENGTH BOUNDS: Keep problem statement, restriction rule, resource guidance, and deliverable each concise (under 400 characters).
 ${negativeContext}
 
 Return ONLY a valid JSON object matching the requested schema.`;
@@ -127,7 +128,7 @@ export class GroqService {
 
     const callApi = async () => {
       const completion = await client.chat.completions.create({
-        model: this.model || config.groqModel || 'llama-3.3-70b-versatile',
+        model: this.model || config.groqModel || 'openai/gpt-oss-20b',
         messages: [
           { role: 'system', content: systemPrompt },
           {
@@ -169,7 +170,9 @@ export class GroqService {
           msg.includes('rate_limit_exceeded') ||
           msg.includes('RESOURCE_EXHAUSTED') ||
           msg.includes('503') ||
-          msg.includes('UNAVAILABLE');
+          msg.includes('UNAVAILABLE') ||
+          msg.includes('404') ||
+          msg.includes('model_not_found');
 
         if (attempt === 0 && !isNonRetryable) {
           await new Promise((resolve) => setTimeout(resolve, 300));

@@ -19,7 +19,7 @@ export const config = Object.freeze({
   isProduction: process.env.NODE_ENV === 'production',
   aiProvider: (process.env.AI_PROVIDER || 'groq').trim().toLowerCase(),
   groqApiKey: process.env.GROQ_API_KEY || '',
-  groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+  groqModel: process.env.GROQ_MODEL || 'openai/gpt-oss-20b',
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
   aiTimeoutMs: parseInt(process.env.AI_TIMEOUT_MS || process.env.GEMINI_TIMEOUT_MS || '4000', 10),

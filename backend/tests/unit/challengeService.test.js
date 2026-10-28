@@ -301,6 +301,27 @@ describe('Phase 6: Multi-Provider (Groq & Gemini) Orchestration', () => {
     expect(mockGemini.generate).toHaveBeenCalledOnce();
   });
 
+  it('should seamlessly fail over to Gemini when Groq encounters a 404 model_not_found error', async () => {
+    const mockGroq = {
+      generate: vi.fn().mockRejectedValue(new Error('404 The model does not exist (model_not_found)'))
+    };
+    const mockGemini = { generate: vi.fn().mockResolvedValue(sampleGeminiOutput) };
+
+    const service = new ChallengeService({
+      provider: 'groq',
+      groqService: mockGroq,
+      geminiService: mockGemini,
+      hasGroqKey: true,
+      hasGeminiKey: true
+    });
+
+    const result = await service.generateChallenge('FinTech');
+    expect(result.source).toBe('ai');
+    expect(result.problem.title).toBe('Campus Food Coupon Expiry Alert');
+    expect(mockGroq.generate).toHaveBeenCalledOnce();
+    expect(mockGemini.generate).toHaveBeenCalledOnce();
+  });
+
   it('should use Gemini directly when provider is explicitly configured to gemini', async () => {
     const mockGroq = { generate: vi.fn().mockResolvedValue(sampleGroqOutput) };
     const mockGemini = { generate: vi.fn().mockResolvedValue(sampleGeminiOutput) };

@@ -180,5 +180,22 @@ describe('Phase 6: GroqService Unit Tests', () => {
         /Groq API request timed out after 50ms/
       );
     });
+
+    it('should fail fast without retrying on 404 model_not_found errors', async () => {
+      const createMock = vi.fn().mockRejectedValue(
+        new Error('404 The model does not exist or you do not have access to it (model_not_found)')
+      );
+      const mockClient = {
+        chat: {
+          completions: {
+            create: createMock
+          }
+        }
+      };
+
+      const service = new GroqService(mockClient);
+      await expect(service.generate('EdTech')).rejects.toThrow(/model_not_found/);
+      expect(createMock).toHaveBeenCalledTimes(1);
+    });
   });
 });
