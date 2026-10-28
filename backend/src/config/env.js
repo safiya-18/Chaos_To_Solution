@@ -17,9 +17,13 @@ export const config = Object.freeze({
   nodeEnv: process.env.NODE_ENV || 'development',
   corsOrigins: parseCorsOrigins(process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:3000'),
   isProduction: process.env.NODE_ENV === 'production',
+  aiProvider: (process.env.AI_PROVIDER || 'groq').trim().toLowerCase(),
+  groqApiKey: process.env.GROQ_API_KEY || '',
+  groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
-  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || '4000', 10)
+  aiTimeoutMs: parseInt(process.env.AI_TIMEOUT_MS || process.env.GEMINI_TIMEOUT_MS || '4000', 10),
+  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || process.env.AI_TIMEOUT_MS || '4000', 10)
 });
 
 export default config;

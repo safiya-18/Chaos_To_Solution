@@ -1,18 +1,19 @@
 # Project State: Chaos to Solution Backend
  
-## Current Phase: Phase 5 - Frontend Integration Docs, UAT & Readiness (COMPLETED)
+## Current Phase: Phase 6 - Groq AI Provider Integration (COMPLETED & VERIFIED)
 - **Current Milestone**: Milestone 1 - Backend MVP & API Integration — COMPLETED
-- **Active Phase**: Phase 5 (Frontend Integration Docs, UAT & Readiness) — Completed
-- **Status**: Completed & Verified. All 78 automated tests passing (48 backend, 30 frontend). Live dual-service integration across all 8 themes verified. Ready for event day.
+- **Active Phase**: Phase 6 (Groq AI Provider Integration) — Implemented & Verified
+- **Status**: Implemented & Verified. All 93 automated tests passing (63 backend, 30 frontend). Groq multi-provider cascade, fail-fast rate-limit handling, and curated fallbacks active. Live generation verified in fallback mode (ready for live Groq API key).
 
 ## Key Approved Decisions
 - **Decision 1 (Themes)**: 8 approved themes (`EdTech`, `FinTech`, `HealthTech`, `Sustainability`, `Smart Cities`, `Accessibility`, `E-commerce`, `Open Innovation`). Strict validation with HTTP 400. No silent fallback to Open Innovation.
-- **Decision 2 (AI Integration)**: Official `@google/genai` SDK (`gemini-3.8-flash`) with backend-only key management (`GEMINI_API_KEY` in `backend/.env`). Structured JSON schema with 10000ms timeout.
+- **Decision 2 (AI Integration)**: Multi-provider architecture. Groq (`groq-sdk`, `llama-3.3-70b-versatile`) as primary with strict JSON Schema. Google Gemini (`gemini-3.8-flash`) as secondary.
 - **Decision 3 (Frontend Contract)**: Reconciled with Imadulla's completed frontend `validateChallenge.js` and `whatsapp.js`. Envelope `{ success: true, data: { id, theme, generatedAt, source, challenge, shareText } }`.
 - **Decision 4 (WhatsApp Formatter)**: Pre-formatted WhatsApp copy in `shareTextFormatter.js` returned inside `data.shareText`. Phone number collection and URL generation handled client-side.
-- **Decision 5 (Graceful Fallback)**: Timeouts ($\le 10000$ms), rate limits (429), or missing keys trigger curated Phase 2 fallbacks with explicit source indicator (`source: "curated-fallback"` vs `source: "ai"`). Zero 500 crashes.
+- **Decision 5 (Graceful Fallback)**: Timeouts ($\le 4000$ms), rate limits (429), or missing keys trigger curated Phase 2 fallbacks with explicit source indicator (`source: "curated-fallback"` vs `source: "ai"`). Zero 500 crashes.
 - **Decision 6 (CORS & Security)**: Default CORS allows `http://localhost:5173-5176` and `http://localhost:3000`. No API keys or secrets exposed.
 - **Decision 7 (Offline Resilience)**: Tier 1 backend curated fallback bank ensures 100% server uptime even without internet; Tier 2 frontend client mock mode handles venue network drops.
+- **Decision 8 (Groq Strict Schema & Fast Failover)**: Groq structured outputs enforced via `response_format: { type: "json_schema", json_schema: { strict: true } }`. Rate limits fail fast to curated fallback in < 1000ms with zero retry loops.
 
 ## Next Action
-Milestone 1 is complete! Present final event-readiness report and runbook to organizers.
+Input `GROQ_API_KEY` into `backend/.env` for live production validation with Groq's LPUs.

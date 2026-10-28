@@ -1,30 +1,34 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../../src/app.js';
+import groqService from '../../src/services/groqService.js';
 import geminiService from '../../src/services/geminiService.js';
 
 describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generate)', () => {
+  const createMockChallenge = (theme) => ({
+    theme,
+    problem: {
+      title: `${theme} Automated Solution Challenge`,
+      statement: `A student-tailored prototype problem statement addressing real user challenges in ${theme}.`
+    },
+    restriction: {
+      name: 'Client-Side Only Execution',
+      rule: 'The solution must operate entirely within the browser without requiring a custom backend service.'
+    },
+    resource: {
+      name: 'Web Storage API',
+      type: 'browser-api',
+      guidance: `Use browser local storage to preserve state and preferences for this ${theme} prototype.`,
+      docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage'
+    },
+    deliverable: `A functional 3-hour prototype demonstrating the core user flow for ${theme}.`
+  });
+
   beforeEach(() => {
     vi.restoreAllMocks();
-    // Default mock ensures tests run deterministically offline without burning Gemini quotas
-    vi.spyOn(geminiService, 'generate').mockImplementation(async (theme) => ({
-      theme,
-      problem: {
-        title: `${theme} Automated Solution Challenge`,
-        statement: `A student-tailored prototype problem statement addressing real user challenges in ${theme}.`
-      },
-      restriction: {
-        name: 'Client-Side Only Execution',
-        rule: 'The solution must operate entirely within the browser without requiring a custom backend service.'
-      },
-      resource: {
-        name: 'Web Storage API',
-        type: 'browser-api',
-        guidance: `Use browser local storage to preserve state and preferences for this ${theme} prototype.`,
-        docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage'
-      },
-      deliverable: `A functional 3-hour prototype demonstrating the core user flow for ${theme}.`
-    }));
+    // Default mocks ensure tests run deterministically offline without burning Groq or Gemini quotas
+    vi.spyOn(groqService, 'generate').mockImplementation(async (theme) => createMockChallenge(theme));
+    vi.spyOn(geminiService, 'generate').mockImplementation(async (theme) => createMockChallenge(theme));
   });
 
   describe('Theme Validation & Error Handling (HTTP 400)', () => {
@@ -141,7 +145,7 @@ describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generat
   });
 
   describe('AI Generation vs. Curated Fallback Mocking', () => {
-    it('should return source: "ai" when Gemini returns a valid challenge', async () => {
+    it('should return source: "ai" when AI provider returns a valid challenge', async () => {
       const mockAiChallenge = {
         theme: 'EdTech',
         problem: {
@@ -161,6 +165,7 @@ describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generat
         deliverable: 'A working prototype showing dyslexia-friendly speed reading with persistent theme toggles.'
       };
 
+      vi.spyOn(groqService, 'generate').mockResolvedValueOnce(mockAiChallenge);
       vi.spyOn(geminiService, 'generate').mockResolvedValueOnce(mockAiChallenge);
 
       const response = await request(app)
@@ -173,7 +178,10 @@ describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generat
       expect(response.body.data.shareText).toContain('[AI Generated]');
     });
 
-    it('should transparently return source: "curated-fallback" when Gemini encounters a 429 quota limit or network timeout', async () => {
+    it('should transparently return source: "curated-fallback" when AI providers encounter a 429 quota limit or network timeout', async () => {
+      vi.spyOn(groqService, 'generate').mockRejectedValueOnce(
+        new Error('429 rate_limit_exceeded')
+      );
       vi.spyOn(geminiService, 'generate').mockRejectedValueOnce(
         new Error('ResourceExhausted: 429 Quota Exceeded')
       );
@@ -190,7 +198,7 @@ describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generat
       expect(response.body.data.challenge.problem.title).toBeTruthy();
     });
 
-    it('should transparently return source: "curated-fallback" when Gemini response fails validation', async () => {
+    it('should transparently return source: "curated-fallback" when AI response fails validation', async () => {
       const invalidAiResponse = {
         theme: 'FinTech',
         problem: { title: 'X', statement: 'Too short' }, // Invalid bounds
@@ -199,6 +207,7 @@ describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generat
         deliverable: 'D'
       };
 
+      vi.spyOn(groqService, 'generate').mockResolvedValueOnce(invalidAiResponse);
       vi.spyOn(geminiService, 'generate').mockResolvedValueOnce(invalidAiResponse);
 
       const response = await request(app)
@@ -213,7 +222,7 @@ describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generat
   });
 
   describe('Zero Secrets Leakage & Response Security', () => {
-    it('should never expose GEMINI_API_KEY or secret environment variables in response body', async () => {
+    it('should never expose GROQ_API_KEY, GEMINI_API_KEY, or secret environment variables in response body', async () => {
       const response = await request(app)
         .post('/api/challenges/generate')
         .send({ theme: 'Sustainability' });
@@ -222,6 +231,8 @@ describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generat
       const jsonString = JSON.stringify(response.body);
       expect(jsonString).not.toContain('AIzaSy');
       expect(jsonString).not.toContain('GEMINI_API_KEY');
+      expect(jsonString).not.toContain('gsk_');
+      expect(jsonString).not.toContain('GROQ_API_KEY');
     });
   });
 });

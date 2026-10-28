@@ -22,7 +22,7 @@ If your frontend runs on a different port or host (e.g. `http://localhost:4173`)
 
 ## 🎯 Primary Endpoint: Challenge Generation
 
-Generates an integrated, 3-hour hackathon challenge tailored to a chosen theme. Dispatches to the Google Gemini engine or seamlessly falls back to pre-vetted curated datasets when offline or rate-limited.
+Generates an integrated, 3-hour hackathon challenge tailored to a chosen theme. Dispatches to the high-speed **Groq** engine (`llama-3.3-70b-versatile` by default), falls over to **Google Gemini** (`gemini-3.8-flash`) if configured, or seamlessly falls back to pre-vetted curated datasets when offline or rate-limited.
 
 - **Method**: `POST`
 - **Path**: `/api/challenges/generate`

@@ -36,3 +36,13 @@
   - Conversational UAT report (`.planning/phases/05-integration/05-UAT.md`).
   - Operational event runbook (`EVENT_RUNBOOK.md`).
   - Dual-service running instructions in `backend/README.md`.
+
+## Phase 6: Groq AI Provider Integration (COMPLETED & VERIFIED)
+- **Goal**: Replace Gemini as the default AI generation engine with Groq while preserving Gemini as an optional provider and retaining the curated challenge fallback.
+- **Status**: Completed & Verified. All 93 automated tests passing (63 backend, 30 frontend).
+- **Deliverables**:
+  - `groq-sdk` integration with strict JSON schema outputs (`llama-3.3-70b-versatile`).
+  - Decoupled `groqService.js` and configurable multi-provider dispatcher in `challengeService.js`.
+  - Fail-fast sub-second error and rate-limit handling (< 1000ms failover to curated fallback).
+  - Comprehensive unit and integration test coverage for Groq provider and provider switching.
+  - Updated API docs, runbook, and environment configuration.

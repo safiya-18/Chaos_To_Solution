@@ -25,9 +25,13 @@ Perform these verification steps on the master presentation/kiosk laptops before
   PORT=5000
   NODE_ENV=development
   CORS_ORIGIN=http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:3000
+  AI_PROVIDER=groq
+  AI_TIMEOUT_MS=4000
+  GROQ_API_KEY=your_groq_api_key_here
+  GROQ_MODEL=llama-3.3-70b-versatile
   GEMINI_API_KEY=your_gemini_api_key_here
   GEMINI_MODEL=gemini-3.8-flash
-  GEMINI_TIMEOUT_MS=10000
+  GEMINI_TIMEOUT_MS=4000
   ```
 - [ ] **Frontend Configuration**: Confirm `frontend/.env` exists and contains:
   ```env
@@ -124,10 +128,10 @@ The system is architected with a **Zero-Downtime Guarantee** specifically for ha
 
 Run the automated test suites to confirm full green status:
 ```bash
-# 1. Backend suite (48 tests)
+# 1. Backend suite (63 tests)
 cd backend && npm test
 
 # 2. Frontend suite (30 tests)
 cd ../frontend && npm test
 ```
-All **78 tests** must pass. Once verified, project the frontend onto the main stage display or open for participant kiosk entry!
+All **93 tests** must pass. Once verified, project the frontend onto the main stage display or open for participant kiosk entry!

@@ -35,6 +35,13 @@
 - **FR-7.1**: Provide clear markdown API documentation (`API.md`) detailing request payloads, response samples, source indicators, and WhatsApp formatting for Imadulla.
 - **FR-7.2**: Supply `.env.example` with `GEMINI_API_KEY` placeholder.
 
+### FR-8: Configurable Multi-Provider AI Generation (Groq & Gemini)
+- **FR-8.1**: Support configurable `AI_PROVIDER` (`groq` default, `gemini` secondary) via environment variables.
+- **FR-8.2**: Integrate `groq-sdk` with strict JSON schema outputs using `llama-3.3-70b-versatile` (or `llama-3.1-8b-instant`).
+- **FR-8.3**: Enforce fail-fast sub-second handoff (< 1,000ms) to `fallbackService.js` on Groq rate limits (`429`), timeouts, or quota errors without retry loops.
+- **FR-8.4**: Fallback to secondary provider if configured when primary key is missing, or fallback to curated datasets if neither is available.
+- **FR-8.5**: Zero modifications to the REST API request/response envelope or frontend client contract.
+
 ---
 
 ## Non-Functional Requirements (NFR)

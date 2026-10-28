@@ -7,7 +7,7 @@ Backend REST API service for the **Chaos to Solution: Challenge Generator** even
 ## 🛠️ Tech Stack
 - **Runtime**: Node.js (`v24.x` LTS)
 - **Framework**: Express.js (JavaScript ES Modules `"type": "module"`)
-- **AI Engine**: Google Gemini (`@google/genai` SDK, `gemini-2.5-flash`)
+- **AI Engine**: Groq (`groq-sdk`, `llama-3.3-70b-versatile` default) & Google Gemini (`@google/genai`, `gemini-3.8-flash` optional)
 - **Testing**: Vitest + Supertest
 - **Security & Networking**: Helmet, CORS, Dotenv
 
@@ -89,9 +89,13 @@ Settings in `.env`:
 - `PORT=5000`
 - `NODE_ENV=development`
 - `CORS_ORIGIN=http://localhost:5173,http://localhost:3000`
-- `GEMINI_API_KEY=` *(Optional in dev/offline mode. If omitted, the engine transparently serves curated fallbacks.)*
+- `AI_PROVIDER=groq` *(default: groq; optional: gemini)*
+- `AI_TIMEOUT_MS=4000`
+- `GROQ_API_KEY=` *(Configured server-side. If omitted or rate-limited, engine falls back to Gemini or curated datasets)*
+- `GROQ_MODEL=llama-3.3-70b-versatile`
+- `GEMINI_API_KEY=` *(Optional secondary provider)*
 - `GEMINI_MODEL=gemini-3.8-flash`
-- `GEMINI_TIMEOUT_MS=10000`
+- `GEMINI_TIMEOUT_MS=4000`
 
 ### 4. Running the Dev Server
 Uses Node 24 native watch mode (auto-reloads on file changes):

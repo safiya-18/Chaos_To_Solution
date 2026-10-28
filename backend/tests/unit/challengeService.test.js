@@ -221,3 +221,144 @@ describe('Phase 3: Challenge Service Orchestration', () => {
     expect(history[4]).toBe('Theme:Title_7');
   });
 });
+
+describe('Phase 6: Multi-Provider (Groq & Gemini) Orchestration', () => {
+  const sampleGroqOutput = {
+    theme: 'FinTech',
+    problem: {
+      title: 'Micro-Expense Tracker',
+      statement: 'A real-time lightweight budget tracker for student campus purchases.'
+    },
+    restriction: {
+      name: 'Single File Architecture',
+      rule: 'All logic and styling must reside entirely within a single standalone HTML page.'
+    },
+    resource: {
+      name: 'HTML5 IndexedDB Storage',
+      type: 'browser-api',
+      guidance: 'Store and retrieve transaction history offline without external databases.',
+      docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API'
+    },
+    deliverable: 'A single-page prototype storing and graphing campus micro-transactions.'
+  };
+
+  const sampleGeminiOutput = {
+    theme: 'FinTech',
+    problem: {
+      title: 'Campus Food Coupon Expiry Alert',
+      statement: 'A tracker warning students before meal coupon credits expire.'
+    },
+    restriction: {
+      name: 'Zero External CSS',
+      rule: 'Use standard HTML5 elements with inline styles and zero third-party stylesheets.'
+    },
+    resource: {
+      name: 'Web Notification API',
+      type: 'browser-api',
+      guidance: 'Trigger desktop alerts when coupons are within 24 hours of expiring.',
+      docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Notifications_API'
+    },
+    deliverable: 'A functional single-screen web app showing coupon timers and notifications.'
+  };
+
+  it('should use Groq by default when provider is groq and Groq succeeds', async () => {
+    const mockGroq = { generate: vi.fn().mockResolvedValue(sampleGroqOutput) };
+    const mockGemini = { generate: vi.fn().mockResolvedValue(sampleGeminiOutput) };
+
+    const service = new ChallengeService({
+      provider: 'groq',
+      groqService: mockGroq,
+      geminiService: mockGemini,
+      hasGroqKey: true,
+      hasGeminiKey: true
+    });
+
+    const result = await service.generateChallenge('FinTech');
+    expect(result.source).toBe('ai');
+    expect(result.problem.title).toBe('Micro-Expense Tracker');
+    expect(mockGroq.generate).toHaveBeenCalledOnce();
+    expect(mockGemini.generate).not.toHaveBeenCalled();
+  });
+
+  it('should seamlessly fail over to Gemini when Groq encounters a 429 rate limit', async () => {
+    const mockGroq = {
+      generate: vi.fn().mockRejectedValue(new Error('429 rate_limit_exceeded'))
+    };
+    const mockGemini = { generate: vi.fn().mockResolvedValue(sampleGeminiOutput) };
+
+    const service = new ChallengeService({
+      provider: 'groq',
+      groqService: mockGroq,
+      geminiService: mockGemini,
+      hasGroqKey: true,
+      hasGeminiKey: true
+    });
+
+    const result = await service.generateChallenge('FinTech');
+    expect(result.source).toBe('ai');
+    expect(result.problem.title).toBe('Campus Food Coupon Expiry Alert');
+    expect(mockGroq.generate).toHaveBeenCalledOnce();
+    expect(mockGemini.generate).toHaveBeenCalledOnce();
+  });
+
+  it('should use Gemini directly when provider is explicitly configured to gemini', async () => {
+    const mockGroq = { generate: vi.fn().mockResolvedValue(sampleGroqOutput) };
+    const mockGemini = { generate: vi.fn().mockResolvedValue(sampleGeminiOutput) };
+
+    const service = new ChallengeService({
+      provider: 'gemini',
+      groqService: mockGroq,
+      geminiService: mockGemini,
+      hasGroqKey: true,
+      hasGeminiKey: true
+    });
+
+    const result = await service.generateChallenge('FinTech');
+    expect(result.source).toBe('ai');
+    expect(result.problem.title).toBe('Campus Food Coupon Expiry Alert');
+    expect(mockGemini.generate).toHaveBeenCalledOnce();
+    expect(mockGroq.generate).not.toHaveBeenCalled();
+  });
+
+  it('should drop cleanly to curated fallback when both Groq and Gemini fail', async () => {
+    const mockGroq = {
+      generate: vi.fn().mockRejectedValue(new Error('429 rate_limit_exceeded'))
+    };
+    const mockGemini = {
+      generate: vi.fn().mockRejectedValue(new Error('503 Service Unavailable'))
+    };
+
+    const service = new ChallengeService({
+      provider: 'groq',
+      groqService: mockGroq,
+      geminiService: mockGemini,
+      hasGroqKey: true,
+      hasGeminiKey: true
+    });
+
+    const result = await service.generateChallenge('FinTech');
+    expect(result.source).toBe('curated-fallback');
+    expect(result.theme).toBe('FinTech');
+    expect(validateChallenge(result, 'FinTech').isValid).toBe(true);
+    expect(mockGroq.generate).toHaveBeenCalledOnce();
+    expect(mockGemini.generate).toHaveBeenCalledOnce();
+  });
+
+  it('should drop directly to curated fallback when neither provider key is configured', async () => {
+    const mockGroq = { generate: vi.fn() };
+    const mockGemini = { generate: vi.fn() };
+
+    const service = new ChallengeService({
+      provider: 'groq',
+      groqService: mockGroq,
+      geminiService: mockGemini,
+      hasGroqKey: false,
+      hasGeminiKey: false
+    });
+
+    const result = await service.generateChallenge('EdTech');
+    expect(result.source).toBe('curated-fallback');
+    expect(mockGroq.generate).not.toHaveBeenCalled();
+    expect(mockGemini.generate).not.toHaveBeenCalled();
+  });
+});
