@@ -39,10 +39,37 @@
 
 ## Phase 6: Groq AI Provider Integration (COMPLETED & VERIFIED)
 - **Goal**: Replace Gemini as the default AI generation engine with Groq while preserving Gemini as an optional provider and retaining the curated challenge fallback.
-- **Status**: Completed & Verified. All 93 automated tests passing (63 backend, 30 frontend).
+- **Status**: Completed & Verified. All 95 automated tests passing (65 backend, 30 frontend).
 - **Deliverables**:
-  - `groq-sdk` integration with strict JSON schema outputs (`llama-3.3-70b-versatile`).
+  - `groq-sdk` integration with strict JSON schema outputs (`openai/gpt-oss-20b`).
   - Decoupled `groqService.js` and configurable multi-provider dispatcher in `challengeService.js`.
   - Fail-fast sub-second error and rate-limit handling (< 1000ms failover to curated fallback).
   - Comprehensive unit and integration test coverage for Groq provider and provider switching.
   - Updated API docs, runbook, and environment configuration.
+
+## Phase 7: Shared Event Timer & MongoDB Team Challenge Persistence (COMPLETED & VERIFIED)
+- **Goal**: Implement a shared event-wide authoritative 4-hour countdown timer and persistent team registration using MongoDB.
+- **Status**: Completed & Verified. All 148 automated tests passing (98 backend, 50 frontend).
+- **Deliverables**:
+  - MongoDB integration using Mongoose with resilient connection manager, connection lifecycle logging, and health readiness probe.
+  - Team registration and assignment persistence (`POST /api/teams`, `GET /api/teams/:id`) collecting team name (2-50 chars) before generation.
+  - Unique team name enforcement (case-insensitive `normalizedTeamName`) returning `409 TEAM_ALREADY_EXISTS`.
+  - Full preservation of challenge pillars, provenance (`ai` vs `curated-fallback`), and metadata without storing personal data.
+  - Shared event-wide 4-hour timer model (`EventTimer`) with authoritative server clock math (`startedAt`, `endsAt`, `pausedAt`).
+  - Operator-only timer mutation endpoints (`/start`, `/pause`, `/resume`, `/reset`) secured with `EVENT_ADMIN_TOKEN` via constant-time verification.
+  - Public `GET /api/event-timer` endpoint polled periodically by frontend with local 1s tick and visual warning thresholds (< 60m amber, < 10m red).
+
+## Phase 8: UI Redesign — Event Dashboard, 4-Hour Timer & Team Challenge Table (COMPLETED & VERIFIED)
+- **Goal**: Redesign the existing CTS application into a clean, professional event-management interface centered on 3 connected screens, fix the `next is not a function` persistence bug, and provide a full-screen projector timer and team challenge table.
+- **Status**: Completed & Verified. All 167 automated tests passing (104 backend, 63 frontend). Clean production build.
+- **Deliverables**:
+  - Root cause fix for `Failed to persist team challenge assignment: next is not a function` in `backend/src/models/TeamAssignment.js` using synchronous validation hooks and regression unit test `tests/unit/teamAssignmentModel.test.js`.
+  - Added `listTeams` service and `GET /api/teams` endpoint with search, theme filter, and sorting.
+  - Custom browser history router (`frontend/src/router/Router.jsx`) supporting clean URLs `/`, `/timer`, `/teams` without page reloads.
+  - **Screen 1: Event Dashboard (`/`)**: Compact event identity, 3 metric chips (4 Hours, 2 Members, Real Problems), 2 navigation action cards (Live Event Timer, Team Challenges), team registration input (max 50 chars), 8-theme selection grid, Generate button, and challenge results with 4 pillars + WhatsApp share.
+  - **Screen 2: Live Event Timer (`/timer`)**: Large centered 4-hour countdown (`04:00:00`) for seminar hall projection, status label (NOT STARTED, RUNNING, PAUSED, COMPLETED), operator-protected Start/Pause/Resume/Reset controls via `EVENT_ADMIN_TOKEN`, fullscreen toggle.
+  - **Screen 3: Team Challenge Table (`/teams`)**: Searchable, filterable, sortable table of persisted team assignments from MongoDB, `#`, Team Name, Theme, Problem, Restriction, Resource, Deliverable, Generated At, mission detail modal with 4 pillars, refresh button with last updated timestamp.
+  - Comprehensive unit and integration test coverage for all screens and navigation flows.
+  - Backward compatibility of `POST /api/challenges/generate` and existing AI cascade preserved 100%.
+  - Comprehensive test suites: 33 new backend tests, 20 new frontend tests.
+

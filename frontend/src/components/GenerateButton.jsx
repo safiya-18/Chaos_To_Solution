@@ -5,9 +5,10 @@ export function GenerateButton({
   onClick,
   isLoading,
   selectedTheme,
+  isTeamNameValid = true,
   hasExistingChallenge = false
 }) {
-  const isEnabled = Boolean(selectedTheme) && !isLoading;
+  const isEnabled = Boolean(selectedTheme) && Boolean(isTeamNameValid) && !isLoading;
 
   return (
     <div className="w-full">
@@ -47,8 +48,6 @@ export function GenerateButton({
         <span className="text-center font-black flex-1 px-2 tracking-[0.08em]">
           {isLoading
             ? 'GENERATING CHALLENGE...'
-            : hasExistingChallenge
-            ? 'GENERATE ANOTHER CHALLENGE'
             : 'GENERATE MY CHALLENGE'}
         </span>
 
@@ -65,7 +64,13 @@ export function GenerateButton({
         </p>
       )}
 
-      {selectedTheme && !isLoading && (
+      {selectedTheme && !isTeamNameValid && !isLoading && (
+        <p className="mt-1 text-center text-[10.5px] sm:text-[11.5px] text-[#78716C] font-medium">
+          Enter a team name (min 2 characters) to unlock generation
+        </p>
+      )}
+
+      {selectedTheme && isTeamNameValid && !isLoading && (
         <p className="mt-1 text-center text-[10.5px] sm:text-[11.5px] text-[#4A453E] font-medium">
           Ready to generate for <span className="text-[#304DB4] font-bold">{selectedTheme}</span>
         </p>

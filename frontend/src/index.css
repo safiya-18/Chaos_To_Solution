@@ -32,18 +32,40 @@ html, body {
 
 /* Custom scrollbar for modern browsers */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #EAE5DC;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4CFC6;
-  border-radius: 4px;
+  background: rgba(17, 24, 32, 0.18);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #BBB5AA;
+  background: rgba(17, 24, 32, 0.35);
+}
+
+/* Elegant floating scrollbar for modals & panels */
+.custom-modal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(17, 24, 32, 0.22) transparent;
+}
+.custom-modal-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-modal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 6px 0;
+}
+.custom-modal-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(17, 24, 32, 0.2);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+.custom-modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(17, 24, 32, 0.38);
 }
 
 /* Accessible focus ring utility */

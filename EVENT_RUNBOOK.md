@@ -28,10 +28,13 @@ Perform these verification steps on the master presentation/kiosk laptops before
   AI_PROVIDER=groq
   AI_TIMEOUT_MS=4000
   GROQ_API_KEY=your_groq_api_key_here
-  GROQ_MODEL=llama-3.3-70b-versatile
+  GROQ_MODEL=openai/gpt-oss-20b
   GEMINI_API_KEY=your_gemini_api_key_here
   GEMINI_MODEL=gemini-3.8-flash
   GEMINI_TIMEOUT_MS=4000
+  MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/chaos_to_solution
+  EVENT_ID=cts-2026
+  EVENT_ADMIN_TOKEN=your_secure_admin_token_here
   ```
 - [ ] **Frontend Configuration**: Confirm `frontend/.env` exists and contains:
   ```env
@@ -112,26 +115,110 @@ The system is architected with a **Zero-Downtime Guarantee** specifically for ha
 
 ---
 
-## 🔧 5. Quick Troubleshooting Guide
+---
+
+## ⏱️ 5. Event-Wide Timer Operations (Operator Runbook)
+
+The event features a centralized 4-hour countdown timer (`14,400,000 ms`) synchronized across all screens.
+Mutations require the `EVENT_ADMIN_TOKEN` configured in `backend/.env`.
+
+### 5.1 Projector Setup (Auditorium & Seminar Hall Display)
+1. Open Google Chrome on the projector display laptop and navigate to:
+   ```text
+   http://localhost:5173/timer
+   ```
+2. Click the **Fullscreen** button (`Maximize2` icon in top right) or press `F11` on the keyboard to enter distraction-free full-screen mode.
+3. The display will show the high-contrast `04:00:00` digits and `NOT STARTED` status.
+
+### 5.2 Hackathon Kickoff (Start the Countdown)
+When the countdown begins, the event operator can either:
+- **Via the UI**: Click **Start Event (4H)**. An authorization dialog will pop up. Enter the `EVENT_ADMIN_TOKEN` and click **Save & Authorize**. The token is stored in the operator's session, the timer transitions to `EVENT RUNNING`, and digits count down in real-time.
+- **Via cURL**:
+  ```bash
+  curl -X POST http://localhost:5000/api/event-timer/start \
+    -H "Authorization: Bearer YOUR_EVENT_ADMIN_TOKEN" \
+    -H "Content-Type: application/json"
+  ```
+*Note: Starting is idempotent. Re-submitting will not restart or reset an already running countdown.*
+
+### 5.3 Temporary Event Halts (e.g. Announcements / Lunch)
+To freeze the remaining time, click **Pause Timer** in the operator controls (or send cURL):
+```bash
+curl -X POST http://localhost:5000/api/event-timer/pause \
+  -H "Authorization: Bearer YOUR_EVENT_ADMIN_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+### 5.4 Resuming Countdown
+To resume ticking from the saved remaining time, click **Resume Timer** (or send cURL):
+```bash
+curl -X POST http://localhost:5000/api/event-timer/resume \
+  -H "Authorization: Bearer YOUR_EVENT_ADMIN_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+### 5.5 Emergency / Rehearsal Reset
+To reset the timer back to `not_started` (04:00:00), click **Reset (Operator)** and confirm:
+```bash
+curl -X POST http://localhost:5000/api/event-timer/reset \
+  -H "Authorization: Bearer YOUR_EVENT_ADMIN_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+---
+
+## 🗄️ 6. Team Registration & Challenge Table Audit
+
+Teams enter their team name before generating a challenge on the dashboard (`/`).
+
+### 6.1 Live Team Monitoring via UI Table
+Mentors, organizers, and judges can monitor registered teams live by navigating to:
+```text
+http://localhost:5173/teams
+```
+- **Real-time Table**: Displays all registered teams, chosen themes, problem statements, restrictions, resources, and deliverables.
+- **Search & Filter**: Search by team name or keyword, and filter by theme.
+- **Mission Detail Modal**: Click **View Mission** on any team to inspect the 4 complete challenge pillars and external documentation links.
+- **Auto & Manual Refresh**: Click **Refresh** to pull the latest registration records from MongoDB.
+
+### 6.2 Checking Assignments via API
+- **List All Teams**:
+  ```bash
+  curl http://localhost:5000/api/teams
+  ```
+- **Query Specific Team**:
+  ```bash
+  curl http://localhost:5000/api/teams/YOUR_TEAM_NAME
+  ```
+- **MongoDB Direct Inspection** (via mongosh or Compass):
+  ```bash
+  mongosh "mongodb://localhost:27017/cts" --eval "db.teamassignments.find({}, { teamName: 1, theme: 1, source: 1, createdAt: 1 })"
+  ```
+
+---
+
+## 🔧 7. Quick Troubleshooting Guide
 
 | Issue | Root Cause | Immediate Resolution |
 | :--- | :--- | :--- |
+| **`Failed to persist team challenge assignment: next is not a function`** | Mongoose 8.x synchronous validation hook signature mismatch | Fixed in `backend/src/models/TeamAssignment.js` using synchronous `pre('validate')` without `next` and schema default. Tested via unit regression suite. |
+| **Database Unavailable (503 on registration)** | MongoDB is not running or unreachable | Start MongoDB (`docker compose up -d` or verify `MONGODB_URI` connection). Backend health at `/api/health` reports status. |
+| **Timer controls return 401/403** | Missing or invalid admin token | Ensure token entered in dialog or `Authorization: Bearer <EVENT_ADMIN_TOKEN>` matches token in `backend/.env`. |
 | **CORS Blocked (Red console error)** | Frontend running on port not in `CORS_ORIGIN` | Add frontend port to `CORS_ORIGIN` in `backend/.env` (e.g. `http://localhost:5176`) and restart backend. |
 | **Port 5000 in use** | Residual node process running | Run `npx kill-port 5000` or stop previous background tasks in terminal. |
-| **Model 404 Error in backend log** | Outdated model string | Ensure `GEMINI_MODEL=gemini-3.8-flash` in `backend/.env`. |
 | **Frontend fails with "Network Error"** | Backend server not running | Ensure Terminal 1 is running `npm run dev` in `backend/`. Verify `curl http://localhost:5000/api/health`. |
 | **Cards not flipping** | Browser hardware acceleration disabled | Click directly on the card surface or press Enter on keyboard when focused. |
 
 ---
 
-## ✅ 6. Final Pre-Hackathon Verification (T-5 Minutes)
+## ✅ 8. Final Pre-Hackathon Verification (T-5 Minutes)
 
 Run the automated test suites to confirm full green status:
 ```bash
-# 1. Backend suite (63 tests)
+# 1. Backend suite (104 tests across 11 test files)
 cd backend && npm test
 
-# 2. Frontend suite (30 tests)
+# 2. Frontend suite (63 tests across 11 test files)
 cd ../frontend && npm test
 ```
-All **93 tests** must pass. Once verified, project the frontend onto the main stage display or open for participant kiosk entry!
+All **167 tests** must pass. Once verified, project the `/timer` screen onto the main stage display or open `/` for participant kiosk entry!

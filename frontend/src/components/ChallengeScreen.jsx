@@ -14,7 +14,8 @@ import {
   Building2,
   PersonStanding,
   ShoppingCart,
-  Lightbulb
+  Lightbulb,
+  Users
 } from 'lucide-react';
 import { THEMES } from '../data/mockChallenges.js';
 import { ChallengeFlipCard } from './ChallengeFlipCard.jsx';
@@ -59,8 +60,8 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
     /* Fills the padded area given by App.jsx — h-full flex-col, no extra scrolling */
     <div className="h-full flex flex-col gap-3 xl:gap-4 animate-fade-in">
 
-      {/* ── HEADER ROW: Back + Theme badge + Source indicator ── */}
-      <header className="shrink-0 flex items-center justify-between gap-3">
+      {/* ── HEADER ROW: Back + EventTimer + Theme badge + Source indicator ── */}
+      <header className="shrink-0 flex items-center justify-between gap-3 flex-wrap">
         {/* Back Button */}
         <button
           type="button"
@@ -74,7 +75,7 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
         </button>
 
         {/* Right: Theme pill + source */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <div
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#11151C]/15 text-sm font-extrabold text-[#111820] shadow-xs select-none"
             style={{ backgroundColor: themeConfig?.bgColor || '#F3E8FF' }}
@@ -94,7 +95,7 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
                 ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                 : 'bg-amber-50 text-amber-900 border-amber-300'
             }`}
-            title={source === 'ai' ? 'Generated dynamically via Gemini AI' : 'Reliable curated fallback challenge'}
+            title={source === 'ai' ? 'Generated dynamically via AI' : 'Reliable curated fallback challenge'}
           >
             {source === 'ai' ? (
               <>
@@ -111,14 +112,29 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
         </div>
       </header>
 
-      {/* ── PAGE TITLE ── */}
-      <div className="shrink-0 select-none">
-        <h1 className="text-2xl xl:text-[30px] 2xl:text-[34px] font-black text-[#111820] tracking-tight leading-tight">
-          Your Challenge
-        </h1>
-        <p className="text-[13px] xl:text-sm text-[#6B6358] font-normal mt-0.5 leading-tight">
-          Click on each card to reveal your challenge elements.
-        </p>
+      {/* ── PAGE TITLE & REGISTERED TEAM ── */}
+      <div className="shrink-0 select-none flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <h1 className="text-2xl xl:text-[30px] 2xl:text-[34px] font-black text-[#111820] tracking-tight leading-tight">
+              Your Challenge
+            </h1>
+            {challengeData.teamName && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#111820] text-white text-xs font-black tracking-wide shadow-xs">
+                <Users className="w-3.5 h-3.5 text-[#FFE56A]" aria-hidden="true" />
+                <span>TEAM: {challengeData.teamName}</span>
+              </span>
+            )}
+            {challengeData.isOfflinePreview && (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold border border-amber-300">
+                Offline Preview Mode
+              </span>
+            )}
+          </div>
+          <p className="text-[13px] xl:text-sm text-[#6B6358] font-normal mt-0.5 leading-tight">
+            Click on each card to reveal your challenge elements.
+          </p>
+        </div>
       </div>
 
       {/* ── THREE FLIP CARDS — responsive: 1 col on mobile, 3 col on md+ ── */}

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { MessageSquare, ArrowRight, Check, AlertCircle, ChevronDown } from 'lucide-react';
-import { validateIndianPhoneNumber, buildWhatsAppShareUrl } from '../utils/whatsapp.js';
+import { MessageSquare, ArrowRight, Check, AlertCircle, ChevronDown, Copy } from 'lucide-react';
+import { validateIndianPhoneNumber, buildWhatsAppShareUrl, formatChallengeForWhatsApp } from '../utils/whatsapp.js';
 
 export function WhatsAppShareForm({ challengeData }) {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [hasInteracted, setHasInteracted] = useState(false);
   const [hasShared, setHasShared] = useState(false);
+  const [hasCopied, setHasCopied] = useState(false);
 
   const [isOpening, setIsOpening] = useState(false);
 
@@ -37,6 +38,27 @@ export function WhatsAppShareForm({ challengeData }) {
     window.open(url, '_blank', 'noopener,noreferrer');
     setHasShared(true);
     setTimeout(() => setIsOpening(false), 800);
+  };
+
+  const handleCopyClick = async () => {
+    const message = formatChallengeForWhatsApp(challengeData);
+    if (!message) return;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(message);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = message;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setHasCopied(true);
+      setTimeout(() => setHasCopied(false), 2000);
+    } catch {
+      // Fallback silent handle
+    }
   };
 
   return (
@@ -116,6 +138,27 @@ export function WhatsAppShareForm({ challengeData }) {
               </p>
             )}
           </div>
+
+          {/* Copy Message Button */}
+          <button
+            type="button"
+            id="copy-mission-btn"
+            onClick={handleCopyClick}
+            className="min-h-[44px] h-11 sm:h-12 px-4 rounded-full font-bold text-xs sm:text-[13px] border border-[#11151C]/15 bg-[#F7F3EA] hover:bg-[#EFE9DD] text-[#111820] flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 shrink-0 select-none shadow-2xs"
+            title="Copy preformatted mission briefing text"
+          >
+            {hasCopied ? (
+              <>
+                <Check className="w-4 h-4 text-emerald-600 stroke-[2.5]" aria-hidden="true" />
+                <span className="text-emerald-700 font-bold">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-4 h-4 text-[#111820]" aria-hidden="true" />
+                <span>Copy Text</span>
+              </>
+            )}
+          </button>
 
           {/* Green WhatsApp Action Button */}
           <button

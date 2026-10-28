@@ -95,31 +95,32 @@ export function formatChallengeForWhatsApp(challengeData) {
   const sourceLabel = source === 'ai' ? 'AI Generated' : 'Backup Challenge';
 
   const lines = [
-    '⚡ *CHAOS TO SOLUTION — AI Challenge* ⚡',
+    '*CHAOS TO SOLUTION — AI Challenge*',
     '_IEEE Computer Society | SJC Institute of Technology_',
+    '----------------------------------------',
+    `*Theme:* ${theme || 'General'}`,
+    ...(challengeData.teamName ? [`*Team:* ${challengeData.teamName}`] : []),
+    `*Challenge ID:* #${id} [${sourceLabel}]`,
+    '----------------------------------------',
     '',
-    `🏷️ *Theme:* ${theme}`,
-    `🆔 *Challenge ID:* #${id} [${sourceLabel}]`,
+    '*01. PROBLEM STATEMENT*',
+    `*${problem?.title || 'Untitled Problem'}*`,
+    problem?.statement || '',
     '',
-    '━━━━━━━━━━━━━━━━━━━━',
-    '📌 *01 — PROBLEM STATEMENT*',
-    `*${problem.title}*`,
-    problem.statement,
+    '*02. TECHNICAL RESTRICTION*',
+    `*${restriction?.name || 'Standard Constraint'}*`,
+    `Rule: ${restriction?.rule || 'Follow standard hackathon rules.'}`,
     '',
-    '⚠️ *02 — TECHNICAL RESTRICTION*',
-    `*${restriction.name}*`,
-    `Rule: ${restriction.rule}`,
+    '*03. PRESCRIBED RESOURCE*',
+    `*${resource?.name || 'Official Documentation'}* (${resource?.type || 'resource'})`,
+    `Guidance: ${resource?.guidance || ''}`,
+    `Docs: ${resource?.docsUrl || ''}`,
     '',
-    '🛠️ *03 — RESOURCE*',
-    `*${resource.name}* (${resource.type || 'resource'})`,
-    `Guidance: ${resource.guidance}`,
-    `Docs: ${resource.docsUrl}`,
+    '*04. EXPECTED DELIVERABLE*',
+    deliverable || '',
     '',
-    '🎯 *04 — EXPECTED DELIVERABLE*',
-    deliverable,
-    '━━━━━━━━━━━━━━━━━━━━',
-    '',
-    '💡 *Sprint Time:* ~4 hours',
+    '----------------------------------------',
+    '*Sprint Time:* ~4 hours',
     'Ready to build? Turn chaos into solution!'
   ];
 
@@ -128,6 +129,7 @@ export function formatChallengeForWhatsApp(challengeData) {
 
 /**
  * Builds the complete WhatsApp click-to-chat URL.
+ * Uses direct api.whatsapp.com/send to prevent wa.me 302 redirect from stripping newlines and mangling characters.
  *
  * @param {string} rawPhoneNumber - Raw phone number input
  * @param {object} challengeData - Validated challenge data
@@ -151,7 +153,7 @@ export function buildWhatsAppShareUrl(rawPhoneNumber, challengeData) {
   }
 
   const encodedMessage = encodeURIComponent(message);
-  const url = `https://wa.me/${phoneValidation.normalizedNumber}?text=${encodedMessage}`;
+  const url = `https://api.whatsapp.com/send?phone=${phoneValidation.normalizedNumber}&text=${encodedMessage}`;
 
   return {
     url,

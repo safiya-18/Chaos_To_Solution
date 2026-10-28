@@ -95,10 +95,10 @@ describe('whatsapp utils', () => {
       expect(text).toContain('AI Generated');
     });
 
-    it('generates a valid https://wa.me/ URL with encoded text', () => {
+    it('generates a valid WhatsApp click-to-chat URL with encoded text', () => {
       const result = buildWhatsAppShareUrl('9876543210', mockChallenge);
       expect(result.error).toBeNull();
-      expect(result.url).toMatch(/^https:\/\/wa\.me\/919876543210\?text=/);
+      expect(result.url).toMatch(/^https:\/\/api\.whatsapp\.com\/send\?phone=919876543210&text=/);
       expect(result.url).toContain(encodeURIComponent('CHAOS TO SOLUTION'));
     });
 

@@ -5,6 +5,8 @@ import config from './config/env.js';
 import healthRouter from './routes/health.routes.js';
 import mockRouter from './routes/mock.routes.js';
 import challengeRouter from './routes/challenge.routes.js';
+import teamRouter from './routes/team.routes.js';
+import timerRouter from './routes/timer.routes.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
 import errorHandler from './middlewares/errorHandler.js';
 
@@ -15,7 +17,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: config.corsOrigins,
-    methods: ['GET', 'POST', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
@@ -27,6 +29,8 @@ app.use(express.json());
 app.use('/api/health', healthRouter);
 app.use('/api/mock', mockRouter);
 app.use('/api/challenges', challengeRouter);
+app.use('/api/teams', teamRouter);
+app.use('/api/event-timer', timerRouter);
 
 // 404 Route Handler
 app.use(notFoundHandler);

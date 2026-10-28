@@ -27,7 +27,7 @@ export function generateChallengeId(theme = 'challenge') {
  * @param {object} params.challenge - Challenge triad (problem, restriction, resource, deliverable)
  * @returns {string} Clean WhatsApp-formatted text
  */
-export function formatChallengeForWhatsApp({ id, theme, source, challenge } = {}) {
+export function formatChallengeForWhatsApp({ id, theme, source, challenge, teamName } = {}) {
   if (!challenge || typeof challenge !== 'object') {
     return '';
   }
@@ -37,31 +37,32 @@ export function formatChallengeForWhatsApp({ id, theme, source, challenge } = {}
   const resourceType = resource.type ? ` (${resource.type})` : '';
 
   const lines = [
-    '⚡ *CHAOS TO SOLUTION — AI Challenge* ⚡',
+    '*CHAOS TO SOLUTION — AI Challenge*',
     '_IEEE Computer Society | SJC Institute of Technology_',
+    '----------------------------------------',
+    `*Theme:* ${theme || 'General'}`,
+    ...(teamName ? [`*Team:* ${teamName}`] : []),
+    `*Challenge ID:* #${id} [${sourceLabel}]`,
+    '----------------------------------------',
     '',
-    `🏷️ *Theme:* ${theme || 'General'}`,
-    `🆔 *Challenge ID:* #${id} [${sourceLabel}]`,
-    '',
-    '━━━━━━━━━━━━━━━━━━━━',
-    '📌 *01 — PROBLEM STATEMENT*',
+    '*01. PROBLEM STATEMENT*',
     `*${problem.title || 'Untitled Problem'}*`,
     problem.statement || '',
     '',
-    '⚠️ *02 — TECHNICAL RESTRICTION*',
+    '*02. TECHNICAL RESTRICTION*',
     `*${restriction.name || 'Standard Constraint'}*`,
     `Rule: ${restriction.rule || 'Follow standard hackathon rules.'}`,
     '',
-    '🛠️ *03 — RESOURCE*',
+    '*03. PRESCRIBED RESOURCE*',
     `*${resource.name || 'Official Documentation'}*${resourceType}`,
     `Guidance: ${resource.guidance || 'Integrate this resource into your prototype solution.'}`,
     `Docs: ${resource.docsUrl || 'https://developer.mozilla.org'}`,
     '',
-    '🎯 *04 — EXPECTED DELIVERABLE*',
-    deliverable || 'A working prototype demonstrating the solution within ~3 hours.',
-    '━━━━━━━━━━━━━━━━━━━━',
+    '*04. EXPECTED DELIVERABLE*',
+    deliverable || 'A working prototype demonstrating the solution within ~4 hours.',
     '',
-    '💡 *Sprint Time:* ~3 hours',
+    '----------------------------------------',
+    '*Sprint Time:* ~4 hours',
     'Ready to build? Turn chaos into solution!'
   ];
 

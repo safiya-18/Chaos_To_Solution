@@ -151,8 +151,10 @@ export function validateChallenge(response) {
   const normalizedData = {
     id: data.id || `cts-${data.theme.toLowerCase().replace(/\s+/g, '')}-${Date.now().toString(36)}`,
     theme: data.theme,
+    teamName: data.teamName || null,
     generatedAt: data.generatedAt || new Date().toISOString(),
     source,
+    shareText: data.shareText || null,
     challenge: {
       problem: {
         title: challenge.problem.title.trim(),

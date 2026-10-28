@@ -5,11 +5,18 @@ import { GenerateButton } from './components/GenerateButton.jsx';
 import { LoadingState } from './components/LoadingState.jsx';
 import { ErrorState } from './components/ErrorState.jsx';
 import { ChallengeScreen } from './components/ChallengeScreen.jsx';
-import { generateChallenge } from './services/challengeApi.js';
+import { TeamRegistrationInput } from './components/TeamRegistrationInput.jsx';
+import { TimerScreen } from './components/TimerScreen.jsx';
+import { TeamsScreen } from './components/TeamsScreen.jsx';
+import { RouterProvider, useRouter } from './router/Router.jsx';
+import { registerTeamAndGenerate } from './services/challengeApi.js';
 
-export function App() {
+function AppContent() {
+  const { currentPath } = useRouter();
   const [currentScreen, setCurrentScreen] = useState('selection'); // 'selection' | 'challenge'
   const [selectedTheme, setSelectedTheme] = useState(null);
+  const [teamName, setTeamName] = useState('');
+  const [teamError, setTeamError] = useState(null);
   const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
   const [challenge, setChallenge] = useState(null);
   const [error, setError] = useState(null);
@@ -21,26 +28,44 @@ export function App() {
     return true; // Default to true so frontend runs independently immediately
   });
 
+  const isTeamNameValid = teamName.trim().length >= 2 && teamName.trim().length <= 50;
+
   const handleSelectTheme = (themeName) => {
     setSelectedTheme(themeName);
   };
 
+  const handleTeamNameChange = (name) => {
+    setTeamName(name);
+    if (teamError) setTeamError(null);
+  };
+
   const handleGenerate = async () => {
-    if (!selectedTheme || status === 'loading') return;
+    if (!selectedTheme || !isTeamNameValid || status === 'loading') {
+      if (!isTeamNameValid) {
+        setTeamError('Please enter a team name between 2 and 50 characters.');
+      }
+      return;
+    }
 
     setStatus('loading');
     setError(null);
+    setTeamError(null);
 
     try {
-      const result = await generateChallenge(selectedTheme, {
+      const result = await registerTeamAndGenerate(teamName, selectedTheme, {
         useMock: isMockMode
       });
       setChallenge(result);
       setStatus('success');
       setCurrentScreen('challenge');
     } catch (err) {
-      setError(err.message || 'Failed to generate challenge. Please try again.');
-      setStatus('error');
+      if (err.code === 'TEAM_ALREADY_EXISTS' || err.status === 409) {
+        setTeamError(err.message || `Team name '${teamName.trim()}' is already registered.`);
+        setStatus('idle');
+      } else {
+        setError(err.message || 'Failed to generate challenge. Please try again.');
+        setStatus('error');
+      }
     }
   };
 
@@ -63,22 +88,46 @@ export function App() {
     };
   }, []);
 
+  // ── ROUTE 1: Live Event Timer Screen (/timer) ──
+  if (currentPath === '/timer') {
+    return <TimerScreen />;
+  }
+
+  // ── ROUTE 2: Team Challenge Table Screen (/teams) ──
+  if (currentPath === '/teams') {
+    return <TeamsScreen />;
+  }
+
+  // ── ROUTE 3: Event Dashboard (/) ──
   return (
     <div className="min-h-screen lg:h-[100dvh] bg-[#F7F3EA] text-[#111820] overflow-x-hidden lg:overflow-hidden font-sans selection:bg-yellow-300 selection:text-black">
-
-      {/* ======================================================== */}
-      {/* SCREEN 1: THEME SELECTION — Responsive: stacked on mobile, 2-col on desktop */}
-      {/* ======================================================== */}
+      {/* SCREEN 1: THEME SELECTION & TEAM REGISTRATION */}
       {currentScreen === 'selection' ? (
         <div className="flex flex-col lg:flex-row h-auto lg:h-full">
-          {/* LEFT COLUMN: Hero on cream bg */}
+          {/* LEFT COLUMN: Hero, Team Registration & Navigation Cards on cream bg */}
           <div className="w-full lg:w-[44%] shrink-0 lg:h-full flex flex-col px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-8 xl:px-14 xl:py-10 2xl:px-16 2xl:py-12">
-            <Hero />
+            <Hero
+              teamName={teamName}
+              onTeamNameChange={handleTeamNameChange}
+              teamError={teamError}
+              isDisabled={status === 'loading'}
+            />
           </div>
 
-          {/* RIGHT COLUMN: White elevated panel */}
+          {/* RIGHT COLUMN: White elevated challenge theme selection panel */}
           <div className="flex-1 min-w-0 w-full lg:h-full p-4 sm:p-5 xl:p-6 2xl:p-8">
-            <div className="relative min-h-[480px] lg:h-full bg-white rounded-[24px] sm:rounded-[28px] flex flex-col p-5 sm:p-6 xl:p-7 2xl:p-9 border border-[#11151C]/10 shadow-sm overflow-hidden">
+            <div className="relative min-h-[480px] lg:h-full bg-white rounded-[32px] sm:rounded-[36px] flex flex-col justify-between p-6 sm:p-7 xl:p-8 2xl:p-9 border border-[#11151C]/10 shadow-sm overflow-hidden">
+              
+              {/* Top Bar inside panel: Mode indicator if in mock mode */}
+              {isMockMode && (
+                <div className="shrink-0 flex items-center justify-end mb-2 select-none">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                    Offline Preview Mode
+                  </span>
+                </div>
+              )}
+
+              {/* Theme Selector (Step 1) */}
               <ThemeSelector
                 selectedTheme={selectedTheme}
                 onSelectTheme={handleSelectTheme}
@@ -90,6 +139,7 @@ export function App() {
                   onClick={handleGenerate}
                   isLoading={status === 'loading'}
                   selectedTheme={selectedTheme}
+                  isTeamNameValid={isTeamNameValid}
                   hasExistingChallenge={Boolean(challenge)}
                 />
               </div>
@@ -107,9 +157,7 @@ export function App() {
           </div>
         </div>
       ) : (
-        /* ======================================================== */
-        /* SCREEN 2: CHALLENGE REVEAL — Responsive flex-col         */
-        /* ======================================================== */
+        /* SCREEN 2: CHALLENGE REVEAL */
         <div className="min-h-screen lg:h-full flex flex-col px-4 py-4 sm:px-8 sm:py-5 xl:px-12 xl:py-7 2xl:px-14 2xl:py-9">
           <ChallengeScreen
             challengeData={challenge}
@@ -118,6 +166,14 @@ export function App() {
         </div>
       )}
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <RouterProvider>
+      <AppContent />
+    </RouterProvider>
   );
 }
 

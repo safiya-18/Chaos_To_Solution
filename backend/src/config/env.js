@@ -1,5 +1,9 @@
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
 const parseCorsOrigins = (rawOrigins) => {
@@ -23,7 +27,11 @@ export const config = Object.freeze({
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
   aiTimeoutMs: parseInt(process.env.AI_TIMEOUT_MS || process.env.GEMINI_TIMEOUT_MS || '4000', 10),
-  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || process.env.AI_TIMEOUT_MS || '4000', 10)
+  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || process.env.AI_TIMEOUT_MS || '4000', 10),
+  mongodbUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/chaos_to_solution',
+  eventId: process.env.EVENT_ID || 'cts-2026',
+  eventAdminToken: process.env.EVENT_ADMIN_TOKEN || '',
+  eventTimerDurationMs: parseInt(process.env.EVENT_TIMER_DURATION_MS || '14400000', 10)
 });
 
 export default config;

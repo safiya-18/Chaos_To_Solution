@@ -25,8 +25,11 @@ describe('App Component Integration Flow', () => {
     ).toBeInTheDocument();
   });
 
-  it('enables the Generate button after selecting a theme', () => {
+  it('enables the Generate button after selecting a theme and entering a team name', () => {
     render(<App />);
+
+    const teamInput = screen.getByLabelText(/Team Name/i);
+    fireEvent.change(teamInput, { target: { value: 'Team Innovators' } });
 
     const fintechCard = screen.getByRole('radio', { name: /FinTech/i });
     fireEvent.click(fintechCard);
@@ -38,6 +41,10 @@ describe('App Component Integration Flow', () => {
 
   it('generates challenge, navigates to Screen 2, flips cards, tests WhatsApp form, and returns Back to Themes', async () => {
     render(<App />);
+
+    // Enter Team Name
+    const teamInput = screen.getByLabelText(/Team Name/i);
+    fireEvent.change(teamInput, { target: { value: 'Team Innovators' } });
 
     // Select EdTech
     const edtechCard = screen.getByRole('radio', { name: /EdTech/i });

@@ -130,12 +130,12 @@ describe('Phase 4: Challenge API Integration Tests (POST /api/challenges/generat
 
       // Verify shareText presence and formatting
       expect(data.shareText).toBeDefined();
-      expect(data.shareText).toContain('⚡ *CHAOS TO SOLUTION — AI Challenge* ⚡');
-      expect(data.shareText).toContain(`🏷️ *Theme:* ${theme}`);
-      expect(data.shareText).toContain(`📌 *01 — PROBLEM STATEMENT*`);
-      expect(data.shareText).toContain(`⚠️ *02 — TECHNICAL RESTRICTION*`);
-      expect(data.shareText).toContain(`🛠️ *03 — RESOURCE*`);
-      expect(data.shareText).toContain(`🎯 *04 — EXPECTED DELIVERABLE*`);
+      expect(data.shareText).toContain('*CHAOS TO SOLUTION — AI Challenge*');
+      expect(data.shareText).toContain(`*Theme:* ${theme}`);
+      expect(data.shareText).toContain(`*01. PROBLEM STATEMENT*`);
+      expect(data.shareText).toContain(`*02. TECHNICAL RESTRICTION*`);
+      expect(data.shareText).toContain(`*03. PRESCRIBED RESOURCE*`);
+      expect(data.shareText).toContain(`*04. EXPECTED DELIVERABLE*`);
       expect(data.shareText).toContain(challenge.resource.docsUrl);
 
       // Verify docsUrl occurs exactly once in shareText
