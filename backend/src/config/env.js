@@ -19,7 +19,7 @@ export const config = Object.freeze({
   isProduction: process.env.NODE_ENV === 'production',
   geminiApiKey: process.env.GEMINI_API_KEY || '',
   geminiModel: process.env.GEMINI_MODEL || 'gemini-3.8-flash',
-  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || '10000', 10)
+  geminiTimeoutMs: parseInt(process.env.GEMINI_TIMEOUT_MS || '4000', 10)
 });
 
 export default config;

@@ -119,7 +119,7 @@ export class GeminiService {
       return JSON.parse(responseText);
     };
 
-    // Execute with timeout and 1 transient retry
+    // Execute with timeout and optional transient retry (never retry on timeout, 429, or 503)
     let lastError;
     for (let attempt = 0; attempt <= 1; attempt++) {
       try {
@@ -127,8 +127,18 @@ export class GeminiService {
         return result;
       } catch (err) {
         lastError = err;
-        if (attempt === 0) {
+        const msg = String(err.message || '');
+        const isNonRetryable =
+          msg.includes('timed out') ||
+          msg.includes('429') ||
+          msg.includes('RESOURCE_EXHAUSTED') ||
+          msg.includes('503') ||
+          msg.includes('UNAVAILABLE');
+
+        if (attempt === 0 && !isNonRetryable) {
           await new Promise((resolve) => setTimeout(resolve, 300));
+        } else {
+          break;
         }
       }
     }
