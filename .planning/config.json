@@ -11,5 +11,8 @@
     "developer": "Safiya",
     "role": "Backend",
     "partner": "Imadulla (Frontend)"
+  },
+  "graphify": {
+    "enabled": true
   }
 }

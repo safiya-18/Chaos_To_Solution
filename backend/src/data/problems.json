@@ -1,0 +1,222 @@
+[
+  {
+    "id": "prob_campus_01",
+    "title": "Campus Canteen Congestion Tracker",
+    "description": "Design a live queue and wait-time estimator for campus food counters, allowing students to report live surges and find the fastest counter.",
+    "category": "campus-life",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["campus", "real-time", "utility", "crowdsourcing"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_campus_02",
+    "title": "Peer Book & Equipment Lending Ledger",
+    "description": "Build an escrow-style lending dashboard for students to borrow lab equipment, calculators, and textbooks with return-due reminders.",
+    "category": "campus-life",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "tags": ["campus", "resource-sharing", "inventory"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_campus_03",
+    "title": "Campus Food-Waste Redistribution Board",
+    "description": "Create an alert board connecting hostel mess coordinators with campus volunteer clubs to claim surplus food before it spoils.",
+    "category": "campus-life",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["campus", "sustainability", "alerts", "civic"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_campus_04",
+    "title": "College Bus Live Route Status & Delay Beacon",
+    "description": "Develop a commuter assistant showing route stops, estimated arrival times, and student delay check-ins for college transit buses.",
+    "category": "campus-life",
+    "difficulty": "hard",
+    "difficultyWeight": 3,
+    "tags": ["campus", "transit", "mapping", "tracking"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_access_01",
+    "title": "High-Contrast Screen Reader News Digest",
+    "description": "Construct an accessible reader for campus announcements featuring keyboard-only navigation, high-contrast themes, and audio read-aloud.",
+    "category": "accessibility",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["accessibility", "tts", "keyboard-navigation", "contrast"],
+    "incompatibleRestrictions": ["rest_ui_04"],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_access_02",
+    "title": "Voice-Assisted Emergency Alert Messenger",
+    "description": "Build a hands-free alert interface that listens for verbal trigger phrases and prepares a pre-structured emergency SOS notice.",
+    "category": "accessibility",
+    "difficulty": "hard",
+    "difficultyWeight": 3,
+    "tags": ["accessibility", "voice", "speech-recognition", "emergency"],
+    "incompatibleRestrictions": ["rest_logic_03"],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_access_03",
+    "title": "Dyslexia-Friendly Document Reformatter",
+    "description": "Create a reading utility that cleans noisy text into weighted dyslexia-friendly typography, adjustable line spacing, and syllable highlighting.",
+    "category": "accessibility",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "tags": ["accessibility", "typography", "reading", "education"],
+    "incompatibleRestrictions": ["rest_css_01"],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_access_04",
+    "title": "Colorblind Data Visualization Palette Checker",
+    "description": "Design an interactive tool that previews charts under Protanopia, Deuteranopia, and Tritanopia color filters with automated contrast scoring.",
+    "category": "accessibility",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["accessibility", "colorblindness", "canvas", "design-tool"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_prod_01",
+    "title": "Distraction-Free Rapid Markdown Note Stream",
+    "description": "Build a fast keyboard-driven scratchpad that auto-converts markdown, organizes snippets with hashtags, and exports cleanly formatted PDFs or HTML.",
+    "category": "productivity",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "tags": ["productivity", "markdown", "editor", "keyboard-first"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_prod_02",
+    "title": "Micro-Commitment Study Sprint Timer",
+    "description": "Create a focus timer enforcing 15-minute bursts with friction-based break locks and streak-decay mechanics if abandoned early.",
+    "category": "productivity",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "tags": ["productivity", "timer", "focus", "habits"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_prod_03",
+    "title": "Kanban Matrix with Auto-Decay Backlog",
+    "description": "Construct a dynamic task board where tasks not touched within 48 hours visually fade and auto-archive to prevent priority clutter.",
+    "category": "productivity",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["productivity", "kanban", "task-management", "ui"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_prod_04",
+    "title": "Flashcard Generator with Leitner Box Scheduler",
+    "description": "Develop a revision dashboard that sorts cards into 5 Leitner review boxes based on recall confidence with spaced repetition queues.",
+    "category": "productivity",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["productivity", "education", "spaced-repetition", "storage"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_civic_01",
+    "title": "Neighborhood Hazard & Pothole Reporter",
+    "description": "Build a community issue board allowing citizens to log road hazards with coordinates, severity tags, and status tracking for local repairs.",
+    "category": "civic-good",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["civic", "reporting", "geolocation", "community"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_civic_02",
+    "title": "Emergency Blood Donor Availability Matcher",
+    "description": "Design an urgent donor registry allowing hospital seekers to filter eligible donors by blood group, locality, and last donation date.",
+    "category": "civic-good",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "tags": ["civic", "healthcare", "matching", "emergency"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_civic_03",
+    "title": "E-Waste Recycling Drop-Off Directory",
+    "description": "Create a drop-point finder guiding users to safe disposal centers for batteries, laptops, and cables with incentive credit calculation.",
+    "category": "civic-good",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["civic", "sustainability", "directory", "recycling"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_civic_04",
+    "title": "Local Disaster Shelter Capacity Monitor",
+    "description": "Construct an emergency shelter dashboard tracking occupancy, medical supplies, and flood/storm warning status during severe weather.",
+    "category": "civic-good",
+    "difficulty": "hard",
+    "difficultyWeight": 3,
+    "tags": ["civic", "disaster-management", "real-time", "dashboard"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_media_01",
+    "title": "Ambient Soundscape & Binaural Beat Mixer",
+    "description": "Build a multi-track audio player synthesizing rain, white noise, and keyboard clicks with volume sliders and sleep timer fadeout.",
+    "category": "interactive-media",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "tags": ["interactive-media", "audio", "web-audio", "wellbeing"],
+    "incompatibleRestrictions": ["rest_logic_03"],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_media_02",
+    "title": "Interactive Breathing & Heart-Rate Pacer",
+    "description": "Create an immersive visual respiration guide using expanding canvas circles and haptic/audio cues for 4-7-8 anxiety reduction.",
+    "category": "interactive-media",
+    "difficulty": "easy",
+    "difficultyWeight": 1,
+    "tags": ["interactive-media", "wellbeing", "canvas", "animation"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_media_03",
+    "title": "Procedural Audio Synthesizer & Visualizer",
+    "description": "Design a browser synthesizer letting users generate melodic frequencies with visual oscilloscope waveforms reacting in real-time.",
+    "category": "interactive-media",
+    "difficulty": "hard",
+    "difficultyWeight": 3,
+    "tags": ["interactive-media", "canvas", "web-audio", "creative-coding"],
+    "incompatibleRestrictions": ["rest_logic_03"],
+    "incompatibleResources": []
+  },
+  {
+    "id": "prob_media_04",
+    "title": "Digital Detox Pledge & Habit Tracker",
+    "description": "Develop a pledge dashboard that logs offline hours, visualizes digital detox milestones, and awards celebratory badges upon completion.",
+    "category": "interactive-media",
+    "difficulty": "medium",
+    "difficultyWeight": 2,
+    "tags": ["interactive-media", "wellbeing", "gamification", "habits"],
+    "incompatibleRestrictions": [],
+    "incompatibleResources": []
+  }
+]

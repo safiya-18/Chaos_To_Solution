@@ -1,0 +1,46 @@
+{
+  "campus": "SJC Institute of Technology (SJCIT), Chikkaballapur",
+  "coordinates": { "latitude": 13.4325, "longitude": 77.7289 },
+  "landmarks": [
+    {
+      "id": "loc_main_block",
+      "name": "Administrative & Main Academic Block",
+      "category": "academic",
+      "latitude": 13.4328,
+      "longitude": 77.7285,
+      "floors": 4
+    },
+    {
+      "id": "loc_cs_block",
+      "name": "Computer Science & Engineering Block",
+      "category": "department",
+      "latitude": 13.4331,
+      "longitude": 77.7292,
+      "floors": 3
+    },
+    {
+      "id": "loc_central_library",
+      "name": "Sir M. Visvesvaraya Central Library",
+      "category": "library",
+      "latitude": 13.4322,
+      "longitude": 77.7287,
+      "floors": 2
+    },
+    {
+      "id": "loc_canteen",
+      "name": "Student Canteen & Food Court",
+      "category": "amenity",
+      "latitude": 13.4319,
+      "longitude": 77.7295,
+      "floors": 1
+    },
+    {
+      "id": "loc_hostel_block",
+      "name": "Boys & Girls Hostel Complex",
+      "category": "residential",
+      "latitude": 13.4312,
+      "longitude": 77.7301,
+      "floors": 4
+    }
+  ]
+}

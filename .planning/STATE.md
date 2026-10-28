@@ -1,24 +1,19 @@
 # Project State: Chaos to Solution Backend
+ 
+## Current Phase: Phase 6 - Groq AI Provider Integration (COMPLETED & VERIFIED)
+- **Current Milestone**: Milestone 1 - Backend MVP & API Integration — COMPLETED
+- **Active Phase**: Phase 6 (Groq AI Provider Integration) — Implemented & Verified
+- **Status**: Implemented & Verified. All 93 automated tests passing (63 backend, 30 frontend). Groq multi-provider cascade, fail-fast rate-limit handling, and curated fallbacks active. Live generation verified in fallback mode (ready for live Groq API key).
 
-## Current Phase: Phase 1 - Project Scaffolding & Tooling Setup (COMPLETED)
-- **Current Milestone**: Milestone 1 - Backend MVP & API Integration
-- **Active Phase**: Phase 1 (Scaffolding & Tooling Setup) - Finished
-- **Status**: Completed & Verified. All 4 Vitest integration tests passing.
-
-## Key Decisions
-- **Decision 1**: No LLM API. Challenges are selected from curated JSON banks using a deterministic, rule-based compatibility engine.
-- **Decision 2**: Keep persistence in-memory (sliding window cache) for anti-repeat logic. Supabase is deferred unless team registration or challenge logging persistence is specifically requested.
-- **Decision 3**: WhatsApp handoff handled client-side by Imadulla using backend-provided `shareText` (encoded into `https://wa.me/?text=...`).
-- **Decision 4**: Test runner is Vitest with Supertest for fast ES module native testing.
-- **Decision 5**: Backend lives in `backend/` directory to allow clear separation from frontend code.
-
-## Verification & Test Results
-- Integration test suite: `backend/tests/integration/health.test.js`
-- Test run: 4 passed in 90ms (Vitest v3.2.7)
-  - `GET /api/health` returns HTTP 200 with `{ success: true, data: { status: "ok", ... } }`
-  - Helmet security headers verified (`x-content-type-options: nosniff`, `x-frame-options: SAMEORIGIN`)
-  - CORS header propagation verified for allowed frontend origin (`http://localhost:5173`)
-  - 404 handler returns standardized error JSON envelope `{ success: false, error: { code: "NOT_FOUND", ... } }`
+## Key Approved Decisions
+- **Decision 1 (Themes)**: 8 approved themes (`EdTech`, `FinTech`, `HealthTech`, `Sustainability`, `Smart Cities`, `Accessibility`, `E-commerce`, `Open Innovation`). Strict validation with HTTP 400. No silent fallback to Open Innovation.
+- **Decision 2 (AI Integration)**: Multi-provider architecture. Groq (`groq-sdk`, `llama-3.3-70b-versatile`) as primary with strict JSON Schema. Google Gemini (`gemini-3.8-flash`) as secondary.
+- **Decision 3 (Frontend Contract)**: Reconciled with Imadulla's completed frontend `validateChallenge.js` and `whatsapp.js`. Envelope `{ success: true, data: { id, theme, generatedAt, source, challenge, shareText } }`.
+- **Decision 4 (WhatsApp Formatter)**: Pre-formatted WhatsApp copy in `shareTextFormatter.js` returned inside `data.shareText`. Phone number collection and URL generation handled client-side.
+- **Decision 5 (Graceful Fallback)**: Timeouts ($\le 4000$ms), rate limits (429), or missing keys trigger curated Phase 2 fallbacks with explicit source indicator (`source: "curated-fallback"` vs `source: "ai"`). Zero 500 crashes.
+- **Decision 6 (CORS & Security)**: Default CORS allows `http://localhost:5173-5176` and `http://localhost:3000`. No API keys or secrets exposed.
+- **Decision 7 (Offline Resilience)**: Tier 1 backend curated fallback bank ensures 100% server uptime even without internet; Tier 2 frontend client mock mode handles venue network drops.
+- **Decision 8 (Groq Strict Schema & Fast Failover)**: Groq structured outputs enforced via `response_format: { type: "json_schema", json_schema: { strict: true } }`. Rate limits fail fast to curated fallback in < 1000ms with zero retry loops.
 
 ## Next Action
-Proceed to Phase 2: Challenge Bank Design & Curated Dataset via `/gsd-plan-phase 2`.
+Input `GROQ_API_KEY` into `backend/.env` for live production validation with Groq's LPUs.

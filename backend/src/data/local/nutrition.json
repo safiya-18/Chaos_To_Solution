@@ -1,0 +1,38 @@
+[
+  {
+    "dish": "South Indian Thali (Rice, Sambar, Rasam, Palya)",
+    "category": "lunch",
+    "calories": 520,
+    "protein_g": 14,
+    "carbs_g": 92,
+    "fat_g": 8,
+    "dietary": ["vegetarian", "halal"]
+  },
+  {
+    "dish": "Steamed Idli with Coconut Chutney (3 pcs)",
+    "category": "breakfast",
+    "calories": 210,
+    "protein_g": 6,
+    "carbs_g": 42,
+    "fat_g": 3,
+    "dietary": ["vegan", "gluten-free", "halal"]
+  },
+  {
+    "dish": "Masala Dosa with Potato Mash",
+    "category": "breakfast",
+    "calories": 360,
+    "protein_g": 7,
+    "carbs_g": 54,
+    "fat_g": 12,
+    "dietary": ["vegetarian", "halal"]
+  },
+  {
+    "dish": "Sprouted Moong Salad with Lemon & Coriander",
+    "category": "snack",
+    "calories": 140,
+    "protein_g": 9,
+    "carbs_g": 22,
+    "fat_g": 1,
+    "dietary": ["vegan", "gluten-free", "high-protein"]
+  }
+]

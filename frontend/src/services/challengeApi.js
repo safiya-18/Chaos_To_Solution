@@ -14,7 +14,7 @@ export const IS_MOCK_ENABLED_BY_DEFAULT =
   import.meta.env.VITE_USE_MOCK === 'true' ||
   import.meta.env.VITE_USE_MOCK === '1';
 
-const REQUEST_TIMEOUT_MS = 12000;
+const REQUEST_TIMEOUT_MS = 15000;
 
 /**
  * Generates a challenge for the specified theme.
