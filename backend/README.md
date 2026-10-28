@@ -111,6 +111,23 @@ To run tests in watch mode:
 npm run test:watch
 ```
 
+### 6. Running Frontend & Backend Together
+To run the complete application for local testing:
+1. **Terminal 1 (Backend)**:
+   ```bash
+   cd backend
+   npm run dev
+   ```
+   Runs on `http://localhost:5000`.
+2. **Terminal 2 (Frontend)**:
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+   Runs on `http://localhost:5173` (or next free port).
+
+For pre-event checklist and emergency contingencies, see [`../EVENT_RUNBOOK.md`](../EVENT_RUNBOOK.md).
+
 ---
 
 ## 🧠 AI Generation & Fallback Engine (Phase 3)
