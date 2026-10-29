@@ -7,8 +7,24 @@ import { fetchMockChallenge } from './mockChallengeApi.js';
 import { validateChallenge } from '../utils/validateChallenge.js';
 
 // Configuration
-export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const resolveApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  // If explicitly set to something other than localhost (e.g. Render production URL), use it
+  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+    return envUrl;
+  }
+  // When accessed via active Cloudflare quick tunnel, route to backend tunnel
+  if (typeof window !== 'undefined' && window.location?.hostname && window.location.hostname.endsWith('trycloudflare.com')) {
+    return 'https://fellow-realm-remarks-chairman.trycloudflare.com';
+  }
+  // When accessed from a tablet or mobile device over LAN (e.g. 192.168.x.x), connect to backend on the same LAN IP
+  if (typeof window !== 'undefined' && window.location?.hostname && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+    return `${window.location.protocol}//${window.location.hostname}:5000`;
+  }
+  return envUrl || 'http://localhost:5000';
+};
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 export const IS_MOCK_ENABLED_BY_DEFAULT =
   import.meta.env.VITE_USE_MOCK === 'true' ||

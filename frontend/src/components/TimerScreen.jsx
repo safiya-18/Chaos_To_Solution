@@ -194,7 +194,7 @@ export function TimerScreen() {
   const isWarning = status === 'running' && !isCritical && localRemainingMs <= 60 * 60 * 1000;
 
   return (
-    <div className="min-h-screen h-[100dvh] bg-[#11151C] text-white flex flex-col justify-between p-4 sm:p-6 lg:p-8 select-none overflow-hidden font-sans">
+    <div className="min-h-screen min-h-[100dvh] bg-[#11151C] text-white flex flex-col justify-between p-4 sm:p-6 lg:p-8 select-none overflow-x-hidden overflow-y-auto font-sans">
 
       {/* ── TOP NAV BAR ── */}
       <header className="shrink-0 flex items-center justify-between gap-3">

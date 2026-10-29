@@ -36,6 +36,16 @@ const corsOriginDelegate = (origin, callback) => {
     return callback(null, true);
   }
 
+  // Allow local LAN IPs (e.g. tablet or mobile testing on Wi-Fi)
+  if (/^http:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(origin)) {
+    return callback(null, true);
+  }
+
+  // Allow Cloudflare quick tunnels for remote testing
+  if (/^https:\/\/[a-zA-Z0-9_-]+\.trycloudflare\.com$/.test(origin)) {
+    return callback(null, true);
+  }
+
   return callback(null, false);
 };
 

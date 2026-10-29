@@ -100,12 +100,12 @@ function AppContent() {
 
   // ── ROUTE 3: Event Dashboard (/) ──
   return (
-    <div className="min-h-screen lg:h-[100dvh] bg-[#F7F3EA] text-[#111820] overflow-x-hidden lg:overflow-hidden font-sans selection:bg-yellow-300 selection:text-black">
+    <div className="min-h-screen min-h-[100dvh] bg-[#F7F3EA] text-[#111820] overflow-x-hidden font-sans selection:bg-yellow-300 selection:text-black flex flex-col">
       {/* SCREEN 1: THEME SELECTION & TEAM REGISTRATION */}
       {currentScreen === 'selection' ? (
-        <div className="flex flex-col lg:flex-row h-auto lg:h-full">
+        <div className="flex flex-col lg:flex-row flex-1 min-h-0">
           {/* LEFT COLUMN: Hero, Team Registration & Navigation Cards on cream bg */}
-          <div className="w-full lg:w-[44%] shrink-0 lg:h-full flex flex-col px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-8 xl:px-14 xl:py-10 2xl:px-16 2xl:py-12">
+          <div className="w-full lg:w-[44%] shrink-0 flex flex-col justify-between px-6 py-6 sm:px-8 sm:py-7 lg:px-8 lg:py-6 xl:px-12 xl:py-8 2xl:px-16 2xl:py-10">
             <Hero
               teamName={teamName}
               onTeamNameChange={handleTeamNameChange}
@@ -115,8 +115,8 @@ function AppContent() {
           </div>
 
           {/* RIGHT COLUMN: White elevated challenge theme selection panel */}
-          <div className="flex-1 min-w-0 w-full lg:h-full p-4 sm:p-5 xl:p-6 2xl:p-8">
-            <div className="relative min-h-[480px] lg:h-full bg-white rounded-[32px] sm:rounded-[36px] flex flex-col justify-between p-6 sm:p-7 xl:p-8 2xl:p-9 border border-[#11151C]/10 shadow-sm overflow-hidden">
+          <div className="flex-1 min-w-0 w-full p-4 sm:p-5 lg:p-5 xl:p-6 2xl:p-8 flex flex-col">
+            <div className="relative min-h-[480px] flex-1 bg-white rounded-[32px] sm:rounded-[36px] flex flex-col justify-between p-6 sm:p-7 xl:p-8 2xl:p-9 border border-[#11151C]/10 shadow-sm">
               
               {/* Top Bar inside panel: Mode indicator if in mock mode */}
               {isMockMode && (
@@ -158,7 +158,7 @@ function AppContent() {
         </div>
       ) : (
         /* SCREEN 2: CHALLENGE REVEAL */
-        <div className="min-h-screen lg:h-full flex flex-col px-4 py-4 sm:px-8 sm:py-5 xl:px-12 xl:py-7 2xl:px-14 2xl:py-9">
+        <div className="min-h-screen min-h-[100dvh] flex flex-col flex-1 px-4 py-4 sm:px-6 sm:py-5 xl:px-10 xl:py-6 2xl:px-14 2xl:py-8">
           <ChallengeScreen
             challengeData={challenge}
             onBackToThemes={handleBackToThemes}

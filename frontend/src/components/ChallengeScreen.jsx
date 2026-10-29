@@ -56,9 +56,19 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
     }));
   };
 
+  const allFlipped = Boolean(flippedCards.problem && flippedCards.restriction && flippedCards.resource);
+
+  const handleToggleAll = () => {
+    const nextState = !allFlipped;
+    setFlippedCards({
+      problem: nextState,
+      restriction: nextState,
+      resource: nextState
+    });
+  };
+
   return (
-    /* Fills the padded area given by App.jsx — h-full flex-col, no extra scrolling */
-    <div className="h-full flex flex-col gap-3 xl:gap-4 animate-fade-in">
+    <div className="flex-1 min-h-0 flex flex-col justify-between gap-3 sm:gap-4 xl:gap-5 animate-fade-in">
 
       {/* ── HEADER ROW: Back + EventTimer + Theme badge + Source indicator ── */}
       <header className="shrink-0 flex items-center justify-between gap-3 flex-wrap">
@@ -112,8 +122,8 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
         </div>
       </header>
 
-      {/* ── PAGE TITLE & REGISTERED TEAM ── */}
-      <div className="shrink-0 select-none flex flex-wrap items-center justify-between gap-2">
+      {/* ── PAGE TITLE, REGISTERED TEAM & REVEAL ALL BUTTON ── */}
+      <div className="shrink-0 select-none flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
             <h1 className="text-2xl xl:text-[30px] 2xl:text-[34px] font-black text-[#111820] tracking-tight leading-tight">
@@ -132,9 +142,21 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
             )}
           </div>
           <p className="text-[13px] xl:text-sm text-[#6B6358] font-normal mt-0.5 leading-tight">
-            Click on each card to reveal your challenge elements.
+            Tap or click any card to reveal your challenge elements.
           </p>
         </div>
+
+        {/* Touch-Friendly "Reveal All Cards" Toggle */}
+        <button
+          type="button"
+          onClick={handleToggleAll}
+          id="reveal-all-cards-btn"
+          className="min-h-[44px] flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-[#F2ECE1] text-[#111820] border border-[#11151C]/15 font-extrabold text-xs sm:text-sm shadow-xs transition-all cursor-pointer active:scale-95 touch-manipulation select-none"
+          aria-label={allFlipped ? 'Conceal all challenge cards' : 'Reveal all challenge cards'}
+        >
+          <Sparkles className="w-4 h-4 text-[#2B43B5]" aria-hidden="true" />
+          <span>{allFlipped ? 'Conceal All Cards' : 'Reveal All Cards'}</span>
+        </button>
       </div>
 
       {/* ── THREE FLIP CARDS — responsive: 1 col on mobile, 3 col on md+ ── */}
