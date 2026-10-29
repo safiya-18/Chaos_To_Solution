@@ -8,7 +8,10 @@ Participants select from eight hackathon themes and generate an AI-powered chall
 3. **03 — Prescribed Resource**: Recommended browser API, public API, dataset, or tool with verified documentation.
 4. **04 — Expected Deliverable**: Concrete working prototype to demonstrate to judges.
 
-After generating a challenge, teams can validate an Indian mobile number (+91) and trigger a pre-filled WhatsApp message containing all four challenge sections.
+The application is organized into three connected screens managed by a zero-dependency History API router:
+1. **Screen 1 — Event Dashboard (`/`)**: Collects team name, presents the 8-theme grid, handles challenge generation via AI cascade, displays the 4 challenge flip cards, and generates WhatsApp share copy.
+2. **Screen 2 — Live Event Timer (`/timer`)**: Full-screen projector countdown clock (`04:00:00`) designed for seminar halls with operator-protected Start/Pause/Resume/Reset controls.
+3. **Screen 3 — Team Challenges Table (`/teams`)**: Live searchable, filterable, and sortable table of all registered teams with a mission detail modal (featuring a custom floating scrollbar) and protected operator deletion.
 
 ---
 
@@ -16,9 +19,10 @@ After generating a challenge, teams can validate an Indian mobile number (+91) a
 
 - **Framework**: [React 19](https://react.dev/)
 - **Bundler & Dev Server**: [Vite 8](https://vite.dev/)
-- **Styling**: [Tailwind CSS v3](https://tailwindcss.com/) with custom dark design tokens
+- **Styling**: [Tailwind CSS v3](https://tailwindcss.com/) with custom dark design tokens and `.custom-modal-scrollbar`
+- **Routing**: Zero-dependency Browser History API router (`src/router/Router.jsx`)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/) + [JSDOM](https://github.com/jsdom/jsdom)
+- **Testing**: [Vitest](https://vitest.dev/) + [React Testing Library](https://testing-library.com/) + [JSDOM](https://github.com/jsdom/jsdom) (65 tests across 11 test suites)
 - **Linter**: [Oxlint](https://oxc.rs/)
 
 ---
@@ -29,17 +33,24 @@ After generating a challenge, teams can validate an Indian mobile number (+91) a
 frontend/
 ├── src/
 │   ├── components/
+│   │   ├── ActionCards.jsx        # Navigation cards deep-linking to /timer and /teams
+│   │   ├── ChallengeCard.jsx      # Numbered 3D flip card (01-04)
+│   │   ├── ChallengeResults.jsx   # Results view with AI / Backup Challenge badges
+│   │   ├── ErrorState.jsx         # User-friendly error message & Retry action
+│   │   ├── GenerateButton.jsx     # Primary action button with loading spinner
 │   │   ├── Header.jsx             # Branding, IEEE badge, and Mock/Live API toggle
 │   │   ├── Hero.jsx               # Hackathon premise and 4-pillar preview
-│   │   ├── ThemeSelector.jsx      # Radiogroup selector for the 8 themes
-│   │   ├── ThemeCard.jsx          # Individual interactive theme card
-│   │   ├── GenerateButton.jsx     # Primary action button with loading spinner
 │   │   ├── LoadingState.jsx       # Step-by-step progress indicator & skeleton cards
-│   │   ├── ErrorState.jsx         # User-friendly error message & Retry action
+│   │   ├── MetricChips.jsx        # 4 Hours, 2 Members, Real Problems chips
 │   │   ├── ResourceLink.jsx       # External doc link with secure target="_blank"
-│   │   ├── ChallengeCard.jsx      # Numbered section card (01-04)
-│   │   ├── ChallengeResults.jsx   # Results view with AI / Backup Challenge badges
+│   │   ├── TeamRegistrationCard.jsx # Team name input with character counter & validation
+│   │   ├── TeamsScreen.jsx        # Screen 3: Searchable table, mission modal & operator delete
+│   │   ├── ThemeCard.jsx          # Individual interactive theme card
+│   │   ├── ThemeSelector.jsx      # Radiogroup grid selector for the 8 themes
+│   │   ├── TimerScreen.jsx        # Screen 2: Projector 4-hour countdown & operator modal
 │   │   └── WhatsAppShareForm.jsx  # +91 phone validation and click-to-chat generator
+│   ├── router/
+│   │   └── Router.jsx             # History API router (RouterProvider, useRouter, Link)
 │   ├── data/
 │   │   └── mockChallenges.js      # Curated fixtures across all 8 themes
 │   ├── services/
@@ -48,18 +59,25 @@ frontend/
 │   ├── utils/
 │   │   ├── validateChallenge.js   # Schema validation enforcing data contract
 │   │   └── whatsapp.js            # Indian number normalization & message builder
-│   ├── test/
-│   │   ├── setup.js               # Vitest environment & RTL cleanup setup
-│   │   ├── validateChallenge.test.js
-│   │   ├── whatsapp.test.js
+│   ├── test/                      # 11 Vitest & RTL test suites (65 tests)
+│   │   ├── App.test.jsx
+│   │   ├── EventTimer.test.jsx
 │   │   ├── mockChallenges.test.js
+│   │   ├── Navigation.test.jsx
+│   │   ├── setup.js
+│   │   ├── TeamRegistrationFlow.test.jsx
+│   │   ├── TeamRegistrationInput.test.jsx
+│   │   ├── TeamsScreen.test.jsx
 │   │   ├── ThemeSelector.test.jsx
-│   │   └── App.test.jsx
-│   ├── App.jsx                    # Root state coordinator
-│   ├── main.jsx                   # Entry point
-│   └── index.css                  # Tailwind directives, focus rings & dark tokens
+│   │   ├── TimerScreen.test.jsx
+│   │   ├── validateChallenge.test.js
+│   │   └── whatsapp.test.js
+│   ├── App.jsx                    # Root state coordinator (Screen 1 Dashboard)
+│   ├── main.jsx                   # Entry point with RouterProvider
+│   └── index.css                  # Custom modal scrollbar, focus rings & dark tokens
 ├── public/
-│   └── favicon.svg                # IEEE / CTS brand favicon
+│   ├── favicon.svg                # IEEE / CTS brand favicon
+│   └── icons.svg                  # SVG sprite sheet
 ├── .env.example                   # Environment configuration template
 ├── tailwind.config.js             # Color palette & font definitions
 ├── vite.config.js                 # Vite & Vitest configuration
@@ -84,8 +102,8 @@ cp .env.example .env
 ```
 
 Configuration keys:
-- `VITE_API_BASE_URL`: Base URL of Safiya's backend REST service (defaults to `http://localhost:5000`).
-- `VITE_USE_MOCK`: Set to `true` (default) to run completely self-contained with offline mock data, or `false` to ping the live backend.
+- `VITE_API_BASE_URL`: Base URL of the backend REST service (defaults to `http://localhost:5000`).
+- `VITE_USE_MOCK`: Set to `false` for live backend & MongoDB persistence, or `true` for offline in-browser fixtures.
 
 > **Tip:** You can also toggle between Mock Mode and Live API at runtime via the badge button in the top navigation bar.
 
@@ -94,10 +112,10 @@ Start the development server with HMR:
 ```bash
 npm run dev
 ```
-Open [http://localhost:5176](http://localhost:5176) in your browser.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ### 4. Running Automated Tests
-Run all unit and integration tests with Vitest:
+Run all 65 unit and integration tests across 11 suites with Vitest:
 ```bash
 npm test
 ```

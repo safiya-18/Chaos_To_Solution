@@ -50,10 +50,11 @@ The application features a clean, responsive event-management interface organize
 
 ### Screen 3: Team Challenge Table (`/teams`)
 * Searchable and filterable table displaying registered teams and persisted assignments from MongoDB.
-* Columns: `#` (index), `Team Name` (with AI vs Backup badge and timestamp), `Theme`, `Problem Statement`, `Technical Restriction`, `Prescribed Resource` (with official docs link), `Deliverable`, and `Action`.
+* Columns: `#` (index), `Team Name` (with AI vs Backup badge and timestamp), `Theme`, `Problem Statement`, `Technical Restriction`, `Prescribed Resource` (with official docs link), `Deliverable`, and `Actions` (View Mission, Operator Delete).
 * Real-time search by team name or challenge topic and filter dropdown by theme (`All`, `EdTech`, `FinTech`, etc.).
 * Sorting by creation time or team name.
-* Full mission detail modal displaying all four challenge pillars, challenge ID, and documentation links.
+* Full mission detail modal displaying all four challenge pillars, challenge ID, documentation links, and sleek custom scrollbar (`.custom-modal-scrollbar`).
+* Operator deletion flow with confirmation dialog and `EVENT_ADMIN_TOKEN` protection to prune test registrations without exposing credentials.
 * Header refresh button displaying exact last-updated timestamp.
 
 ---
@@ -77,11 +78,15 @@ The application features a clean, responsive event-management interface organize
   * Case-insensitive duplicate detection (`normalizedTeamName`) returning clean `409 TEAM_ALREADY_EXISTS` without wiping selected theme.
   * Atomic persistence in MongoDB storing all 4 challenge pillars, theme, and provenance metadata (`ai` vs `curated-fallback`).
   * Explicit 503 handling if database is unreachable, with frontend retry and no false "saved" confirmations.
+  * Protected operator team deletion (`DELETE /api/teams/:id`) with constant-time `EVENT_ADMIN_TOKEN` authentication and zero credential leakage to browser storage.
 * **Authoritative Shared Event Timer**:
   * Unified 4-hour countdown (`14,400,000 ms`) across all browser tabs, kiosks, and projectors connected to the backend.
   * Clock state computed from server timestamps (`startedAt`, `endsAt`, `pausedAt`), preventing local browser drift and refresh resets.
   * Visual threshold states: normal, amber warning (< 60 minutes), and red pulsing critical warning (< 10 minutes).
   * Protected operator mutation endpoints (`/start`, `/pause`, `/resume`, `/reset`) secured with `EVENT_ADMIN_TOKEN` via constant-time verification.
+* **Security & Credential Zero-Exposure**:
+  * Constant-time token verification (`crypto.timingSafeEqual`) protects against timing attacks.
+  * Operator tokens are captured on-demand and kept purely in ephemeral React component memory during modal interactions—never persisted to `localStorage`, `sessionStorage`, or logs.
 * **8 Curated Innovation Themes**:
   * `EdTech` — Educational tools, spaced repetition, accessible readers.
   * `FinTech` — Micro-expenses, split calculators, savings visualizers.
@@ -170,10 +175,11 @@ flowchart TD
 Chaos_To_Solution/
 ├── README.md                 # Master repository documentation (this file)
 ├── EVENT_RUNBOOK.md          # Pre-event checklist, operational runbook, and contingencies
+├── docker-compose.yml        # Local MongoDB 7.0 development service container
 ├── backend/
 │   ├── src/
 │   │   ├── app.js            # Express application, security middleware & route mounting
-│   │   ├── server.js         # HTTP server entrypoint (default port 5000)
+│   │   ├── server.js         # HTTP server entrypoint & MongoDB connection lifecycle
 │   │   ├── config/
 │   │   │   └── env.js        # Environment validator & configuration freeze
 │   │   ├── data/
@@ -183,24 +189,32 @@ Chaos_To_Solution/
 │   │   │   ├── mock/         # Offline mock response JSONs (weather, products, books...)
 │   │   │   └── local/        # Bundled offline datasets (campus map, taxonomy...)
 │   │   ├── middlewares/
-│   │   │   ├── errorHandler.js # Standardized error response formatter
-│   │   │   └── notFoundHandler.js # Standardized 404 handler
+│   │   │   ├── errorHandler.js   # Standardized error response formatter
+│   │   │   ├── notFoundHandler.js# Standardized 404 handler
+│   │   │   └── auth.js           # Constant-time EVENT_ADMIN_TOKEN verification
+│   │   ├── models/
+│   │   │   ├── EventTimer.js     # Shared 4-hour countdown schema with server clock math
+│   │   │   └── TeamAssignment.js # MongoDB schema for team registration & 4 pillars
 │   │   ├── routes/
 │   │   │   ├── challenge.routes.js # POST /api/challenges/generate
-│   │   │   ├── health.routes.js    # GET /api/health
-│   │   │   └── mock.routes.js      # GET /api/mock/:dataset
+│   │   │   ├── health.routes.js    # GET /api/health (with MongoDB readiness)
+│   │   │   ├── mock.routes.js      # GET /api/mock/:dataset
+│   │   │   ├── team.routes.js      # POST, GET, GET /:id, DELETE /:id /api/teams
+│   │   │   └── timer.routes.js     # GET & POST (start/pause/resume/reset) /api/event-timer
 │   │   ├── services/
 │   │   │   ├── challengeService.js # Multi-provider orchestrator with anti-repeat cache
 │   │   │   ├── groqService.js      # Groq SDK integration with JSON Schema outputs
 │   │   │   ├── geminiService.js    # Google GenAI integration with fallback handling
 │   │   │   ├── fallbackService.js  # Curated Phase 2 dataset selector
-│   │   │   └── shareTextFormatter.js # WhatsApp Markdown copy generator
+│   │   │   ├── shareTextFormatter.js # WhatsApp Markdown copy generator
+│   │   │   ├── teamService.js      # Team registration, validation, uniqueness & queries
+│   │   │   └── timerService.js     # Authoritative duration math & state transitions
 │   │   └── utils/
 │   │       ├── challengeValidator.js # 8-theme bounds, URL syntax & banned-term checks
 │   │       └── dataValidator.js      # Dataset schema validation & combinatorial check
 │   ├── tests/
-│   │   ├── integration/      # Supertest API endpoint tests (challenge, health, mock)
-│   │   └── unit/             # Orchestrator, Groq service & validator unit tests
+│   │   ├── integration/      # Supertest tests (challenge, health, mock, team, timer)
+│   │   └── unit/             # Unit tests (models, services, validators, data)
 │   ├── .env.example          # Backend environment template
 │   ├── API.md                # Full REST API specification
 │   ├── package.json          # Backend dependencies & scripts
@@ -208,21 +222,45 @@ Chaos_To_Solution/
 │   └── README.md             # Backend-specific architecture guide
 └── frontend/
     ├── src/
-    │   ├── components/       # ThemeSelector, ChallengeCard, WhatsAppShareForm, Header...
-    │   ├── data/             # mockChallenges.js (8 themes curated fixtures)
-    │   ├── services/         # challengeApi.js & mockChallengeApi.js
-    │   ├── utils/            # validateChallenge.js & whatsapp.js
-    │   ├── test/             # Vitest & RTL component and utility test suites
-    │   ├── App.jsx           # Root UI coordinator (Screen 1 & Screen 2)
-    │   ├── main.jsx          # React DOM entrypoint
-    │   └── index.css         # Tailwind tokens, dark design theme & focus rings
+    │   ├── components/       # UI Components:
+    │   │   ├── ActionCards.jsx       # Deep links to /timer and /teams
+    │   │   ├── ChallengeCard.jsx     # Numbered 3D flip card (01-04)
+    │   │   ├── ChallengeResults.jsx  # 4-card reveal with provenance badge
+    │   │   ├── ErrorState.jsx        # Error alert & retry trigger
+    │   │   ├── GenerateButton.jsx    # Primary action button with loading spinner
+    │   │   ├── Header.jsx            # Brand header, IEEE badge & mock toggle
+    │   │   ├── Hero.jsx              # Hackathon premise & 4-pillar preview
+    │   │   ├── LoadingState.jsx      # Progress spinner & skeleton cards
+    │   │   ├── MetricChips.jsx       # 4h, 2 members, real problems chips
+    │   │   ├── ResourceLink.jsx      # External docs link with target="_blank"
+    │   │   ├── TeamRegistrationCard.jsx # Team name input & validation
+    │   │   ├── TeamsScreen.jsx       # Screen 3: Searchable table & operator delete
+    │   │   ├── ThemeCard.jsx         # Individual interactive theme card
+    │   │   ├── ThemeSelector.jsx     # 8-theme radiogroup grid
+    │   │   ├── TimerScreen.jsx       # Screen 2: Full-screen projector timer
+    │   │   └── WhatsAppShareForm.jsx # Phone validation & click-to-chat copy
+    │   ├── router/
+    │   │   └── Router.jsx            # Zero-dependency History API router (/, /timer, /teams)
+    │   ├── data/
+    │   │   └── mockChallenges.js     # Curated fixtures across all 8 themes
+    │   ├── services/
+    │   │   ├── challengeApi.js       # Live API client with timeout & abort
+    │   │   └── mockChallengeApi.js   # Offline in-browser mock service
+    │   ├── utils/
+    │   │   ├── validateChallenge.js  # Client contract schema validator
+    │   │   └── whatsapp.js           # Indian number validation & URL generator
+    │   ├── test/                     # 11 Vitest & RTL test suites (65 tests)
+    │   ├── App.jsx                   # Screen 1 Root UI coordinator
+    │   ├── main.jsx                  # React DOM entrypoint with RouterProvider
+    │   └── index.css                 # Custom scrollbar, dark theme tokens & styles
     ├── public/
-    │   └── favicon.svg       # CTS brand favicon
-    ├── .env.example          # Frontend environment template
-    ├── package.json          # Frontend dependencies & scripts
-    ├── tailwind.config.js    # CTS color palette & tokens
-    ├── vite.config.js        # Vite & Vitest configuration
-    └── README.md             # Frontend-specific guide
+    │   ├── favicon.svg               # CTS brand favicon
+    │   └── icons.svg                 # SVG sprite sheet
+    ├── .env.example                  # Frontend environment template
+    ├── package.json                  # Frontend dependencies & scripts
+    ├── tailwind.config.js            # CTS color palette & tokens
+    ├── vite.config.js                # Vite & Vitest configuration
+    └── README.md                     # Frontend-specific guide
 ```
 
 ---
@@ -387,7 +425,84 @@ Complete API documentation with response examples is available in [`backend/API.
   }
   ```
 
-### 2. Health Check
+### 2. Team Registration & Challenge Persistence
+* **Endpoint**: `POST /api/teams`
+* **Headers**: `Content-Type: application/json`, `Accept: application/json`
+* **Request Body**:
+  ```json
+  {
+    "teamName": "Binary Beasts",
+    "theme": "EdTech"
+  }
+  ```
+* **Success Response (`201 Created`)**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "6720f1a9b2...",
+      "teamName": "Binary Beasts",
+      "theme": "EdTech",
+      "challenge": {
+        "problem": { "title": "...", "statement": "..." },
+        "restriction": { "name": "...", "rule": "..." },
+        "resource": { "name": "...", "type": "browser-api", "guidance": "...", "docsUrl": "https://..." },
+        "deliverable": "..."
+      },
+      "source": "ai",
+      "challengeId": "cts-edtech-m3f9g1k",
+      "eventId": "cts-2026-hackathon",
+      "createdAt": "2026-10-28T16:00:00.000Z",
+      "shareText": "⚡ *CHAOS TO SOLUTION — AI Challenge* ⚡\n..."
+    }
+  }
+  ```
+* **Duplicate Conflict (`409 Conflict`)**: Returns `{ "code": "TEAM_ALREADY_EXISTS" }` if `teamName` has already been registered for this event.
+
+### 3. List Teams & Assignments (Screen 3 Table)
+* **Endpoint**: `GET /api/teams`
+* **Query Parameters**:
+  * `search` (optional): Filter by team name or challenge title.
+  * `theme` (optional): Filter by innovation theme.
+  * `sortBy` (optional): `createdAt` (default) or `teamName`.
+  * `sortOrder` (optional): `desc` (default) or `asc`.
+  * `page` (optional): Page number (default `1`).
+  * `limit` (optional): Items per page (default `100`, max `200`).
+* **Success Response (`200 OK`)**: Returns `{ "success": true, "data": { "teams": [...], "total": 1, "page": 1, "totalPages": 1 } }`.
+
+### 4. Delete Team Assignment (Protected Operator Action)
+* **Endpoint**: `DELETE /api/teams/:id`
+* **Headers**: `Authorization: Bearer <EVENT_ADMIN_TOKEN>`, `Accept: application/json`
+* **Example `curl` Request**:
+  ```bash
+  curl -X DELETE http://localhost:5000/api/teams/671fda1b4f0b2f3d8a8b4567 \
+    -H "Authorization: Bearer YOUR_EVENT_ADMIN_TOKEN"
+  ```
+* **Success Response (`200 OK`)**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "id": "671fda1b4f0b2f3d8a8b4567",
+      "teamName": "Binary Beasts",
+      "deleted": true,
+      "message": "Team 'Binary Beasts' deleted successfully."
+    }
+  }
+  ```
+* **Error Responses**: `401 Unauthorized` (missing/malformed header), `403 Forbidden` (invalid token), `404 Not Found` (team does not exist).
+
+### 5. Shared Event Timer
+* **Public Status**: `GET /api/event-timer`
+  * Returns `{ "status": "not_started"|"running"|"paused"|"completed", "remainingMs": 14400000, "formattedRemaining": "04:00:00", ... }`.
+* **Operator Controls (Protected)**:
+  * `POST /api/event-timer/start` — Start 4-hour countdown (idempotent).
+  * `POST /api/event-timer/pause` — Freeze remaining duration.
+  * `POST /api/event-timer/resume` — Resume countdown from saved duration.
+  * `POST /api/event-timer/reset` — Reset to not started with 4 hours.
+  * All mutations require `Authorization: Bearer <EVENT_ADMIN_TOKEN>`.
+
+### 6. Health & Readiness Check
 * **Endpoint**: `GET /api/health`
 * **Response (`200 OK`)**:
   ```json
@@ -397,7 +512,11 @@ Complete API documentation with response examples is available in [`backend/API.
       "status": "ok",
       "uptime": 42,
       "timestamp": "2026-10-28T16:04:25.442Z",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "database": {
+        "status": "connected",
+        "readyState": 1
+      }
     }
   }
   ```
@@ -424,35 +543,31 @@ CTS implements a resilient multi-tier fallback architecture designed for high av
 All automated unit and integration tests run **100% offline** without requiring live AI API keys or network calls:
 
 ```bash
-# 1. Run Backend Tests (98 tests across 10 suites)
+# 1. Run Backend Tests (112 tests across 11 suites)
 cd backend
 npm test
 
-# 1. Run Backend Tests (104 tests across 11 suites)
-cd backend
-npm test
-
-# 2. Run Frontend Tests (63 tests across 11 suites)
+# 2. Run Frontend Tests (65 tests across 11 suites)
 cd ../frontend
 npm test
 ```
 
-### Verified Test Summary:
-* **Backend (`104/104 passed`)**:
+### Verified Test Summary (177 Passing Tests):
+* **Backend (`112/112 passed across 11 test suites`)**:
   * `tests/unit/teamAssignmentModel.test.js` (3 tests) — regression guard against `next is not a function` in synchronous and asynchronous validation
-  * `tests/integration/team.test.js` (8 tests) — registration, duplicate 409 conflict, database failure, assignment retrieval, `GET /api/teams` search and filtering
+  * `tests/integration/team.test.js` (11 tests) — registration, duplicate 409 conflict, database failure, assignment retrieval, `GET /api/teams` search and filtering, protected `DELETE /api/teams/:id` with 401/403 authorization
   * `tests/integration/timer.test.js` (8 tests) — public state, 401/403 authorization guards, operator transitions
   * `tests/integration/challenge.test.js` (16 tests) — theme validation, envelopes, WhatsApp format, secret security
   * `tests/integration/health.test.js` (4 tests) — health probe with database readiness check and CORS headers
   * `tests/integration/mock.test.js` (6 tests) — offline mock dataset endpoints
-  * `tests/unit/teamService.test.js` (12 tests) — team validation, persistence atomicity, 409 uniqueness, 503 error handling, `listTeams` pagination/search/sorting
+  * `tests/unit/teamService.test.js` (17 tests) — team validation, persistence atomicity, 409 uniqueness, 503 error handling, `listTeams` pagination/search/sorting, `deleteTeam` confirmation and not-found guards
   * `tests/unit/timerService.test.js` (7 tests) — authoritative duration math, idempotent start, pause/resume, reset
   * `tests/unit/challengeService.test.js` (21 tests) — multi-provider dispatch, Groq failover, anti-repeat buffer
   * `tests/unit/groqService.test.js` (11 tests) — schema compliance, 404/503 fail-fast, timeout guard
-  * `tests/unit/dataValidation.test.js` (7 tests) — curated data banks and combinatorial completeness
-* **Frontend (`63/63 passed`)**:
+  * `tests/unit/dataValidation.test.js` (8 tests) — curated data banks and combinatorial completeness
+* **Frontend (`65/65 passed across 11 test suites`)**:
   * `src/test/TimerScreen.test.jsx` (5 tests) — 4-hour countdown digits (`04:00:00`), status pills, operator token modal, action execution, back to dashboard
-  * `src/test/TeamsScreen.test.jsx` (5 tests) — table rendering, search filtering, theme dropdown, mission detail modal with 4 pillars, empty state
+  * `src/test/TeamsScreen.test.jsx` (7 tests) — table rendering, search filtering, theme dropdown, mission detail modal with 4 pillars, empty state, operator deletion confirmation and token authorization
   * `src/test/Navigation.test.jsx` (3 tests) — end-to-end routing between `/`, `/timer`, and `/teams` without page reloads
   * `src/test/TeamRegistrationFlow.test.jsx` (4 tests) — button enablement, 409 conflict display, 503 retry, Screen 2 team badge
   * `src/test/TeamRegistrationInput.test.jsx` (6 tests) — validation bounds (2-50 chars), counter, error alerts, disabled state

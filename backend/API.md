@@ -22,7 +22,7 @@ If your frontend runs on a different port or host (e.g. `http://localhost:4173`)
 
 ## 🎯 Primary Endpoint: Challenge Generation
 
-Generates an integrated, 3-hour hackathon challenge tailored to a chosen theme. Dispatches to the high-speed **Groq** engine (`llama-3.3-70b-versatile` by default), falls over to **Google Gemini** (`gemini-3.8-flash`) if configured, or seamlessly falls back to pre-vetted curated datasets when offline or rate-limited.
+Generates an integrated, 3-hour hackathon challenge tailored to a chosen theme. Dispatches to the high-speed **Groq** engine (`openai/gpt-oss-20b` by default), falls over to **Google Gemini** (`gemini-3.8-flash`) if configured, or seamlessly falls back to pre-vetted curated datasets when offline or rate-limited.
 
 - **Method**: `POST`
 - **Path**: `/api/challenges/generate`
@@ -325,16 +325,37 @@ Timer controls are protected using constant-time verification against `EVENT_ADM
 - `POST /api/event-timer/resume` — Resumes countdown from remaining duration.
 - `POST /api/event-timer/reset` — Resets state to `not_started` with full 4 hours.
 
-#### Unauthorized Response (`401 Unauthorized` / `403 Forbidden`):
-```json
-{
-  "success": false,
-  "error": {
-    "code": "UNAUTHORIZED_OPERATOR",
-    "message": "Valid Bearer token matching EVENT_ADMIN_TOKEN is required."
+#### Unauthorized Responses:
+- **`401 Unauthorized`** (Missing Header):
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "UNAUTHORIZED",
+      "message": "Missing Authorization header. Operator token required."
+    }
   }
-}
-```
+  ```
+- **`401 Unauthorized`** (Malformed Header):
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "INVALID_AUTH_FORMAT",
+      "message": "Invalid Authorization header format. Expected: Bearer <TOKEN>"
+    }
+  }
+  ```
+- **`403 Forbidden`** (Invalid Token):
+  ```json
+  {
+    "success": false,
+    "error": {
+      "code": "FORBIDDEN",
+      "message": "Invalid operator token provided."
+    }
+  }
+  ```
 
 ---
 
@@ -440,4 +461,4 @@ Server starts on `http://localhost:5000`.
 cd backend
 npm test
 ```
-All 109 integration and unit tests run in <3 seconds.
+All 112 integration and unit tests across 11 test suites run in <3 seconds.

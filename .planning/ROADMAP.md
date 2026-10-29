@@ -59,17 +59,18 @@
   - Operator-only timer mutation endpoints (`/start`, `/pause`, `/resume`, `/reset`) secured with `EVENT_ADMIN_TOKEN` via constant-time verification.
   - Public `GET /api/event-timer` endpoint polled periodically by frontend with local 1s tick and visual warning thresholds (< 60m amber, < 10m red).
 
-## Phase 8: UI Redesign — Event Dashboard, 4-Hour Timer & Team Challenge Table (COMPLETED & VERIFIED)
-- **Goal**: Redesign the existing CTS application into a clean, professional event-management interface centered on 3 connected screens, fix the `next is not a function` persistence bug, and provide a full-screen projector timer and team challenge table.
-- **Status**: Completed & Verified. All 167 automated tests passing (104 backend, 63 frontend). Clean production build.
+## Phase 8: UI Redesign & Security Hardening — Event Dashboard, 4-Hour Timer & Team Table (COMPLETED & VERIFIED)
+- **Goal**: Redesign the existing CTS application into a clean, professional event-management interface centered on 3 connected screens, fix the `next is not a function` persistence bug, provide a full-screen projector timer and team challenge table, harden operator authorization, and polish modal UI.
+- **Status**: Completed & Verified. All 177 automated tests passing (112 backend across 11 suites, 65 frontend across 11 suites). Clean production build.
 - **Deliverables**:
   - Root cause fix for `Failed to persist team challenge assignment: next is not a function` in `backend/src/models/TeamAssignment.js` using synchronous validation hooks and regression unit test `tests/unit/teamAssignmentModel.test.js`.
   - Added `listTeams` service and `GET /api/teams` endpoint with search, theme filter, and sorting.
+  - Protected operator team deletion (`DELETE /api/teams/:id`) requiring `EVENT_ADMIN_TOKEN` via constant-time authentication (`crypto.timingSafeEqual`).
+  - Zero credential leakage: operator tokens are entered on-demand and kept strictly in ephemeral React component memory—never written to `localStorage` or `sessionStorage`.
   - Custom browser history router (`frontend/src/router/Router.jsx`) supporting clean URLs `/`, `/timer`, `/teams` without page reloads.
   - **Screen 1: Event Dashboard (`/`)**: Compact event identity, 3 metric chips (4 Hours, 2 Members, Real Problems), 2 navigation action cards (Live Event Timer, Team Challenges), team registration input (max 50 chars), 8-theme selection grid, Generate button, and challenge results with 4 pillars + WhatsApp share.
   - **Screen 2: Live Event Timer (`/timer`)**: Large centered 4-hour countdown (`04:00:00`) for seminar hall projection, status label (NOT STARTED, RUNNING, PAUSED, COMPLETED), operator-protected Start/Pause/Resume/Reset controls via `EVENT_ADMIN_TOKEN`, fullscreen toggle.
-  - **Screen 3: Team Challenge Table (`/teams`)**: Searchable, filterable, sortable table of persisted team assignments from MongoDB, `#`, Team Name, Theme, Problem, Restriction, Resource, Deliverable, Generated At, mission detail modal with 4 pillars, refresh button with last updated timestamp.
-  - Comprehensive unit and integration test coverage for all screens and navigation flows.
+  - **Screen 3: Team Challenge Table (`/teams`)**: Searchable, filterable, sortable table of persisted team assignments from MongoDB, `#`, Team Name, Theme, Problem, Restriction, Resource, Deliverable, Generated At, mission detail modal with 4 pillars, custom sleek scrollbar (`.custom-modal-scrollbar`), operator delete modal, refresh button with last updated timestamp.
+  - Comprehensive unit and integration test coverage for all screens and navigation flows (112 backend tests, 65 frontend tests).
   - Backward compatibility of `POST /api/challenges/generate` and existing AI cascade preserved 100%.
-  - Comprehensive test suites: 33 new backend tests, 20 new frontend tests.
 

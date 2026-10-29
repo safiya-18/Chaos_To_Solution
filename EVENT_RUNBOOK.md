@@ -132,7 +132,7 @@ Mutations require the `EVENT_ADMIN_TOKEN` configured in `backend/.env`.
 
 ### 5.2 Hackathon Kickoff (Start the Countdown)
 When the countdown begins, the event operator can either:
-- **Via the UI**: Click **Start Event (4H)**. An authorization dialog will pop up. Enter the `EVENT_ADMIN_TOKEN` and click **Save & Authorize**. The token is stored in the operator's session, the timer transitions to `EVENT RUNNING`, and digits count down in real-time.
+- **Via the UI**: Click **Start Event (4H)**. An authorization dialog will pop up. Enter the `EVENT_ADMIN_TOKEN` and click **Confirm & Start Event**. The token is used in-memory for the request and is **never written to browser `sessionStorage` or `localStorage`**, the timer transitions to `EVENT RUNNING`, and digits count down in real-time.
 - **Via cURL**:
   ```bash
   curl -X POST http://localhost:5000/api/event-timer/start \
@@ -178,10 +178,23 @@ http://localhost:5173/teams
 ```
 - **Real-time Table**: Displays all registered teams, chosen themes, problem statements, restrictions, resources, and deliverables.
 - **Search & Filter**: Search by team name or keyword, and filter by theme.
-- **Mission Detail Modal**: Click **View Mission** on any team to inspect the 4 complete challenge pillars and external documentation links.
+- **Mission Detail Modal**: Click **View Mission** on any team to inspect the 4 complete challenge pillars, challenge ID, and external documentation links inside a sleek, pinned modal with a floating custom scrollbar (`.custom-modal-scrollbar`).
 - **Auto & Manual Refresh**: Click **Refresh** to pull the latest registration records from MongoDB.
 
-### 6.2 Checking Assignments via API
+### 6.2 Operator Team Deletion (Disqualifications / Test Cleanup)
+If a team name was registered as a test or needs to be reset:
+- **Via the UI**:
+  1. Click the red **Trash** icon next to the team row on `/teams`.
+  2. A confirmation modal will appear requiring the operator `EVENT_ADMIN_TOKEN`.
+  3. Enter the token and click **Delete Team**.
+  4. The record is permanently deleted from MongoDB, and the table updates immediately. The token remains strictly in ephemeral component state.
+- **Via cURL**:
+  ```bash
+  curl -X DELETE http://localhost:5000/api/teams/TEAM_ID_OR_NORMALIZED_NAME \
+    -H "Authorization: Bearer YOUR_EVENT_ADMIN_TOKEN"
+  ```
+
+### 6.3 Checking Assignments via API
 - **List All Teams**:
   ```bash
   curl http://localhost:5000/api/teams
@@ -203,7 +216,7 @@ http://localhost:5173/teams
 | :--- | :--- | :--- |
 | **`Failed to persist team challenge assignment: next is not a function`** | Mongoose 8.x synchronous validation hook signature mismatch | Fixed in `backend/src/models/TeamAssignment.js` using synchronous `pre('validate')` without `next` and schema default. Tested via unit regression suite. |
 | **Database Unavailable (503 on registration)** | MongoDB is not running or unreachable | Start MongoDB (`docker compose up -d` or verify `MONGODB_URI` connection). Backend health at `/api/health` reports status. |
-| **Timer controls return 401/403** | Missing or invalid admin token | Ensure token entered in dialog or `Authorization: Bearer <EVENT_ADMIN_TOKEN>` matches token in `backend/.env`. |
+| **Timer / Deletion controls return 401/403** | Missing or invalid admin token | Ensure token entered in dialog or `Authorization: Bearer <EVENT_ADMIN_TOKEN>` matches token in `backend/.env`. |
 | **CORS Blocked (Red console error)** | Frontend running on port not in `CORS_ORIGIN` | Add frontend port to `CORS_ORIGIN` in `backend/.env` (e.g. `http://localhost:5176`) and restart backend. |
 | **Port 5000 in use** | Residual node process running | Run `npx kill-port 5000` or stop previous background tasks in terminal. |
 | **Frontend fails with "Network Error"** | Backend server not running | Ensure Terminal 1 is running `npm run dev` in `backend/`. Verify `curl http://localhost:5000/api/health`. |
@@ -215,10 +228,11 @@ http://localhost:5173/teams
 
 Run the automated test suites to confirm full green status:
 ```bash
-# 1. Backend suite (104 tests across 11 test files)
+# 1. Backend suite (112 tests across 11 test files)
 cd backend && npm test
 
-# 2. Frontend suite (63 tests across 11 test files)
+# 2. Frontend suite (65 tests across 11 test files)
 cd ../frontend && npm test
 ```
-All **167 tests** must pass. Once verified, project the `/timer` screen onto the main stage display or open `/` for participant kiosk entry!
+All **177 tests** must pass. Once verified, project the `/timer` screen onto the main stage display or open `/` for participant kiosk entry!
+

@@ -21,6 +21,8 @@
 - **Decision 13 (Mongoose Hook Modernization)**: Mongoose 8.x synchronous `pre('validate')` without `next` parameter to resolve `TypeError: next is not a function`, plus schema default for `normalizedTeamName`. Guarded by unit regression tests.
 - **Decision 14 (Zero-Dependency Client Routing)**: Browser History API router (`RouterProvider`, `useRouter`, `Link`) supporting `/`, `/timer`, `/teams` without page reloads or bundle bloat.
 - **Decision 15 (Three-Screen Event Interface)**: Event Dashboard (`/`), Dedicated Projector Timer (`/timer`), and Searchable Team Challenge Table (`/teams`) fully connected with live backend.
+- **Decision 16 (Protected Operator Deletion & Zero Credential Leaks)**: `DELETE /api/teams/:id` requires operator Bearer token matching `EVENT_ADMIN_TOKEN` via constant-time verification. Operator tokens are kept strictly in ephemeral React component memory—never stored in `sessionStorage` or `localStorage`.
+- **Decision 17 (Pinned Modal & Floating Custom Scrollbar)**: Detail modal in Screen 3 pins the header and close button while allowing the 4 challenge pillars to scroll independently via `.custom-modal-scrollbar` with a floating pill thumb.
 
 ## Next Action
 System is production-ready for the IEEE Chaos to Solution event at SJCIT. Event kiosk and projection setup follows `EVENT_RUNBOOK.md`.
