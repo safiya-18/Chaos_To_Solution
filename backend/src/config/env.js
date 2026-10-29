@@ -18,6 +18,7 @@ const parseCorsOrigins = (rawOrigins) => {
 
 export const config = Object.freeze({
   port: parseInt(process.env.PORT || '5000', 10),
+  host: process.env.HOST || '0.0.0.0',
   nodeEnv: process.env.NODE_ENV || 'development',
   corsOrigins: parseCorsOrigins(process.env.CORS_ORIGIN || 'http://localhost:5173,http://localhost:3000'),
   isProduction: process.env.NODE_ENV === 'production',

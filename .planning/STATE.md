@@ -1,10 +1,10 @@
 # Project State: Chaos to Solution Backend
  
-## Current Phase: Phase 8 - UI Redesign — Event Dashboard, 4-Hour Timer & Team Challenge Table (COMPLETED & VERIFIED)
-- **Current Milestone**: Milestone 1 - Complete Event Management Platform — COMPLETED
-- **Active Phase**: Phase 8 (UI Redesign — Event Dashboard, 4-Hour Timer & Team Challenge Table) — Implemented, Verified & Documented
-- **Status**: Fully audited, verified end-to-end, and release-ready. All 177 automated tests passing (112 backend across 11 suites, 65 frontend across 11 suites). Clean Vite production build. 3 interconnected screens (`/`, `/timer`, `/teams`), live MongoDB Atlas persistence, real-time Groq AI generation with transparent fallbacks, authoritative shared timer, protected deletion requiring operator authorization, and complete API endpoint verification.
- 
+### Current Phase: Phase 9 - Production Deployment & Cloud Hardening (PREPARED & VERIFIED)
+- **Current Milestone**: Milestone 1 - Complete Event Management Platform — PREPARED FOR LIVE CLOUD
+- **Active Phase**: Phase 9 (Production Deployment — Render + Vercel + MongoDB Atlas) — Hardened, Configured & Verified
+- **Status**: Full security review complete. All 178 automated tests passing (113 backend across 11 suites, 65 frontend across 11 suites). Clean production build. Production CORS allowlist with Vercel dynamic support, host interface binding (`0.0.0.0`), SPA history rewrite rule in `frontend/vercel.json`, `render.yaml` Blueprint specification, and comprehensive operational guide in `DEPLOYMENT.md`.
+
 ## Key Approved Decisions
 - **Decision 1 (Themes)**: 8 approved themes (`EdTech`, `FinTech`, `HealthTech`, `Sustainability`, `Smart Cities`, `Accessibility`, `E-commerce`, `Open Innovation`). Strict validation with HTTP 400. No silent fallback to Open Innovation.
 - **Decision 2 (AI Integration)**: Multi-provider architecture. Groq (`groq-sdk`, `openai/gpt-oss-20b`) as primary with strict JSON Schema. Google Gemini (`gemini-3.8-flash`) as secondary.
@@ -23,6 +23,7 @@
 - **Decision 15 (Three-Screen Event Interface)**: Event Dashboard (`/`), Dedicated Projector Timer (`/timer`), and Searchable Team Challenge Table (`/teams`) fully connected with live backend.
 - **Decision 16 (Protected Operator Deletion & Zero Credential Leaks)**: `DELETE /api/teams/:id` requires operator Bearer token matching `EVENT_ADMIN_TOKEN` via constant-time verification. Operator tokens are kept strictly in ephemeral React component memory—never stored in `sessionStorage` or `localStorage`.
 - **Decision 17 (Pinned Modal & Floating Custom Scrollbar)**: Detail modal in Screen 3 pins the header and close button while allowing the 4 challenge pillars to scroll independently via `.custom-modal-scrollbar` with a floating pill thumb.
+- **Decision 18 (Production Cloud Hardening & Dynamic Vercel CORS)**: Express server binds to `0.0.0.0` with dynamic port. CORS dynamically supports Vercel production and preview subdomains (`*.vercel.app`) as well as explicit allowlists. Vercel SPA rewrites route client-side deep links to `/index.html`.
 
 ## Next Action
-System is production-ready for the IEEE Chaos to Solution event at SJCIT. Event kiosk and projection setup follows `EVENT_RUNBOOK.md`.
+Awaiting user confirmation to commit and push changes, then guide through live Render and Vercel deployments.

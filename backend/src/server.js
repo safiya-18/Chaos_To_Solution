@@ -9,8 +9,8 @@ if (config.mongodbUri) {
   });
 }
 
-const server = app.listen(config.port, () => {
-  console.log(`[CTS Backend] Server running on port ${config.port} (${config.nodeEnv})`);
+const server = app.listen(config.port, config.host, () => {
+  console.log(`[CTS Backend] Server running on ${config.host}:${config.port} (${config.nodeEnv})`);
   console.log(`[CTS Backend] Health check: http://localhost:${config.port}/api/health`);
 });
 

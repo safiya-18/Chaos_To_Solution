@@ -32,6 +32,18 @@ describe('GET /api/health', () => {
 
     expect(res.headers['access-control-allow-origin']).toBe('http://localhost:5173');
   });
+
+  it('should allow production Vercel origins and block unauthorized origins', async () => {
+    const allowedRes = await request(app)
+      .get('/api/health')
+      .set('Origin', 'https://ctschallenge.vercel.app');
+    expect(allowedRes.headers['access-control-allow-origin']).toBe('https://ctschallenge.vercel.app');
+
+    const blockedRes = await request(app)
+      .get('/api/health')
+      .set('Origin', 'https://unauthorized-domain.com');
+    expect(blockedRes.headers['access-control-allow-origin']).toBeUndefined();
+  });
 });
 
 describe('404 Route Handling', () => {

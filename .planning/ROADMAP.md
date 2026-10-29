@@ -74,3 +74,14 @@
   - Comprehensive unit and integration test coverage for all screens and navigation flows (112 backend tests, 65 frontend tests).
   - Backward compatibility of `POST /api/challenges/generate` and existing AI cascade preserved 100%.
 
+## Phase 9: Production Deployment & Cloud Hardening — Render, Vercel & MongoDB Atlas (PREPARED & VERIFIED)
+- **Goal**: Prepare, harden, and document production deployment across Render (backend), Vercel (frontend), and MongoDB Atlas, with zero secret leaks, SPA rewrites, and full CORS allowlist support.
+- **Status**: Prepared & Locally Verified. 178 automated tests passing (113 backend across 11 suites, 65 frontend across 11 suites). Production build ready in 1.27s.
+- **Deliverables**:
+  - Bound backend Express server explicitly to `0.0.0.0` with configurable `process.env.HOST` for cloud container hosting.
+  - Hardened CORS origin delegate to dynamically allow explicit production domains (`https://cts.vercel.app`, `https://ctschallenge.vercel.app`) as well as Vercel preview subdomains (`*.vercel.app`) while rejecting untrusted origins.
+  - Added `frontend/vercel.json` SPA history rewrite rule to guarantee direct loads of `/timer` and `/teams` resolve without 404 errors.
+  - Created root `render.yaml` Blueprint specification with `sync: false` for all secret credentials.
+  - Authored comprehensive `DEPLOYMENT.md` operational runbook covering Atlas network access, Render deployment, Vercel custom domains, and non-destructive post-deployment smoke verification.
+
+

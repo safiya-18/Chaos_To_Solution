@@ -14,9 +14,34 @@ const app = express();
 
 // Security and CORS middleware
 app.use(helmet());
+
+const corsOriginDelegate = (origin, callback) => {
+  // Allow requests with no origin (e.g. mobile apps, curl, or server-to-server)
+  if (!origin) {
+    return callback(null, true);
+  }
+
+  // Wildcard allow if configured
+  if (config.corsOrigins === '*') {
+    return callback(null, true);
+  }
+
+  // Explicit allowed origins list
+  if (Array.isArray(config.corsOrigins) && config.corsOrigins.includes(origin)) {
+    return callback(null, true);
+  }
+
+  // Allow Vercel preview and production subdomains
+  if (/^https:\/\/[a-zA-Z0-9_-]+\.vercel\.app$/.test(origin)) {
+    return callback(null, true);
+  }
+
+  return callback(null, false);
+};
+
 app.use(
   cors({
-    origin: config.corsOrigins,
+    origin: corsOriginDelegate,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
   })
