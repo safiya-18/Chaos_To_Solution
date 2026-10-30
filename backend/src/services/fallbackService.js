@@ -27,6 +27,41 @@ export const getOfficialCuratedChallenges = (theme) => {
 };
 
 /**
+ * Constructs a rich, multi-component deliverable tailored for an ambitious 2-hour hackathon sprint.
+ * Adheres strictly to the 5-part structure:
+ * 1. Product Objective
+ * 2. Functional Requirements
+ * 3. System Components
+ * 4. Expected Working Outcome
+ * 5. Evaluation Criteria
+ * Preserves all official technical constraints (client-side only, simulated data, no paid APIs).
+ */
+export const buildRichDeliverable = ({ title, theme, statement, restrictionRule, resourceName }) => {
+  const isClientSideOnly = /client-side|purely on the client|no backend|zero backend/i.test(restrictionRule);
+  const isSimulatedOnly = /simulated|no live|sample records|no hardware/i.test(restrictionRule);
+  const isOfflineOnly = /offline|zero internet|no internet/i.test(restrictionRule);
+
+  let componentDesc = 'Responsive client application with modular state management';
+  if (!isClientSideOnly && !isOfflineOnly) {
+    componentDesc += ', lightweight REST API service, and local persistence layer';
+  } else {
+    componentDesc += ' and persistent browser storage (LocalStorage/IndexedDB)';
+  }
+
+  const functionalDesc = isSimulatedOnly
+    ? 'Interactive input validation, algorithmic analysis of simulated records, status visualization, and data export'
+    : 'User data input and validation, real-time calculations and analysis, visual progress feedback, and export/summary features';
+
+  return `Build a functional ${title} to solve the core friction: ${statement.slice(0, 100)}...
+
+1. Product Objective: Deliver an accessible, high-reliability solution addressing ${title.toLowerCase()} for the ${theme} domain.
+2. Functional Requirements: ${functionalDesc}.
+3. System Components: ${componentDesc} leveraging ${resourceName}.
+4. Expected Working Outcome: A demonstrable, testable application providing end-to-end interactive workflows with zero runtime errors.
+5. Evaluation Criteria: Functional completeness, algorithmic correctness, clean user experience, and 100% adherence to: ${restrictionRule.slice(0, 80)}.`;
+};
+
+/**
  * Generates fallback challenge directly from official curated challenge dataset when available.
  */
 export const generateOfficialFallback = (theme, recentHistory = []) => {
@@ -45,6 +80,7 @@ export const generateOfficialFallback = (theme, recentHistory = []) => {
   const primaryResource = selected.resourcesProvided[0] || 'Official Dataset';
   const resourceName = primaryResource.length > 80 ? `${primaryResource.slice(0, 77)}...` : primaryResource;
   const isBrowserApi = /web speech|canvas|storage|indexeddb|notification|worker|clipboard/i.test(primaryResource);
+  const restrictionRule = selected.restrictions.join('; ');
 
   return {
     theme: selected.theme,
@@ -54,7 +90,7 @@ export const generateOfficialFallback = (theme, recentHistory = []) => {
     },
     restriction: {
       name: `${selected.theme} Official Constraint`,
-      rule: selected.restrictions.join('; ')
+      rule: restrictionRule
     },
     resource: {
       name: resourceName,
@@ -62,7 +98,13 @@ export const generateOfficialFallback = (theme, recentHistory = []) => {
       guidance: `Utilize provided resource: ${selected.resourcesProvided.join('; ')}`,
       docsUrl: 'https://github.com/safiya-18/Chaos_To_Solution'
     },
-    deliverable: `A functional 3-hour prototype solving: ${selected.problemStatement.slice(0, 80)}... strictly conforming to all official restrictions.`,
+    deliverable: buildRichDeliverable({
+      title: selected.title,
+      theme: selected.theme,
+      statement: selected.problemStatement,
+      restrictionRule,
+      resourceName
+    }),
     source: 'curated-fallback',
     isOfficialCurated: true,
     curatedId: selected.id
@@ -128,7 +170,13 @@ export const generateFallback = (theme, recentHistory = []) => {
       guidance: `Use ${resource.name} to provide live data, interactive feedback, or storage for ${problem.title.toLowerCase()}.`,
       docsUrl: resource.docsUrl
     },
-    deliverable: `A functional 3-hour prototype demonstrating ${problem.title.toLowerCase()} conforming to ${restriction.name.toLowerCase()}.`,
+    deliverable: buildRichDeliverable({
+      title: problem.title,
+      theme: validatedTheme,
+      statement: problem.description,
+      restrictionRule: restriction.rule,
+      resourceName: resource.name
+    }),
     source: 'curated-fallback'
   };
 };

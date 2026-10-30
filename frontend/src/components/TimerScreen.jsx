@@ -211,7 +211,7 @@ export function TimerScreen() {
         {/* Small Event Title */}
         <div className="text-center">
           <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.24em] text-[#FFE56A] block">
-            IEEE SJC INSTITUTE OF TECHNOLOGY
+            IEEE COMPUTER SOCIETY
           </span>
           <h1 className="text-xs sm:text-sm font-black text-white/90 tracking-wide mt-0.5">
             CHAOS TO SOLUTION — LIVE EVENT TIMER

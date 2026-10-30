@@ -4,6 +4,7 @@ import {
   Filter,
   ArrowUpDown,
   RefreshCw,
+  Printer,
   ArrowLeft,
   Users,
   ExternalLink,
@@ -98,11 +99,20 @@ export function TeamsScreen() {
     return THEMES.find((t) => t.name.toLowerCase() === (themeName || '').toLowerCase()) || THEMES[0];
   };
 
+  // Human-readable sort label for export header
+  const getSortLabel = (by, order) => {
+    if (by === 'createdAt' && order === 'desc') return 'Newest First';
+    if (by === 'createdAt' && order === 'asc') return 'Oldest First';
+    if (by === 'teamName' && order === 'asc') return 'Team Name (A-Z)';
+    if (by === 'teamName' && order === 'desc') return 'Team Name (Z-A)';
+    return `${by} (${order})`;
+  };
+
   return (
     <div className="min-h-screen bg-[#F7F3EA] text-[#111820] flex flex-col font-sans selection:bg-yellow-300 selection:text-black">
 
-      {/* ── TOP HEADER ── */}
-      <header className="sticky top-0 z-30 bg-[#F7F3EA]/90 backdrop-blur-md border-b border-[#E2DDD6] px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4">
+      {/* ── TOP HEADER (HIDDEN DURING PRINT) ── */}
+      <header className="sticky top-0 z-30 bg-[#F7F3EA]/90 backdrop-blur-md border-b border-[#E2DDD6] px-4 sm:px-8 py-3.5 flex items-center justify-between gap-4 print:hidden">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -124,18 +134,30 @@ export function TeamsScreen() {
           </div>
         </div>
 
-        {/* Refresh button with timestamp */}
-        <div className="flex items-center gap-3">
+        {/* Actions: Print / Export PDF & Refresh */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
           {lastRefreshed && (
-            <span className="hidden sm:inline-block text-[11px] font-mono text-[#78716C]">
+            <span className="hidden sm:inline-block text-[11px] font-mono text-[#78716C] mr-0.5">
               Updated: {lastRefreshed}
             </span>
           )}
 
           <button
             type="button"
+            onClick={() => window.print()}
+            id="print-teams-report-btn"
+            title="Print or Export PDF of current team allocations"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white hover:bg-[#EFE9DD] border border-[#11151C]/15 font-bold text-xs text-[#111820] shadow-2xs transition-all cursor-pointer active:scale-95 select-none"
+          >
+            <Printer className="w-3.5 h-3.5 text-[#111820]" aria-hidden="true" />
+            <span>Print / Export PDF</span>
+          </button>
+
+          <button
+            type="button"
             onClick={loadTeams}
             disabled={isLoading}
+            id="refresh-teams-btn"
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#11151C] hover:bg-[#1E2532] text-white text-xs font-bold transition-all cursor-pointer active:scale-95 disabled:opacity-50 select-none shadow-xs"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
@@ -145,10 +167,47 @@ export function TeamsScreen() {
       </header>
 
       {/* ── MAIN CONTENT CONTAINER ── */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-4">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-4 print:p-2 print:max-w-none print:w-full">
 
-        {/* ── FILTER & SEARCH TOOLBAR ── */}
-        <div className="p-4 rounded-2xl bg-white border border-[#E2DDD6] shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 select-none">
+        {/* ── PRINT-SPECIFIC REPORT HEADER (VISIBLE ONLY DURING PRINT / PDF EXPORT) ── */}
+        <div id="printable-allocation-header" className="hidden print:block border-b-2 border-[#111820] pb-3 mb-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#A16207] block">
+                IEEE COMPUTER SOCIETY
+              </span>
+              <h1 className="text-xl font-black tracking-tight text-[#111820] mt-0.5">
+                CHAOS TO SOLUTION
+              </h1>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#44403C] mt-0.5">
+                TEAM CHALLENGE ALLOCATION REPORT
+              </h2>
+            </div>
+            <div className="text-right text-[10px] font-mono text-[#57534E]">
+              <div>Generated: {new Date().toLocaleString()}</div>
+              <div className="font-bold text-[#111820] mt-0.5">Official Hackathon Record</div>
+            </div>
+          </div>
+
+          {/* Filter & Sort Metadata Chips */}
+          <div className="mt-3 flex items-center gap-2 flex-wrap text-[10px]">
+            <span className="px-2 py-0.5 rounded bg-gray-100 border border-gray-300 font-medium">
+              <strong>Theme Filter:</strong> {selectedTheme === 'All' ? 'All Themes (8)' : selectedTheme}
+            </span>
+            <span className="px-2 py-0.5 rounded bg-gray-100 border border-gray-300 font-medium">
+              <strong>Search Query:</strong> {searchTerm.trim() ? `"${searchTerm.trim()}"` : 'None'}
+            </span>
+            <span className="px-2 py-0.5 rounded bg-gray-100 border border-gray-300 font-medium">
+              <strong>Sort Order:</strong> {getSortLabel(sortBy, sortOrder)}
+            </span>
+            <span className="px-2 py-0.5 rounded bg-gray-100 border border-gray-300 font-bold text-[#111820]">
+              <strong>Total Teams Included:</strong> {teams.length}
+            </span>
+          </div>
+        </div>
+
+        {/* ── FILTER & SEARCH TOOLBAR (HIDDEN DURING PRINT) ── */}
+        <div className="p-4 rounded-2xl bg-white border border-[#E2DDD6] shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 select-none print:hidden">
           {/* Search Box */}
           <div className="relative flex-1 min-w-[240px]">
             <Search className="w-4 h-4 text-[#8C8477] absolute left-3.5 top-1/2 -translate-y-1/2" aria-hidden="true" />
@@ -222,18 +281,18 @@ export function TeamsScreen() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#111820] text-white text-[10.5px] uppercase tracking-[0.14em] font-black border-b border-[#111820] select-none">
-                  <th className="py-3.5 px-3 text-center w-12">#</th>
-                  <th className="py-3.5 px-4 min-w-[150px]">Team Name</th>
-                  <th className="py-3.5 px-3 min-w-[120px]">Theme</th>
-                  <th className="py-3.5 px-4 min-w-[220px]">Problem Statement</th>
-                  <th className="py-3.5 px-4 min-w-[180px]">Technical Restriction</th>
-                  <th className="py-3.5 px-4 min-w-[160px]">Resource</th>
-                  <th className="py-3.5 px-4 min-w-[180px]">Deliverable</th>
-                  <th className="py-3.5 px-3 text-center min-w-[140px]">Actions</th>
+                <tr className="bg-[#111820] text-white text-[10.5px] uppercase tracking-[0.14em] font-black border-b border-[#111820] select-none print:bg-gray-100 print:text-[#111820] print:text-[9px] print:border-gray-400">
+                  <th className="py-3.5 px-3 text-center w-12 print:w-8 print:py-2 print:px-1.5 print:border-r print:border-gray-300">#</th>
+                  <th className="py-3.5 px-4 min-w-[150px] print:min-w-[95px] print:w-28 print:py-2 print:px-2 print:border-r print:border-gray-300">Team Name</th>
+                  <th className="py-3.5 px-3 min-w-[120px] print:min-w-[70px] print:w-24 print:py-2 print:px-2 print:border-r print:border-gray-300">Theme</th>
+                  <th className="py-3.5 px-4 min-w-[220px] print:min-w-[180px] print:py-2 print:px-2.5 print:border-r print:border-gray-300">Problem Statement</th>
+                  <th className="py-3.5 px-4 min-w-[180px] print:min-w-[150px] print:py-2 print:px-2.5 print:border-r print:border-gray-300">Technical Restriction</th>
+                  <th className="py-3.5 px-4 min-w-[160px] print:min-w-[120px] print:w-36 print:py-2 print:px-2 print:border-r print:border-gray-300">Resource</th>
+                  <th className="py-3.5 px-4 min-w-[180px] print:min-w-[180px] print:py-2 print:px-2.5 print:border-r print:border-gray-300">Deliverable</th>
+                  <th className="py-3.5 px-3 text-center min-w-[140px] print:hidden">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E2DDD6]/70 text-xs">
+              <tbody className="divide-y divide-[#E2DDD6]/70 text-xs print:divide-gray-300">
                 {isLoading && teams.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="py-12 text-center text-[#78716C]">
@@ -243,10 +302,10 @@ export function TeamsScreen() {
                   </tr>
                 ) : teams.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="py-16 text-center text-[#78716C]">
-                      <Users className="w-10 h-10 text-[#8C8477]/50 mx-auto mb-2" />
+                    <td colSpan="8" className="py-16 text-center text-[#78716C] print:py-8">
+                      <Users className="w-10 h-10 text-[#8C8477]/50 mx-auto mb-2 print:hidden" />
                       <h3 className="text-sm font-black text-[#111820]">No teams registered yet</h3>
-                      <p className="text-xs text-[#8C8477] mt-1">
+                      <p className="text-xs text-[#8C8477] mt-1 print:text-gray-500">
                         Teams will appear here in real-time as they register on the Dashboard.
                       </p>
                     </td>
@@ -257,36 +316,39 @@ export function TeamsScreen() {
                     return (
                       <tr
                         key={item.id || idx}
-                        className="hover:bg-[#F7F3EA]/40 transition-colors"
+                        className="hover:bg-[#F7F3EA]/40 transition-colors print:border-b print:border-gray-300 print:align-top"
                       >
                         {/* # */}
-                        <td className="py-3 px-3 text-center font-mono font-bold text-[#8C8477] text-xs">
+                        <td className="py-3 px-3 text-center font-mono font-bold text-[#8C8477] text-xs print:py-2 print:px-1.5 print:text-[9.5px] print:border-r print:border-gray-300 print:text-gray-700">
                           {item.index || idx + 1}
                         </td>
 
                         {/* Team Name */}
-                        <td className="py-3 px-4 font-black text-[#111820] text-sm tracking-tight">
+                        <td className="py-3 px-4 font-black text-[#111820] text-sm tracking-tight print:py-2 print:px-2 print:text-[10px] print:border-r print:border-gray-300">
                           <div className="flex items-center gap-1.5">
                             <span>{item.teamName}</span>
                             {item.source === 'ai' ? (
-                              <span title="AI Generated">
+                              <span title="AI Generated" className="print:hidden">
                                 <Sparkles className="w-3.5 h-3.5 text-emerald-600 inline" aria-hidden="true" />
                               </span>
                             ) : (
-                              <span title="Backup Challenge">
+                              <span title="Backup Challenge" className="print:hidden">
                                 <ShieldCheck className="w-3.5 h-3.5 text-amber-700 inline" aria-hidden="true" />
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] font-mono text-[#8C8477] block mt-0.5">
+                          <span className="text-[10px] font-mono text-[#8C8477] block mt-0.5 print:text-[8.5px] print:text-gray-500">
                             {new Date(item.generatedAt || item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          <span className="hidden print:inline-block text-[8px] font-mono uppercase text-gray-400 mt-0.5">
+                            {item.source === 'ai' ? 'AI' : 'Curated'}
                           </span>
                         </td>
 
                         {/* Theme */}
-                        <td className="py-3 px-3">
+                        <td className="py-3 px-3 print:py-2 print:px-2 print:border-r print:border-gray-300">
                           <span
-                            className="inline-block px-2.5 py-1 rounded-full text-[11px] font-extrabold border border-[#111820]/10 whitespace-nowrap shadow-2xs"
+                            className="inline-block px-2.5 py-1 rounded-full text-[11px] font-extrabold border border-[#111820]/10 whitespace-nowrap shadow-2xs print:text-[9.5px] print:border-none print:p-0 print:bg-transparent"
                             style={{ backgroundColor: themeConf.bgColor, color: '#111820' }}
                           >
                             {item.theme}
@@ -294,52 +356,62 @@ export function TeamsScreen() {
                         </td>
 
                         {/* Problem */}
-                        <td className="py-3 px-4">
-                          <div className="font-extrabold text-[#111820] line-clamp-1">
+                        <td className="py-3 px-4 print:py-2 print:px-2.5 print:border-r print:border-gray-300">
+                          <div className="font-extrabold text-[#111820] line-clamp-1 print:line-clamp-none print:text-[10px]">
                             {item.challenge?.problem?.title}
                           </div>
-                          <div className="text-[11px] text-[#524B43] line-clamp-2 mt-0.5 leading-snug">
+                          <div className="text-[11px] text-[#524B43] line-clamp-2 mt-0.5 leading-snug print:line-clamp-none print:text-[9px] print:leading-normal print:whitespace-pre-line print:text-gray-700">
                             {item.challenge?.problem?.statement}
                           </div>
                         </td>
 
                         {/* Restriction */}
-                        <td className="py-3 px-4">
-                          <div className="font-bold text-[#A16207] line-clamp-1">
+                        <td className="py-3 px-4 print:py-2 print:px-2.5 print:border-r print:border-gray-300">
+                          <div className="font-bold text-[#A16207] line-clamp-1 print:line-clamp-none print:text-[10px] print:text-[#854D0E]">
                             {item.challenge?.restriction?.name}
                           </div>
-                          <div className="text-[11px] text-[#524B43] line-clamp-2 mt-0.5 leading-snug">
+                          <div className="text-[11px] text-[#524B43] line-clamp-2 mt-0.5 leading-snug print:line-clamp-none print:text-[9px] print:leading-normal print:whitespace-pre-line print:text-gray-700">
                             {item.challenge?.restriction?.rule}
                           </div>
                         </td>
 
                         {/* Resource */}
-                        <td className="py-3 px-4">
-                          <div className="font-bold text-[#304DB4] line-clamp-1">
+                        <td className="py-3 px-4 print:py-2 print:px-2 print:border-r print:border-gray-300">
+                          <div className="font-bold text-[#304DB4] line-clamp-1 print:line-clamp-none print:text-[10px] print:text-[#1D4ED8]">
                             {item.challenge?.resource?.name}
                           </div>
+                          {item.challenge?.resource?.type && (
+                            <div className="hidden print:block text-[8.5px] font-mono text-gray-500">
+                              {item.challenge.resource.type}
+                            </div>
+                          )}
                           {item.challenge?.resource?.docsUrl && (
-                            <a
-                              href={item.challenge.resource.docsUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-[10px] text-[#304DB4] hover:underline inline-flex items-center gap-1 mt-0.5 font-medium"
-                            >
-                              <span>Docs</span>
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
+                            <>
+                              <a
+                                href={item.challenge.resource.docsUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[10px] text-[#304DB4] hover:underline inline-flex items-center gap-1 mt-0.5 font-medium print:hidden"
+                              >
+                                <span>Docs</span>
+                                <ExternalLink className="w-2.5 h-2.5" />
+                              </a>
+                              <div className="hidden print:block text-[8px] text-gray-500 break-all font-mono mt-0.5">
+                                {item.challenge.resource.docsUrl}
+                              </div>
+                            </>
                           )}
                         </td>
 
                         {/* Deliverable */}
-                        <td className="py-3 px-4">
-                          <div className="text-[11.5px] text-[#292524] line-clamp-2 font-medium leading-snug">
+                        <td className="py-3 px-4 print:py-2 print:px-2.5 print:border-r print:border-gray-300">
+                          <div className="text-[11.5px] text-[#292524] line-clamp-2 font-medium leading-snug print:line-clamp-none print:text-[9.5px] print:leading-normal print:whitespace-pre-line print:text-gray-800">
                             {item.challenge?.deliverable}
                           </div>
                         </td>
 
                         {/* Action: View Modal & Delete */}
-                        <td className="py-3 px-3 text-center">
+                        <td className="py-3 px-3 text-center print:hidden">
                           <div className="flex items-center justify-center gap-1.5">
                             <button
                               type="button"
@@ -369,6 +441,12 @@ export function TeamsScreen() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* ── PRINT-SPECIFIC REPORT FOOTER (VISIBLE ONLY ON PRINT) ── */}
+        <div className="hidden print:flex mt-4 pt-2 border-t border-gray-400 items-center justify-between text-[8.5px] text-gray-500 font-mono">
+          <div>Chaos to Solution • Team Challenge Allocation Report</div>
+          <div>IEEE Computer Society • Confidential Official Record</div>
         </div>
 
       </main>
@@ -471,7 +549,7 @@ export function TeamsScreen() {
                 <span className="text-[10px] font-black uppercase tracking-wider text-[#16A34A] block">
                   04 — EXPECTED DELIVERABLE
                 </span>
-                <p className="text-xs font-semibold text-[#111820] mt-1 leading-relaxed">
+                <p className="text-xs font-semibold text-[#111820] mt-1 leading-relaxed whitespace-pre-line">
                   {selectedTeam.challenge?.deliverable}
                 </p>
               </div>

@@ -38,7 +38,7 @@ export function formatChallengeForWhatsApp({ id, theme, source, challenge, teamN
 
   const lines = [
     '*CHAOS TO SOLUTION — AI Challenge*',
-    '_IEEE Computer Society | SJC Institute of Technology_',
+    '_IEEE Computer Society_',
     '----------------------------------------',
     `*Theme:* ${theme || 'General'}`,
     ...(teamName ? [`*Team:* ${teamName}`] : []),

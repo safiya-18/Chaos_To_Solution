@@ -102,3 +102,59 @@ html, body {
 }
 
 /* Cards and illustration fill their flex/grid containers — no fixed heights needed */
+
+/* ── DEDICATED PRINT STYLES FOR OFFICIAL EVENT REPORTS ── */
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm 12mm 12mm 12mm;
+  }
+
+  html, body {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #111820 !important;
+    overflow: visible !important;
+    font-size: 10pt;
+  }
+
+  #root {
+    display: block !important;
+    min-height: auto !important;
+  }
+
+  /* Hide interactive screen elements during print */
+  header,
+  nav,
+  .no-print,
+  button,
+  input,
+  select,
+  [role="dialog"] {
+    display: none !important;
+  }
+
+  /* Display print report container */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Ensure headers repeat on subsequent printed pages */
+  thead {
+    display: table-header-group !important;
+  }
+
+  /* Prevent row splitting across printed pages */
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* High-contrast and exact colors */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}

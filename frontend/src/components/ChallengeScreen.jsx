@@ -197,12 +197,12 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
 
             {deliverable && (
               <div className="pt-2 border-t border-[#11151C]/15 shrink-0">
-                <span className="text-[10px] font-black uppercase tracking-wider text-[#111820]/75 block mb-0.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#111820]/75 block mb-1">
                   Expected Deliverable
                 </span>
-                <p className="text-[11px] xl:text-xs text-[#26211C] font-semibold leading-snug">
+                <div className="text-[11px] xl:text-xs text-[#26211C] font-semibold leading-relaxed whitespace-pre-line max-h-40 overflow-y-auto custom-modal-scrollbar pr-1">
                   {deliverable}
-                </p>
+                </div>
               </div>
             )}
           </div>

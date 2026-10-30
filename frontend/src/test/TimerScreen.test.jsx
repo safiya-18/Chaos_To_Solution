@@ -33,6 +33,9 @@ describe('TimerScreen Component', () => {
       expect(screen.getByText('04:00:00')).toBeInTheDocument();
     });
 
+    expect(screen.getByText('IEEE COMPUTER SOCIETY')).toBeInTheDocument();
+    expect(screen.queryByText(/IEEE SJC INSTITUTE OF TECHNOLOGY/i)).not.toBeInTheDocument();
+    expect(screen.getByText('CHAOS TO SOLUTION — LIVE EVENT TIMER')).toBeInTheDocument();
     expect(screen.getByText(/NOT STARTED/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Start Event/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Reset/i })).toBeInTheDocument();
