@@ -97,7 +97,7 @@ Settings in `.env`:
 - `PORT=5000`
 - `NODE_ENV=development`
 - `CORS_ORIGIN=http://localhost:5173,http://localhost:3000`
-- `MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/chaos_to_solution`
+- `MONGODB_URI=mongodb+srv://[username]:[password]@cluster.mongodb.net/chaos_to_solution`
 - `EVENT_ID=cts-2026-hackathon`
 - `EVENT_ADMIN_TOKEN=your_secure_admin_token`
 - `EVENT_TIMER_DURATION_MS=14400000`

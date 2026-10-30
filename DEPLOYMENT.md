@@ -44,7 +44,7 @@ Render web services run inside dynamic cloud containers whose outbound IP addres
 3. Select **Drivers** (Node.js).
 4. Copy the connection string format:
    ```text
-   mongodb+srv://<username>:<password>@<cluster-address>.mongodb.net/chaos_to_solution?retryWrites=true&w=majority
+   mongodb+srv://[username]:[password]@[cluster-address].mongodb.net/chaos_to_solution?retryWrites=true&w=majority
    ```
 *(Keep this ready for your Render environment variables dashboard—do not paste it into chat or Git).*
 

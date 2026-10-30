@@ -1,619 +1,295 @@
-# Chaos to Solution: Challenge Generator (CTS)
+# Chaos to Solution (CTS)
 
-[![Event: IEEE Computer Society](https://img.shields.io/badge/Event-IEEE%20Computer%20Society-blue.svg)](https://www.ieee.org/)
-[![Institution: SJCIT](https://img.shields.io/badge/Institution-SJC%20Institute%20of%20Technology-darkgreen.svg)](https://sjcit.ac.in/)
-[![Stack: React + Node.js](https://img.shields.io/badge/Stack-React%2019%20%7C%20Node%2024%20%7C%20Express%20%7C%20MongoDB-black.svg)]()
-[![AI: Groq + Gemini](https://img.shields.io/badge/AI-Groq%20LPU%20%7C%20Google%20Gemini-orange.svg)]()
-[![Tests: 177 Passing](https://img.shields.io/badge/Tests-177%20Passing%20(112%20Backend%2C%2065%20Frontend)-brightgreen.svg)]()
+> **AI-Powered Challenge Generation and Live Event Management Platform for Hackathons and Innovation Sprints.**
 
-> **Turn Chaos into Solution:** An AI-powered hackathon challenge generation platform built for the **IEEE Computer Society Student Branch** at **SJC Institute of Technology (SJCIT)**.
-
----
-
-## 1. Project Overview
-
-**Chaos to Solution (CTS)** generates cohesive, scoped hackathon challenges tailored to participant-selected innovation themes. Rather than open-ended brainstorming prompts, CTS generates an integrated 4-pillar challenge triad engineered specifically for a **~3 to 4-hour rapid prototype sprint**:
-
-1. **01 — Problem Statement**: A concrete, relatable real-world friction point with an identified user persona.
-2. **02 — Technical Restriction**: An architectural or UX constraint (e.g. *Zero Client-Side Frameworks*, *Single-Screen View*, *Zero Text-Input Fields*) that forces creative problem solving.
-3. **03 — Prescribed Resource**: A free browser API (e.g. *Web Speech*, *Canvas*, *Web Storage*), a keyless public REST API (e.g. *Open Library*, *REST Countries*, *Open-Meteo*), or a bundled local dataset with verified documentation.
-4. **04 — Expected Deliverable**: A concrete, achievable working prototype scope that teams can demonstrate to judges within the build window.
-
-Once registered and generated, teams can review their mission, monitor the shared event-wide 4-hour countdown clock, validate their mobile number (+91), and generate a pre-formatted WhatsApp mission summary to coordinate within their team or submit to event mentors.
+[![Production Frontend](https://img.shields.io/badge/Production-Frontend-0070F3?style=flat&logo=vercel&logoColor=white)](https://cts-beta.vercel.app/)
+[![Production Backend](https://img.shields.io/badge/Production-Backend-46E3B7?style=flat&logo=render&logoColor=black)](https://cts-backend-iywa.onrender.com/api/health)
+[![Node.js Version](https://img.shields.io/badge/Node.js-v20%20%7C%20v22%20%7C%20v24-339933?style=flat&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Database](https://img.shields.io/badge/MongoDB-Atlas%20v8.0-47A248?style=flat&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+[![AI Providers](https://img.shields.io/badge/AI-Groq%20LPU%20%7C%20Google%20Gemini-F05A28?style=flat)](https://groq.com/)
+[![CI Status](https://img.shields.io/badge/CI-Passing-brightgreen?style=flat&logo=githubactions&logoColor=white)](https://github.com/safiya-18/Chaos_To_Solution/actions)
 
 ---
 
-## 2. Event Management Interface — Three Connected Screens
+## 📖 Introduction
 
-The application features a clean, responsive event-management interface organized into three interconnected screens:
+**Chaos to Solution (CTS)** is an AI-powered challenge generation platform designed for innovation challenges, hackathons, and rapid-prototyping sprints. Instead of generic or unconstrained problem statements, CTS generates an integrated **challenge triad** tailored to participant-selected innovation themes:
 
-### Screen 1: Event Dashboard (`/`)
-* **Event Identity**: Compact brand section with `AI-POWERED BUILD CHALLENGE`, `CHAOS TO SOLUTION.` headline, and 3 metric chips:
-  * **4 Hours**: Build Time
-  * **2 Members**: Per Team
-  * **Real Problems**: Real Impact
-* **Navigation Action Cards**:
-  * **Live Event Timer**: Deep link to `/timer` for auditorium countdown viewing and operator controls.
-  * **Team Challenges**: Deep link to `/teams` for viewing registered teams and assignments.
-* **Team Registration & Generation Panel**:
-  * Team name input with character count counter (`0/50`) and client + server validation.
-  * 8-theme selection grid with radio selection indicator circles.
-  * `GENERATE MY CHALLENGE` button with loading, duplicate-team, and error recovery states.
-  * Challenge reveal view displaying team badge, 4 flip cards, and WhatsApp team share form.
+1. **Problem Statement**: A relatable, concrete friction point grounded in realistic personas.
+2. **Technical Restriction**: An architectural constraint (e.g., *Zero External CSS Frameworks*, *Single-Screen View*, *Zero Text-Input Fields*) forcing deliberate problem solving.
+3. **Prescribed Resource**: A verified browser API (e.g., *Web Speech*, *Canvas*, *Web Storage*), an open REST API, or a bundled offline dataset.
+4. **Expected Deliverable**: A concrete, achievable working prototype scope that teams can demonstrate to judges within the build sprint.
 
-### Screen 2: Full-Screen Live Event Timer (`/timer`)
-* Designed for projection onto seminar hall displays and auditoriums during the hackathon.
-* Giant, high-contrast monospace digits (`04:00:00`) readable from across the room.
-* Real-time status indicator pill: `NOT STARTED`, `EVENT RUNNING`, `FINAL HOUR`, `FINAL SPRINT (<10M)`, `COUNTDOWN PAUSED`, `HACKATHON ENDED`.
-* Fullscreen toggle button (`Maximize2` / `Minimize2`).
-* Protected event operator controls (`Start`, `Pause`, `Resume`, `Reset`) secured with `EVENT_ADMIN_TOKEN` modal dialog. Public viewers cannot mutate event timer state.
-
-### Screen 3: Team Challenge Table (`/teams`)
-* Searchable and filterable table displaying registered teams and persisted assignments from MongoDB.
-* Columns: `#` (index), `Team Name` (with AI vs Backup badge and timestamp), `Theme`, `Problem Statement`, `Technical Restriction`, `Prescribed Resource` (with official docs link), `Deliverable`, and `Actions` (View Mission, Operator Delete).
-* Real-time search by team name or challenge topic and filter dropdown by theme (`All`, `EdTech`, `FinTech`, etc.).
-* Sorting by creation time or team name.
-* Full mission detail modal displaying all four challenge pillars, challenge ID, documentation links, and sleek custom scrollbar (`.custom-modal-scrollbar`).
-* Operator deletion flow with confirmation dialog and `EVENT_ADMIN_TOKEN` protection to prune test registrations without exposing credentials.
-* Header refresh button displaying exact last-updated timestamp.
+CTS pairs challenge intelligence with a full event-management suite, including participant registration, team deduplication, a synchronized 4-hour countdown clock for auditoriums, and pre-formatted WhatsApp mission summaries.
 
 ---
 
-## 3. Event Details
+## 📸 Application Preview
 
-* **Event Name**: Chaos to Solution: Challenge Generator
-* **Organizer**: IEEE Computer Society Student Branch
-* **Institution**: SJC Institute of Technology (SJCIT), Chickballapur
-* **Format**: Theme-based student hackathon challenge generator
-* **Sprint Window**: Authoritative 4-hour countdown timer (`14,400,000 ms`)
-* **Team Structure**: Two student developers per team
-* **Operational Runbook**: See [`EVENT_RUNBOOK.md`](./EVENT_RUNBOOK.md) for pre-event checklist and kiosk procedures.
+| Event Dashboard (`/`) | Live Event Timer (`/timer`) |
+| :---: | :---: |
+| ![Event Dashboard](./docs/screenshots/dashboard.png) | ![Live Event Timer](./docs/screenshots/event_timer.png) |
+| *Team name registration, 8-theme selection, and challenge cards.* | *Authoritative 4-hour countdown clock for auditoriums.* |
 
----
-
-## 4. Features
-
-* **Team Registration & MongoDB Persistence**:
-  * Mandatory team name collection (2–50 characters, trimmed) before challenge generation.
-  * Case-insensitive duplicate detection (`normalizedTeamName`) returning clean `409 TEAM_ALREADY_EXISTS` without wiping selected theme.
-  * Atomic persistence in MongoDB storing all 4 challenge pillars, theme, and provenance metadata (`ai` vs `curated-fallback`).
-  * Explicit 503 handling if database is unreachable, with frontend retry and no false "saved" confirmations.
-  * Protected operator team deletion (`DELETE /api/teams/:id`) with constant-time `EVENT_ADMIN_TOKEN` authentication and zero credential leakage to browser storage.
-* **Authoritative Shared Event Timer**:
-  * Unified 4-hour countdown (`14,400,000 ms`) across all browser tabs, kiosks, and projectors connected to the backend.
-  * Clock state computed from server timestamps (`startedAt`, `endsAt`, `pausedAt`), preventing local browser drift and refresh resets.
-  * Visual threshold states: normal, amber warning (< 60 minutes), and red pulsing critical warning (< 10 minutes).
-  * Protected operator mutation endpoints (`/start`, `/pause`, `/resume`, `/reset`) secured with `EVENT_ADMIN_TOKEN` via constant-time verification.
-* **Security & Credential Zero-Exposure**:
-  * Constant-time token verification (`crypto.timingSafeEqual`) protects against timing attacks.
-  * Operator tokens are captured on-demand and kept purely in ephemeral React component memory during modal interactions—never persisted to `localStorage`, `sessionStorage`, or logs.
-* **8 Curated Innovation Themes**:
-  * `EdTech` — Educational tools, spaced repetition, accessible readers.
-  * `FinTech` — Micro-expenses, split calculators, savings visualizers.
-  * `HealthTech` — Medication schedules, hydration alarms, mental focus timers.
-  * `Sustainability` — Campus food waste trackers, carbon calculators, reuse logs.
-  * `Smart Cities` — Citizen incident reporting, transit delays, civic alerts.
-  * `Accessibility` — Dyslexia-friendly readers, high-contrast tools, screen-reader focus.
-  * `E-commerce` — Local artisan catalogs, pantry reorder checklists, flash-deal tickers.
-  * `Open Innovation` — Creative civic tech, campus utility hacks, multi-domain mashups.
-* **Resilient Multi-Provider AI Engine**:
-  * **Groq LPU Primary**: High-speed challenge generation using `openai/gpt-oss-20b` (or custom Groq models) with strict JSON Schema outputs (verified live).
-  * **Google Gemini Alternate**: Secondary configured failover using `gemini-3.8-flash` via `@google/genai` (verified in automated failover test suites).
-  * **Curated Fallback Reservoir**: Offline fallback bank providing pre-evaluated challenges if external providers encounter network drops, model issues, or quota exhaustion.
-* **Transparent Source Stamping**: Challenges explicitly indicate provenance with color-coded badges:
-  * `[AI Generated]` (emerald green badge) — Synthesized by live AI provider.
-  * `[Backup Challenge]` (amber badge) — Served from pre-vetted curated datasets.
-* **WhatsApp Sharing**:
-  * Client-side Indian mobile number validation (+91 normalization, 10-digit check).
-  * Direct click-to-chat `https://wa.me/` link generation with preformatted Markdown copy including team name.
-  * Privacy-first: Phone numbers are processed purely client-side and never stored or logged by the backend.
-* **Dual Operation Modes**:
-  * **Live API Mode** (`VITE_USE_MOCK=false`): Communicates with the Express REST API and MongoDB.
-  * **Offline Mock Mode** (`VITE_USE_MOCK=true` or runtime `window.__toggleMockMode()`): Runs in-browser using curated fixtures for offline operation.
+| Team Challenges Table (`/teams`) |
+| :---: |
+| ![Team Challenges Table](./docs/screenshots/teams_table.png) |
+| *Persisted team assignments, live search, theme filtering, and detail modals.* |
 
 ---
 
-## 4. Technology Stack
+## ⚡ Key Features
 
-### Frontend
-* **Core Framework**: React 19 (`react`, `react-dom`)
-* **Build Tool & Dev Server**: Vite 8 (`vite`)
-* **Styling**: Tailwind CSS v3 (`tailwindcss`, `postcss`, `autoprefixer`)
-* **Icons**: Lucide React (`lucide-react`)
-* **Testing**: Vitest (`vitest`), React Testing Library (`@testing-library/react`), JSDOM (`jsdom`)
-* **Linter**: Oxlint (`oxlint`)
-
-### Backend
-* **Runtime**: Node.js (`v24.x LTS` or `v20.x`) with JavaScript ES Modules (`"type": "module"`)
-* **Framework**: Express.js 4 (`express`)
-* **AI Providers**:
-  * Groq Cloud SDK (`groq-sdk`) — primary provider with structured outputs (`openai/gpt-oss-20b`)
-  * Google Gen AI SDK (`@google/genai`) — alternate secondary provider (`gemini-3.8-flash`)
-* **Security & Networking**: Helmet (`helmet`), CORS (`cors`), Dotenv (`dotenv`)
-* **Testing**: Vitest (`vitest`), Supertest (`supertest`)
+| Feature | Description | Reference |
+| :--- | :--- | :--- |
+| **Multi-Tier AI Cascade** | High-speed primary generation via Groq LPU (`openai/gpt-oss-20b`), secondary cloud fallback via Google Gemini (`gemini-3.8-flash`), and offline curated benchmarks. | [AI Pipeline](./docs/AI_PIPELINE.md) |
+| **Reference Grounding** | Grounded against a reference catalog of 76 verified benchmark challenges across 8 curated innovation domains. | [Catalog Data](file:///backend/src/data/referenceChallenges.json) |
+| **Novelty Detection** | Evaluates candidate challenges using word-token Jaccard and character 3-gram metrics against benchmarks and event history to reduce repetition. | [`noveltyService.js`](./backend/src/services/noveltyService.js) |
+| **SSRF-Resistant Verification** | Validates external documentation URLs with private IP blocklists (RFC 1918, link-local, cloud metadata) and IP-pinned socket connections. | [Security Guide](./docs/SECURITY.md) |
+| **Atomic Uniqueness** | Enforced via a MongoDB Atlas partial unique compound index on `(eventId, challengeSignature)`, preventing duplicate assignments within the event. | [Database Guide](./docs/DATABASE.md) |
+| **Authoritative Shared Timer** | Server-synchronized 4-hour hackathon countdown clock readable from across seminar halls, protected by constant-time operator authentication. | [Timer Spec](./docs/API.md#4-authoritative-event-timer) |
+| **Team Management** | Case-insensitive team name deduplication, assignment search, theme filtering, and mobile-friendly WhatsApp mission export. | [API Guide](./docs/API.md) |
 
 ---
 
-## 5. Architecture & Request Cascade
+## 🌐 Supported Challenge Domains
+
+CTS tailors challenges across 8 distinct innovation domains:
+
+- **EdTech**: Interactive learning tools, spaced repetition, accessible readers.
+- **FinTech**: Micro-expense splitters, cash-flow trackers, savings visualizers.
+- **HealthTech**: Medication adherence, dietary risk detectors, mental focus timers.
+- **Sustainability**: Campus food waste audits, carbon footprints, energy telemetry.
+- **Smart Cities**: Transit alerts, citizen incident logging, civic utilities.
+- **Accessibility**: High-contrast interfaces, screen-reader focus, dyslexia-friendly readers.
+- **E-commerce**: Local artisan storefronts, pantry reorder checklists, flash-deal tickers.
+- **Open Innovation**: Campus utility hacks, multi-domain mashups, civic technology.
+
+---
+
+## 🏗️ System Architecture
 
 ```mermaid
-flowchart TD
-    A[Student Team] -->|1. Selects Theme & Clicks Generate| B[React 19 Frontend]
-    B -->|2. POST /api/challenges/generate| C[Express REST API]
-    C --> D[Challenge Orchestrator]
-    
-    subgraph AI Cascade
-        D -->|Attempt 1| E{Groq API Key?}
-        E -->|Yes| F[Groq LPU Engine: openai/gpt-oss-20b]
-        F -->|Success| G[Challenge Validator]
-        
-        E -->|No / Timeout / 429 / 404| H{Gemini Key?}
-        F -->|Error / Validation Fail| H
-        
-        H -->|Yes| I[Google Gemini Engine: gemini-3.8-flash]
-        I -->|Success| G
-        
-        H -->|No / 503 / 429 / Timeout| J[Curated Fallback Service]
-        I -->|Error / Validation Fail| J
-        
-        J -->|Selects pre-vetted triplet| K[Source: curated-fallback]
-        G -->|Validation Passes| L[Source: ai]
+graph TD
+    subgraph Client ["Frontend Layer (React 19 + Vite)"]
+        UI_Dash["Event Dashboard (/)"]
+        UI_Timer["Live Event Timer (/timer)"]
+        UI_Teams["Team Challenges (/teams)"]
     end
 
-    L --> M[Standardized JSON Envelope & WhatsApp Formatter]
-    K --> M
-    M -->|HTTP 200 OK| B
-    B --> N[Results View: 4 Pillars & Provenance Badge]
-    N -->|Enter Phone & Share| O[WhatsApp Click-to-Chat URL]
+    subgraph Hosting ["Production Edge & Services"]
+        Vercel["Vercel Edge Network (cts-beta.vercel.app)"]
+        Render["Render Web Service (cts-backend-iywa.onrender.com)"]
+    end
+
+    subgraph Engine ["CTS AI Challenge Intelligence Engine"]
+        Grounding["Reference Grounding (76 Benchmarks)"]
+        Cascade["Provider Cascade (Groq -> Gemini -> Fallback)"]
+        Novelty["Novelty Detector (Jaccard + 3-grams)"]
+        Verifier["Resource Verifier (IP-Pinned SSRF Guard)"]
+    end
+
+    subgraph Database ["Persistence (MongoDB Atlas v8.0)"]
+        Atlas["Atlas Replica Set (chaos_to_solution)"]
+    end
+
+    UI_Dash --> Vercel
+    UI_Timer --> Vercel
+    UI_Teams --> Vercel
+    Vercel --> Render
+    Render --> Grounding
+    Grounding --> Cascade
+    Cascade --> Novelty
+    Novelty --> Verifier
+    Verifier --> Atlas
 ```
+
+For complete technical specifications, see the [Architecture Documentation](./docs/ARCHITECTURE.md).
 
 ---
 
-## 6. Repository Structure
+## 🔄 How CTS Works: AI Generation Workflow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Team as Participant / UI
+    participant Server as Express Backend
+    participant Engine as AI Intelligence Engine
+    participant DB as MongoDB Atlas
+
+    Team->>Server: POST /api/teams (teamName, theme)
+    Server->>Server: Deduplicate teamName
+    Server->>Engine: Generate Challenge Request
+    Engine->>Engine: Retrieve Domain Grounding & Negative Signals
+    Engine->>Engine: Generate Candidate (Groq -> Gemini -> Curated)
+    Engine->>Engine: Verify Resource (SSRF Guard & Fetch Bounding)
+    Engine->>Engine: Evaluate Novelty vs 76 Benchmarks
+    alt Novelty Accepted & Rules Valid
+        Engine-->>Server: Return Challenge Triad & Signature
+    else Repetition or Rule Violation
+        Engine->>Engine: Bounded Regeneration (Max 2 Retries / Fallback)
+    end
+    Server->>DB: Atomic Insert with Partial Unique Index
+    Server-->>Team: Return Assignment & WhatsApp Share Text
+```
+
+> [!NOTE]
+> The novelty system compares candidates against existing reference benchmarks and recent event history to minimize challenge repetition. It significantly reduces similarity while keeping generation times bounded.
+
+---
+
+## 💻 Technology Stack
+
+- **Frontend**: React 19, Vite 8, TailwindCSS 3, Lucide Icons.
+- **Backend**: Node.js (ES Modules, v20+), Express 4, Helmet, CORS.
+- **Database**: MongoDB Atlas (v8.0+), Mongoose 9.x.
+- **AI Providers**: Groq SDK (`openai/gpt-oss-20b`), Google GenAI SDK (`gemini-3.8-flash`), Curated In-Memory Datasets.
+- **Testing**: Vitest, React Testing Library, Supertest, JSDOM.
+- **Deployments**: Vercel (Frontend), Render (Backend), MongoDB Atlas (Database).
+
+---
+
+## 📂 Repository Structure
 
 ```
 Chaos_To_Solution/
-├── README.md                 # Master repository documentation (this file)
-├── EVENT_RUNBOOK.md          # Pre-event checklist, operational runbook, and contingencies
-├── docker-compose.yml        # Local MongoDB 7.0 development service container
-├── backend/
+├── .github/                      # GitHub community templates and workflows
+│   ├── ISSUE_TEMPLATE/           # Bug report and feature request templates
+│   ├── PULL_REQUEST_TEMPLATE.md  # Standard pull request checklist
+│   └── workflows/ci.yml          # GitHub Actions CI workflow
+├── backend/                      # Node.js + Express backend service
 │   ├── src/
-│   │   ├── app.js            # Express application, security middleware & route mounting
-│   │   ├── server.js         # HTTP server entrypoint & MongoDB connection lifecycle
-│   │   ├── config/
-│   │   │   └── env.js        # Environment validator & configuration freeze
-│   │   ├── data/
-│   │   │   ├── problems.json # 20 curated hackathon problems across 5 categories
-│   │   │   ├── restrictions.json # 15 technical & UX constraints
-│   │   │   ├── resources.json # 15 keyless APIs, browser features & datasets
-│   │   │   ├── mock/         # Offline mock response JSONs (weather, products, books...)
-│   │   │   └── local/        # Bundled offline datasets (campus map, taxonomy...)
-│   │   ├── middlewares/
-│   │   │   ├── errorHandler.js   # Standardized error response formatter
-│   │   │   ├── notFoundHandler.js# Standardized 404 handler
-│   │   │   └── auth.js           # Constant-time EVENT_ADMIN_TOKEN verification
-│   │   ├── models/
-│   │   │   ├── EventTimer.js     # Shared 4-hour countdown schema with server clock math
-│   │   │   └── TeamAssignment.js # MongoDB schema for team registration & 4 pillars
-│   │   ├── routes/
-│   │   │   ├── challenge.routes.js # POST /api/challenges/generate
-│   │   │   ├── health.routes.js    # GET /api/health (with MongoDB readiness)
-│   │   │   ├── mock.routes.js      # GET /api/mock/:dataset
-│   │   │   ├── team.routes.js      # POST, GET, GET /:id, DELETE /:id /api/teams
-│   │   │   └── timer.routes.js     # GET & POST (start/pause/resume/reset) /api/event-timer
-│   │   ├── services/
-│   │   │   ├── challengeService.js # Multi-provider orchestrator with anti-repeat cache
-│   │   │   ├── groqService.js      # Groq SDK integration with JSON Schema outputs
-│   │   │   ├── geminiService.js    # Google GenAI integration with fallback handling
-│   │   │   ├── fallbackService.js  # Curated Phase 2 dataset selector
-│   │   │   ├── shareTextFormatter.js # WhatsApp Markdown copy generator
-│   │   │   ├── teamService.js      # Team registration, validation, uniqueness & queries
-│   │   │   └── timerService.js     # Authoritative duration math & state transitions
-│   │   └── utils/
-│   │       ├── challengeValidator.js # 8-theme bounds, URL syntax & banned-term checks
-│   │       └── dataValidator.js      # Dataset schema validation & combinatorial check
-│   ├── tests/
-│   │   ├── integration/      # Supertest tests (challenge, health, mock, team, timer)
-│   │   └── unit/             # Unit tests (models, services, validators, data)
-│   ├── .env.example          # Backend environment template
-│   ├── API.md                # Full REST API specification
-│   ├── package.json          # Backend dependencies & scripts
-│   ├── vitest.config.js      # Vitest test configuration (with isolated test.env)
-│   └── README.md             # Backend-specific architecture guide
-└── frontend/
-    ├── src/
-    │   ├── components/       # UI Components:
-    │   │   ├── ActionCards.jsx       # Deep links to /timer and /teams
-    │   │   ├── ChallengeCard.jsx     # Numbered 3D flip card (01-04)
-    │   │   ├── ChallengeResults.jsx  # 4-card reveal with provenance badge
-    │   │   ├── ErrorState.jsx        # Error alert & retry trigger
-    │   │   ├── GenerateButton.jsx    # Primary action button with loading spinner
-    │   │   ├── Header.jsx            # Brand header, IEEE badge & mock toggle
-    │   │   ├── Hero.jsx              # Hackathon premise & 4-pillar preview
-    │   │   ├── LoadingState.jsx      # Progress spinner & skeleton cards
-    │   │   ├── MetricChips.jsx       # 4h, 2 members, real problems chips
-    │   │   ├── ResourceLink.jsx      # External docs link with target="_blank"
-    │   │   ├── TeamRegistrationCard.jsx # Team name input & validation
-    │   │   ├── TeamsScreen.jsx       # Screen 3: Searchable table & operator delete
-    │   │   ├── ThemeCard.jsx         # Individual interactive theme card
-    │   │   ├── ThemeSelector.jsx     # 8-theme radiogroup grid
-    │   │   ├── TimerScreen.jsx       # Screen 2: Full-screen projector timer
-    │   │   └── WhatsAppShareForm.jsx # Phone validation & click-to-chat copy
-    │   ├── router/
-    │   │   └── Router.jsx            # Zero-dependency History API router (/, /timer, /teams)
-    │   ├── data/
-    │   │   └── mockChallenges.js     # Curated fixtures across all 8 themes
-    │   ├── services/
-    │   │   ├── challengeApi.js       # Live API client with timeout & abort
-    │   │   └── mockChallengeApi.js   # Offline in-browser mock service
-    │   ├── utils/
-    │   │   ├── validateChallenge.js  # Client contract schema validator
-    │   │   └── whatsapp.js           # Indian number validation & URL generator
-    │   ├── test/                     # 11 Vitest & RTL test suites (65 tests)
-    │   ├── App.jsx                   # Screen 1 Root UI coordinator
-    │   ├── main.jsx                  # React DOM entrypoint with RouterProvider
-    │   └── index.css                 # Custom scrollbar, dark theme tokens & styles
-    ├── public/
-    │   ├── favicon.svg               # CTS brand favicon
-    │   └── icons.svg                 # SVG sprite sheet
-    ├── .env.example                  # Frontend environment template
-    ├── package.json                  # Frontend dependencies & scripts
-    ├── tailwind.config.js            # CTS color palette & tokens
-    ├── vite.config.js                # Vite & Vitest configuration
-    └── README.md                     # Frontend-specific guide
+│   │   ├── config/               # Database and environment configurations
+│   │   ├── data/                 # 76 master reference challenges & mock data
+│   │   ├── middlewares/          # Auth, error handling, not-found handlers
+│   │   ├── models/               # Mongoose schemas (TeamAssignment, EventTimer, etc.)
+│   │   ├── routes/               # Express REST route controllers
+│   │   ├── services/             # AI cascade, grounding, novelty, and verifier
+│   │   └── utils/                # SSRF validator, safe fetcher, challenge validator
+│   └── tests/                    # Unit and integration test suites (Vitest)
+├── docs/                         # Detailed system and operational guides
+│   ├── ARCHITECTURE.md           # System and module architecture
+│   ├── SETUP.md                  # Comprehensive local development setup
+│   ├── API.md                    # Exhaustive REST API specification
+│   ├── AI_PIPELINE.md            # AI cascade, grounding, and novelty mechanics
+│   ├── DATABASE.md               # MongoDB schema and partial unique index
+│   ├── SECURITY.md               # SSRF mitigations, IP pinning, and timing safe auth
+│   ├── DEPLOYMENT.md             # Render, Vercel, and Atlas runbooks
+│   ├── TESTING.md                # Test organization and execution strategy
+│   └── screenshots/              # Genuine production application screenshots
+├── frontend/                     # React 19 + Vite frontend application
+│   ├── public/                   # Static assets, favicon, brand icons
+│   └── src/
+│       ├── components/           # UI components (Timer, FlipCards, Selector, etc.)
+│       ├── router/               # Application navigation and view controllers
+│       ├── services/             # Backend API client adapters
+│       └── test/                 # Component and navigation test suites
+├── .editorconfig                 # Cross-editor formatting standards
+├── .gitignore                    # Production credential and artifact exclusion rules
+├── render.yaml                   # Infrastructure-as-code for Render web service
+├── CONTRIBUTING.md               # Contributor workflow and standards
+├── CODE_OF_CONDUCT.md            # Contributor Covenant v2.1
+├── SECURITY.md                   # Vulnerability reporting and disclosure policy
+└── README.md                     # Project overview and entry point
 ```
 
 ---
 
-## 7. Prerequisites
+## 🚀 Installation & Local Development
 
-Before running CTS locally, ensure your system has:
+### Prerequisites
+- Node.js `v20.x`, `v22.x`, or `v24.x`
+- npm `v10.x` or higher
+- MongoDB instance (local or Atlas)
 
-* **Node.js**: `v20.x` or `v24.x LTS` (verified on `v24.22.1`)
-* **npm**: `v10.x` or `v11.x` (verified on `11.19.1`)
-* **Git**: `v2.x` or later
-* **Modern Web Browser**: Google Chrome, Mozilla Firefox, or Microsoft Edge
-
----
-
-## 8. Environment Configuration
-
-The repository uses separate `.env` files for backend and frontend. Templates are committed as `.env.example`.
-
-### Step 1: Configure Backend Environment
-From the root directory:
+### Quick Start
 ```bash
-cp backend/.env.example backend/.env
-```
+# 1. Clone the repository
+git clone https://github.com/safiya-18/Chaos_To_Solution.git
+cd Chaos_To_Solution
 
-| Variable | Default Value | Description |
-| :--- | :--- | :--- |
-| `PORT` | `5000` | Port for the Express REST API server |
-| `NODE_ENV` | `development` | Runtime environment (`development` or `production`) |
-| `CORS_ORIGIN` | `http://localhost:5173,http://localhost:3000` | Comma-separated allowed frontend origins (add e.g. `http://localhost:5176` if needed) |
-| `MONGODB_URI` | `mongodb://localhost:27017/cts` | MongoDB connection URI for persistent team assignments & event timer |
-| `EVENT_ID` | `cts-2026-hackathon` | Unique identifier for the hackathon event timer instance |
-| `EVENT_ADMIN_TOKEN` | *(required for operator controls)* | Bearer secret for `/start`, `/pause`, `/resume`, `/reset` timer endpoints |
-| `EVENT_TIMER_DURATION_MS`| `14400000` | Timer duration in milliseconds (default: 4 hours) |
-| `AI_PROVIDER` | `groq` | Primary AI provider (`groq` default, or `gemini`) |
-| `AI_TIMEOUT_MS` | `4000` | Maximum timeout before initiating failover |
-| `GROQ_API_KEY` | *(your key)* | Server-side Groq API key (optional for offline testing; required for live AI) |
-| `GROQ_MODEL` | `openai/gpt-oss-20b` | Model ID configured on Groq (supports structured outputs) |
-| `GEMINI_API_KEY` | *(optional)* | Google Gemini API key for secondary failover |
-| `GEMINI_MODEL` | `gemini-3.8-flash` | Gemini model ID |
-| `GEMINI_TIMEOUT_MS` | `4000` | Gemini request timeout before curated fallback |
-
-> **Security Rule**: `GROQ_API_KEY`, `GEMINI_API_KEY`, `MONGODB_URI`, and `EVENT_ADMIN_TOKEN` are read **exclusively server-side**. Never commit `.env` files, paste keys in git commits, or expose them in frontend bundles.
-
-### Step 2: Start MongoDB (Optional Local Service or Docker)
-For team registration and challenge persistence, start a local MongoDB instance:
-
-**Option A — Via Docker Compose (Recommended)**:
-```bash
-docker compose up -d
-```
-Starts MongoDB 7.0 on `localhost:27017` with persistent data in a named volume.
-
-**Option B — Via Local System Service**:
-```bash
-sudo systemctl start mongod
-```
-*Note: If MongoDB is unavailable, CTS still serves live/curated challenges, but returns a safe `503 DATABASE_SAVE_FAILED` on team registration so teams can retry when connectivity is restored.*
-
-### Step 3: Configure Frontend Environment
-From the root directory:
-```bash
-cp frontend/.env.example frontend/.env
-```
-
-| Variable | Default Value | Description |
-| :--- | :--- | :--- |
-| `VITE_API_BASE_URL` | `http://localhost:5000` | Base URL pointing to the Express backend |
-| `VITE_USE_MOCK` | `true` (in `.env.example`) | Set `false` to connect to live backend API; `true` for offline in-browser fixtures |
-
----
-
-## 9. Installation & Local Development
-
-Run the backend and frontend simultaneously in **two separate terminal windows**:
-
-### Terminal 1: Start Backend API
-```bash
+# 2. Setup and run the backend
 cd backend
 npm install
 npm run dev
-```
-* The server starts on **`http://localhost:5000`** with Node 24 native file watching.
-* Verify operational status and database readiness:
-  ```bash
-  curl http://localhost:5000/api/health
-  # Response: {"success":true,"data":{"status":"ok","uptime":...,"database":{"status":"connected","readyState":1}}}
-  ```
 
-### Terminal 2: Start Frontend UI
-```bash
-cd frontend
-npm install
-npm run dev
-```
-* The Vite dev server will start at **`http://localhost:5173`** (or next free port, such as `5176`).
-* Open the displayed URL in your browser to interact with the challenge generator.
-
----
-
-## 10. API Reference
-
-Complete API documentation with response examples is available in [`backend/API.md`](./backend/API.md).
-
-### 1. Generate Challenge
-* **Endpoint**: `POST /api/challenges/generate`
-* **Headers**: `Content-Type: application/json`, `Accept: application/json`
-* **Example `curl` Request**:
-  ```bash
-  curl -X POST http://localhost:5000/api/challenges/generate \
-    -H "Content-Type: application/json" \
-    -d '{"theme": "EdTech"}'
-  ```
-* **Request Body**:
-  ```json
-  {
-    "theme": "EdTech"
-  }
-  ```
-  *(Supported themes: `EdTech`, `FinTech`, `HealthTech`, `Sustainability`, `Smart Cities`, `Accessibility`, `E-commerce`, `Open Innovation`)*
-
-* **Sample Success Response (`200 OK`)** *(illustrative sample)*:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "cts-edtech-sample123",
-      "theme": "EdTech",
-      "generatedAt": "2026-10-28T12:00:00.000Z",
-      "source": "ai",
-      "challenge": {
-        "theme": "EdTech",
-        "problem": {
-          "title": "Book Summary Quiz Generator",
-          "statement": "Build a single-page app that fetches a book summary from Open Library, displays it, then auto-generates 3 multiple-choice questions..."
-        },
-        "restriction": {
-          "name": "No Backend",
-          "rule": "All data must come from free public APIs or local storage; no authentication, databases, or payment gateways."
-        },
-        "resource": {
-          "name": "Open Library Search API",
-          "type": "public-api",
-          "guidance": "Use https://openlibrary.org/search.json?q=<keyword> to fetch title and description...",
-          "docsUrl": "https://openlibrary.org/developers/api"
-        },
-        "deliverable": "Prototype of a single-page UI that searches books, shows a summary, auto-creates 3 quiz questions, and records answers locally."
-      },
-      "shareText": "⚡ *CHAOS TO SOLUTION — AI Challenge* ⚡\n_IEEE Computer Society | SJC Institute of Technology_\n\n🏷️ *Theme:* EdTech\n🆔 *Challenge ID:* #cts-edtech-sample123 [AI Generated]\n..."
-    }
-  }
-  ```
-
-* **Sample Error Response (`400 Bad Request`)**:
-  ```json
-  {
-    "success": false,
-    "error": {
-      "code": "INVALID_THEME",
-      "message": "Invalid theme 'Gaming'. Must be one of: EdTech, FinTech, HealthTech, Sustainability, Smart Cities, Accessibility, E-commerce, Open Innovation"
-    }
-  }
-  ```
-
-### 2. Team Registration & Challenge Persistence
-* **Endpoint**: `POST /api/teams`
-* **Headers**: `Content-Type: application/json`, `Accept: application/json`
-* **Request Body**:
-  ```json
-  {
-    "teamName": "Binary Beasts",
-    "theme": "EdTech"
-  }
-  ```
-* **Success Response (`201 Created`)**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "6720f1a9b2...",
-      "teamName": "Binary Beasts",
-      "theme": "EdTech",
-      "challenge": {
-        "problem": { "title": "...", "statement": "..." },
-        "restriction": { "name": "...", "rule": "..." },
-        "resource": { "name": "...", "type": "browser-api", "guidance": "...", "docsUrl": "https://..." },
-        "deliverable": "..."
-      },
-      "source": "ai",
-      "challengeId": "cts-edtech-m3f9g1k",
-      "eventId": "cts-2026-hackathon",
-      "createdAt": "2026-10-28T16:00:00.000Z",
-      "shareText": "⚡ *CHAOS TO SOLUTION — AI Challenge* ⚡\n..."
-    }
-  }
-  ```
-* **Duplicate Conflict (`409 Conflict`)**: Returns `{ "code": "TEAM_ALREADY_EXISTS" }` if `teamName` has already been registered for this event.
-
-### 3. List Teams & Assignments (Screen 3 Table)
-* **Endpoint**: `GET /api/teams`
-* **Query Parameters**:
-  * `search` (optional): Filter by team name or challenge title.
-  * `theme` (optional): Filter by innovation theme.
-  * `sortBy` (optional): `createdAt` (default) or `teamName`.
-  * `sortOrder` (optional): `desc` (default) or `asc`.
-  * `page` (optional): Page number (default `1`).
-  * `limit` (optional): Items per page (default `100`, max `200`).
-* **Success Response (`200 OK`)**: Returns `{ "success": true, "data": { "teams": [...], "total": 1, "page": 1, "totalPages": 1 } }`.
-
-### 4. Delete Team Assignment (Protected Operator Action)
-* **Endpoint**: `DELETE /api/teams/:id`
-* **Headers**: `Authorization: Bearer <EVENT_ADMIN_TOKEN>`, `Accept: application/json`
-* **Example `curl` Request**:
-  ```bash
-  curl -X DELETE http://localhost:5000/api/teams/671fda1b4f0b2f3d8a8b4567 \
-    -H "Authorization: Bearer YOUR_EVENT_ADMIN_TOKEN"
-  ```
-* **Success Response (`200 OK`)**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "id": "671fda1b4f0b2f3d8a8b4567",
-      "teamName": "Binary Beasts",
-      "deleted": true,
-      "message": "Team 'Binary Beasts' deleted successfully."
-    }
-  }
-  ```
-* **Error Responses**: `401 Unauthorized` (missing/malformed header), `403 Forbidden` (invalid token), `404 Not Found` (team does not exist).
-
-### 5. Shared Event Timer
-* **Public Status**: `GET /api/event-timer`
-  * Returns `{ "status": "not_started"|"running"|"paused"|"completed", "remainingMs": 14400000, "formattedRemaining": "04:00:00", ... }`.
-* **Operator Controls (Protected)**:
-  * `POST /api/event-timer/start` — Start 4-hour countdown (idempotent).
-  * `POST /api/event-timer/pause` — Freeze remaining duration.
-  * `POST /api/event-timer/resume` — Resume countdown from saved duration.
-  * `POST /api/event-timer/reset` — Reset to not started with 4 hours.
-  * All mutations require `Authorization: Bearer <EVENT_ADMIN_TOKEN>`.
-
-### 6. Health & Readiness Check
-* **Endpoint**: `GET /api/health`
-* **Response (`200 OK`)**:
-  ```json
-  {
-    "success": true,
-    "data": {
-      "status": "ok",
-      "uptime": 42,
-      "timestamp": "2026-10-28T16:04:25.442Z",
-      "version": "1.0.0",
-      "database": {
-        "status": "connected",
-        "readyState": 1
-      }
-    }
-  }
-  ```
-
----
-
-## 11. AI Provider & Fallback Engine
-
-CTS implements a resilient multi-tier fallback architecture designed for high availability during hackathons:
-
-| Tier | Provider | Model | Latency | Activation Condition |
-| :--- | :--- | :--- | :--- | :--- |
-| **Tier 1 (Primary)** | **Groq Cloud** | `openai/gpt-oss-20b` | **~1.5s** | Primary generation when `GROQ_API_KEY` is present. Enforces strict JSON Schema validation (verified live). |
-| **Tier 2 (Alternate)** | **Google Gemini** | `gemini-3.8-flash` | **~2.5s** (4s timeout) | Configured secondary failover when Groq encounters rate limits (429), timeouts (>4s), 404/503 errors, or schema validation failure. *(Configured failover verified in automated test suites; live Groq active)*. |
-| **Tier 3 (Fallback)** | **Curated Datasets** | Local JSON Banks | **<10ms** | Transparent fallback when external API keys are absent, network is unavailable, or AI outputs fail validator bounds. |
-
-* **Anti-Repeat Ring Buffer**: Maintains the last 30 challenge signatures in-memory to prevent immediate repetition of the same problem during the hackathon.
-* **Validation Guardrails**: [`challengeValidator.js`](./backend/src/utils/challengeValidator.js) inspects all AI outputs before accepting them. Rejects banned terms (`openai`, `stripe`, `aws`, `firebase`, paid services, hardware sensors) and character length overflows.
-
----
-
-## 12. Automated Testing
-
-All automated unit and integration tests run **100% offline** without requiring live AI API keys or network calls:
-
-```bash
-# 1. Run Backend Tests (112 tests across 11 suites)
-cd backend
-npm test
-
-# 2. Run Frontend Tests (65 tests across 11 suites)
+# 3. In a separate terminal, setup and run the frontend
 cd ../frontend
-npm test
+npm install
+npm run dev
 ```
 
-### Verified Test Summary (177 Passing Tests):
-* **Backend (`112/112 passed across 11 test suites`)**:
-  * `tests/unit/teamAssignmentModel.test.js` (3 tests) — regression guard against `next is not a function` in synchronous and asynchronous validation
-  * `tests/integration/team.test.js` (11 tests) — registration, duplicate 409 conflict, database failure, assignment retrieval, `GET /api/teams` search and filtering, protected `DELETE /api/teams/:id` with 401/403 authorization
-  * `tests/integration/timer.test.js` (8 tests) — public state, 401/403 authorization guards, operator transitions
-  * `tests/integration/challenge.test.js` (16 tests) — theme validation, envelopes, WhatsApp format, secret security
-  * `tests/integration/health.test.js` (4 tests) — health probe with database readiness check and CORS headers
-  * `tests/integration/mock.test.js` (6 tests) — offline mock dataset endpoints
-  * `tests/unit/teamService.test.js` (17 tests) — team validation, persistence atomicity, 409 uniqueness, 503 error handling, `listTeams` pagination/search/sorting, `deleteTeam` confirmation and not-found guards
-  * `tests/unit/timerService.test.js` (7 tests) — authoritative duration math, idempotent start, pause/resume, reset
-  * `tests/unit/challengeService.test.js` (21 tests) — multi-provider dispatch, Groq failover, anti-repeat buffer
-  * `tests/unit/groqService.test.js` (11 tests) — schema compliance, 404/503 fail-fast, timeout guard
-  * `tests/unit/dataValidation.test.js` (8 tests) — curated data banks and combinatorial completeness
-* **Frontend (`65/65 passed across 11 test suites`)**:
-  * `src/test/TimerScreen.test.jsx` (5 tests) — 4-hour countdown digits (`04:00:00`), status pills, operator token modal, action execution, back to dashboard
-  * `src/test/TeamsScreen.test.jsx` (7 tests) — table rendering, search filtering, theme dropdown, mission detail modal with 4 pillars, empty state, operator deletion confirmation and token authorization
-  * `src/test/Navigation.test.jsx` (3 tests) — end-to-end routing between `/`, `/timer`, and `/teams` without page reloads
-  * `src/test/TeamRegistrationFlow.test.jsx` (4 tests) — button enablement, 409 conflict display, 503 retry, Screen 2 team badge
-  * `src/test/TeamRegistrationInput.test.jsx` (6 tests) — validation bounds (2-50 chars), counter, error alerts, disabled state
-  * `src/test/EventTimer.test.jsx` (10 tests) — HH:MM:SS formatting, states (not started, running, warning, critical, paused, completed, connecting)
-  * `src/test/whatsapp.test.js` (12 tests) — Indian number normalization, URL encoding with team name
-  * `src/test/validateChallenge.test.js` (9 tests) — frontend contract validation & metadata preservation
-  * `src/test/ThemeSelector.test.jsx` (4 tests) — 8 theme cards rendering and selection
-  * `src/test/App.test.jsx` (3 tests) — Screen 1 to Screen 2 state flow, team input, and flip cards
-  * `src/test/mockChallenges.test.js` (2 tests) — curated mock fixtures completeness
+For detailed configuration parameters, see the [Setup & Installation Guide](./docs/SETUP.md).
 
 ---
 
-## 13. Troubleshooting
+## ⚙️ Environment Configuration
 
-| Symptom | Root Cause | Solution |
-| :--- | :--- | :--- |
-| **`Failed to persist team challenge assignment: next is not a function`** | Mongoose 8.x/9.x `pre('validate')` callback with `next` argument called synchronously during validation | Removed `next` parameter from `TeamAssignmentSchema.pre('validate', function () { ... })` and added a synchronous `default` function on `normalizedTeamName`. Guarded by unit regression test in `tests/unit/teamAssignmentModel.test.js`. |
-| **`CORS error` in browser console** | Frontend running on a port not listed in backend CORS origin | Add frontend URL (e.g. `http://localhost:5176`) to `CORS_ORIGIN` in `backend/.env` and restart backend. |
-| **`EADDRINUSE: address already in use :::5000`** | Port 5000 occupied by previous background process | Run `lsof -i :5000` to identify PID, then terminate gracefully with `kill <PID>` (or `npx kill-port 5000`). |
-| **`404 model_not_found` in backend logs** | Configured Groq model is not enabled on account | Ensure `GROQ_MODEL=openai/gpt-oss-20b` in `backend/.env`. |
-| **Amber `[Backup Challenge]` badge shown instead of Green `[AI Generated]`** | Missing `GROQ_API_KEY`, quota limit (429), or model outage | Check `backend/.env` for a valid key. The app gracefully continues serving curated challenges. |
-| **Frontend shows "Network Error"** | Backend API server is stopped or port mismatch | Verify backend is running in Terminal 1 (`npm run dev`) and `curl http://localhost:5000/api/health` succeeds. |
-| **Frontend running offline mock data** | `VITE_USE_MOCK=true` in `frontend/.env` | Change to `VITE_USE_MOCK=false` in `frontend/.env` and restart Vite dev server. |
+Sample configuration for `backend/.env`:
+```env
+PORT=5000
+HOST=0.0.0.0
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173,http://localhost:3000
+MONGODB_URI=mongodb://localhost:27017/chaos_to_solution
 
----
+# Event Settings
+EVENT_ID=cts-2026
+EVENT_ADMIN_TOKEN=your_secure_operator_token
+EVENT_TIMER_DURATION_MS=14400000
 
-## 14. Event Operations & Runbook
-
-For venue setup, AV projection checklist, emergency Wi-Fi procedures, and student kiosk management, consult the **[Event Operational Runbook (`EVENT_RUNBOOK.md`)](./EVENT_RUNBOOK.md)**:
-* **T-30 Minutes**: Verification checklist for master kiosk laptops.
-* **Emergency Offline Mode**: Run `window.__toggleMockMode()` in browser console to run 100% client-side if local LAN breaks.
-* **WhatsApp Privacy**: Assurances for participant data handling.
-
----
-
-## 15. Security & Development Workflow
-
-* **Zero Secret Commitment**: API keys belong strictly in uncommitted `backend/.env` files. Both root and frontend [`.gitignore`](./.gitignore) ignore all `.env*` files.
-* **Deterministic Tests**: Automated test suites use mocked service providers and do not consume provider token quotas.
-* **Pull Request Guidelines**: Run both `npm test` suites (`backend` and `frontend`) before proposing code changes to maintain the 95 passing test baseline.
+# AI Provider Settings (Optional: system falls back to curated if omitted)
+AI_PROVIDER=groq
+GROQ_MODEL=openai/gpt-oss-20b
+GROQ_API_KEY=your_groq_api_key
+GEMINI_MODEL=gemini-3.8-flash
+GEMINI_API_KEY=your_gemini_api_key
+AI_TIMEOUT_MS=4000
+```
 
 ---
 
-## 👥 Contributors & Acknowledgments
+## 🧪 Testing
 
-* **Safiya**: Backend Architecture, Groq/Gemini Multi-Provider AI Engine, Validation & Curated Fallbacks
-* **Imadulla**: Frontend Engineering, Theme Selection UI, Challenge Flip Cards & WhatsApp Integration
-* **Institution**: **SJC Institute of Technology (SJCIT)**, Chickballapur
-* **Community**: **IEEE Computer Society Student Branch**
+CTS maintains automated test suites across both backend and frontend:
+
+```bash
+# Run backend unit and integration suites
+cd backend
+npm test
+
+# Run frontend component tests
+cd ../frontend
+npm test -- --run
+
+# Validate frontend production build
+npm run build
+```
+
+Detailed test organization is covered in the [Testing Documentation](./docs/TESTING.md).
+
+---
+
+## 🛡️ Security & Safe Practices
+
+- **SSRF Defenses**: External resource checks resolve hostnames before connection and validate against RFC 1918, loopback, and cloud metadata (`169.254.169.254`) ranges. Connections are IP-pinned to neutralize DNS rebinding.
+- **Timing Safe Authentication**: Event operator tokens are verified with constant-time cryptographic equality (`crypto.timingSafeEqual`).
+- **Zero Secrets in Code**: Credentials, tokens, and database connection strings are never committed to the repository.
+
+To report security issues, please follow our [Responsible Disclosure Policy](./SECURITY.md).
+
+---
+
+## 🤝 Contributing
+
+We welcome community contributions! Please review our [Contributing Guide](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md) before submitting pull requests.
+
+CTS follows a trunk-based development workflow centered around short-lived feature branches merging into `main`.
+
+---
+
+## 📄 License & Attribution
+
+- **Event Context**: Created for the **IEEE Computer Society Student Branch** at **SJC Institute of Technology (SJCIT)**.
+- **License**: The repository currently does not include a formal open-source license. An appropriate open-source license (such as MIT or Apache 2.0) should be selected and added by the repository owner before formal open-source distribution.

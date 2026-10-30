@@ -16,7 +16,7 @@ Perform these verification steps on the master presentation/kiosk laptops before
   node -v
   npm -v
   ```
-- [ ] **Repository State**: Ensure you are on the `backend` branch with a clean working tree:
+- [ ] **Repository State**: Ensure you are on the `main` branch with a clean working tree:
   ```bash
   git status
   ```
@@ -32,7 +32,7 @@ Perform these verification steps on the master presentation/kiosk laptops before
   GEMINI_API_KEY=your_gemini_api_key_here
   GEMINI_MODEL=gemini-3.8-flash
   GEMINI_TIMEOUT_MS=4000
-  MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/chaos_to_solution
+  MONGODB_URI=mongodb+srv://[username]:[password]@cluster.mongodb.net/chaos_to_solution
   EVENT_ID=cts-2026
   EVENT_ADMIN_TOKEN=your_secure_admin_token_here
   ```
