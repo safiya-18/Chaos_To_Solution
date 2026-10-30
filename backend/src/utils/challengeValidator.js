@@ -134,9 +134,17 @@ export const validateChallenge = (challenge, requestedTheme) => {
 
   BANNED_SERVICE_KEYWORDS.forEach((bannedKeyword) => {
     if (fullText.includes(bannedKeyword)) {
-      errors.push(
-        `Challenge references disallowed paid/proprietary or hardware dependency: '${bannedKeyword}'.`
-      );
+      const matchIndex = fullText.indexOf(bannedKeyword);
+      const lookback = fullText.slice(Math.max(0, matchIndex - 35), matchIndex);
+      const isNegated = /\b(no|not|without|never|zero|free of|prevent)\b[\w\s,;-]*$/.test(lookback);
+      if (!isNegated && bannedKeyword === 'subscription' && /audit|track|cancel|unnoticed|drain/i.test(fullText)) {
+        return;
+      }
+      if (!isNegated) {
+        errors.push(
+          `Challenge references disallowed paid/proprietary or hardware dependency: '${bannedKeyword}'.`
+        );
+      }
     }
   });
 

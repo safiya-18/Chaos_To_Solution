@@ -124,6 +124,7 @@ Persists the authoritative event clock state for synchronized countdown across a
 - **`GenerationHistory`**: Diagnostic logs tracking LLM performance, latency, provider transitions (Groq -> Gemini -> Fallback), and composite novelty scores.
 - **`ResourceCatalog`**: Persistent cache storing reachability test results, SSRF validation outcomes, and response metadata for online APIs.
 - **`ChallengeBank`**: Master catalog of 76 reference benchmarks used for grounding and offline fallback.
+- **`OfficialCuratedKnowledgeBase`** (`backend/src/data/officialCuratedChallenges.json`): 40 official curated challenge records across FinTech, Sustainability, EdTech, and Open Innovation extracted from organizer challenge PDFs.
 - **`RestrictionCatalog`**: Architectural constraints categorized into UX, client framework, algorithmic, and data persistence limitations.
 
 ---

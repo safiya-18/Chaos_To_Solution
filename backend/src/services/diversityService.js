@@ -1,5 +1,6 @@
 import { validateChallenge, BANNED_SERVICE_KEYWORDS } from '../utils/challengeValidator.js';
 import { categorizeRestriction } from './ingestionService.js';
+import { validateThemeConstraints } from '../utils/themeConstraintValidator.js';
 
 export const SCORING_WEIGHTS = Object.freeze({
   PROBLEM_NOVELTY: 0.35,
@@ -31,7 +32,15 @@ export function validateHardRules(candidate) {
   const candidateStr = JSON.stringify(candidate).toLowerCase();
   for (const keyword of BANNED_SERVICE_KEYWORDS) {
     if (candidateStr.includes(keyword)) {
-      rejections.push(`Candidate references prohibited paid service keyword '${keyword}' violating zero-budget policy.`);
+      const matchIndex = candidateStr.indexOf(keyword);
+      const lookback = candidateStr.slice(Math.max(0, matchIndex - 35), matchIndex);
+      const isNegated = /\b(no|not|without|never|zero|free of|prevent)\b[\w\s,;-]*$/.test(lookback);
+      if (!isNegated && keyword === 'subscription' && /audit|track|cancel|unnoticed|drain/i.test(candidateStr)) {
+        continue;
+      }
+      if (!isNegated) {
+        rejections.push(`Candidate references prohibited paid service keyword '${keyword}' violating zero-budget policy.`);
+      }
     }
   }
 
@@ -56,6 +65,12 @@ export function validateHardRules(candidate) {
     if (deliverableLower.includes(token) || problemLower.includes(token)) {
       rejections.push(`Impossible 3-hour hackathon feasibility: requires '${token}'.`);
     }
+  }
+
+  // 6. Official Theme-Specific Constraint Policy
+  const themeConstraintCheck = validateThemeConstraints(candidate, candidate.theme || candidate.domain);
+  if (!themeConstraintCheck.passed) {
+    rejections.push(...themeConstraintCheck.violations);
   }
 
   return {

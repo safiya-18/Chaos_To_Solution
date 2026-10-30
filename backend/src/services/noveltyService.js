@@ -3,6 +3,7 @@ import { computeFingerprint, normalizeText, categorizeRestriction } from './inge
 import ChallengeBank from '../models/ChallengeBank.js';
 import TeamAssignment from '../models/TeamAssignment.js';
 import referenceChallenges from '../data/referenceChallenges.json' with { type: 'json' };
+import officialCuratedChallenges from '../data/officialCuratedChallenges.json' with { type: 'json' };
 
 /**
  * Configurable thresholds for novelty detection.
@@ -113,6 +114,22 @@ export async function gatherHistoricalChallenges(domain) {
       resource: r.resource,
       domain: r.domain,
       source: 'reference_benchmark'
+    });
+  }
+
+  // 1b. Official curated challenges from PDFs (FinTech, Sustainability, EdTech, Open Innovation)
+  const officialMatches = officialCuratedChallenges.filter(
+    (o) => !domain || (o.theme && o.theme.toLowerCase() === domain.toLowerCase())
+  );
+  for (const o of officialMatches) {
+    historical.push({
+      id: o.id,
+      title: o.title,
+      problemStatement: o.problemStatement,
+      restriction: Array.isArray(o.restrictions) ? o.restrictions.join('; ') : (o.restrictions || ''),
+      resource: Array.isArray(o.resourcesProvided) ? o.resourcesProvided.join('; ') : (o.resourcesProvided || ''),
+      domain: o.theme,
+      source: 'official_curated_pdf'
     });
   }
 

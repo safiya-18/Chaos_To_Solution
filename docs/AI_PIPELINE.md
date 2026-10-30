@@ -105,3 +105,23 @@ Novelty scoring prevents challenge repetition across participant teams:
 - Each challenge receives a deterministic signature:
   `sha256(theme:problem_statement:restriction_name:resource_name)`.
 - Enforced at database level via the MongoDB partial unique index on `(eventId, challengeSignature)`, ensuring no two teams in the same event receive an identical challenge.
+
+---
+
+## 6. Official Curated Challenge Knowledge Base & Theme Constraint Enforcement
+
+CTS integrates **40 official curated problem statements** extracted directly from official organizer challenge documents across four primary themes:
+1. **FinTech (10 Challenges)**: Client-side settlement calculation, rule-based fraud detection without external ML APIs, simulated transactions without live UPI/banking credentials, offline compound growth comparisons, zero PII collection, and sub-1 MB performance budgets.
+2. **Sustainability (10 Challenges)**: Simulated mess logs without physical scales, 5-inch mobile usability, transparent formulas without paid GIS, zero-cash donation/barter models, WCAG AA compliance, and sub-1.5 MB bundle bounds.
+3. **EdTech (10 Challenges)**: Dual-pane notes preserving original context, image text alternatives with full keyboard access, rule-based syllabus prioritization without paid APIs, preserved technical terms, zero arbitrary server-side code execution, and sub-2 MB bundle bounds.
+4. **Open Innovation (10 Challenges)**: Simulated hazard map alternatives without safety guarantees, simulated sensor waste dispatch, static web civic dashboards, no facial recognition or vehicle tracking, allergen disclosures without food safety guarantees, and strictly no emergency medical diagnoses.
+
+### Strict Theme Constraint Validator (`themeConstraintValidator.js`)
+Integrated into `diversityService.js` (`validateHardRules`), this validator executes non-negotiable hackathon rule enforcement using affirmative violation detection, ensuring candidates never breach official organizer constraints while distinguishing between official requirements and prohibited implementation attempts.
+
+### Source Provenance Mandate
+Generated challenges maintain rigorous provenance:
+- **Original Problem**: Direct friction point from official source.
+- **Mandatory Restrictions**: Non-negotiable technical bounds.
+- **Provided Resources**: Officially supplied datasets, starter templates, or libraries.
+- **AI-Generated Enhancements**: Distinctly marked suggestions that are never misrepresented as organizer-supplied materials.

@@ -1,0 +1,1038 @@
+[
+  {
+    "id": "fintech-01",
+    "theme": "FinTech",
+    "number": 1,
+    "title": "Client-Side Shared Expense Settler",
+    "problemStatement": "Roommates and project teams struggle to track shared expenses and calculate the minimum number of transactions needed to settle up.",
+    "restrictions": [
+      "Must calculate settlements purely on the client side; no external payment gateway or backend server."
+    ],
+    "resourcesProvided": [
+      "A sample dataset of 25 shared expense transactions among 5 roommates in CSV/JSON format."
+    ],
+    "tags": [
+      "fintech",
+      "expense-tracking",
+      "debt-simplification",
+      "client-side",
+      "csv",
+      "json"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-02",
+    "theme": "FinTech",
+    "number": 2,
+    "title": "Rule-Based Digital Wallet Fraud Detector",
+    "problemStatement": "First-time digital wallet users struggle to spot fraudulent debit patterns and hidden recurring micro-charges.",
+    "restrictions": [
+      "Use rule-based anomaly detection only (burst transactions, duplicate timestamps); no external ML APIs."
+    ],
+    "resourcesProvided": [
+      "A simulated CSV feed containing 100 debit records with timestamps, amounts, merchant IDs, and anomaly tags."
+    ],
+    "tags": [
+      "fintech",
+      "fraud-detection",
+      "anomaly-detection",
+      "rule-based",
+      "security",
+      "wallet"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-03",
+    "theme": "FinTech",
+    "number": 3,
+    "title": "Student Daily Allowance Burn-Rate Visualizer",
+    "problemStatement": "College students exhaust monthly allowances early because they cannot visualize their daily burn rate and projected end-of-month deficit.",
+    "restrictions": [
+      "Must be a single web page hosted statically, with no user login or cloud database."
+    ],
+    "resourcesProvided": [
+      "A ready-made React and Tailwind starter template with mock student budget categories."
+    ],
+    "tags": [
+      "fintech",
+      "budgeting",
+      "burn-rate",
+      "students",
+      "static-web",
+      "personal-finance"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-04",
+    "theme": "FinTech",
+    "number": 4,
+    "title": "Transparent Loan Amortization & Hidden Fee Calculator",
+    "problemStatement": "Students and young professionals find it difficult to understand compound interest, hidden fees, and the real amortized cost of education or personal loans.",
+    "restrictions": [
+      "Transparent mathematical formulas only; no external financial services or closed calculators."
+    ],
+    "resourcesProvided": [
+      "A sample interest rate sheet for 4 loan types (education, personal, gadget, vehicle) with tenure benchmarks."
+    ],
+    "tags": [
+      "fintech",
+      "loans",
+      "amortization",
+      "interest-rates",
+      "financial-literacy",
+      "math"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-05",
+    "theme": "FinTech",
+    "number": 5,
+    "title": "Micro-Savings Spare Change Round-Up Simulator",
+    "problemStatement": "Young adults struggle to save money in lump sums without disrupting daily discretionary spending.",
+    "restrictions": [
+      "Must use simulated wallet transactions; do not store or collect real banking credentials or live UPI data."
+    ],
+    "resourcesProvided": [
+      "40 mock UPI transaction logs (canteen, transit, grocery) with round-up goal targets."
+    ],
+    "tags": [
+      "fintech",
+      "micro-savings",
+      "round-up",
+      "upi-simulation",
+      "savings-goals"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-06",
+    "theme": "FinTech",
+    "number": 6,
+    "title": "Bilingual Receipt Itemizer & Tax Splitter",
+    "problemStatement": "Small shopkeepers and customers struggle to decipher paper receipts or calculate accurate tax breakdowns during split payments.",
+    "restrictions": [
+      "Must support two languages: English and one regional language."
+    ],
+    "resourcesProvided": [
+      "10 structured receipt datasets with itemized costs, tax slabs, and verified regional financial terms."
+    ],
+    "tags": [
+      "fintech",
+      "receipts",
+      "tax-calculation",
+      "split-payments",
+      "multilingual",
+      "retail"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-07",
+    "theme": "FinTech",
+    "number": 7,
+    "title": "Offline FD vs RD Compound Growth Comparator",
+    "problemStatement": "First-time savers do not know whether a Fixed Deposit (FD) or a Recurring Deposit (RD) offers better compound growth for their timeline.",
+    "restrictions": [
+      "Must keep working offline after the first load."
+    ],
+    "resourcesProvided": [
+      "A free chart library (Chart.js) and benchmark bank interest rate matrices across tenures."
+    ],
+    "tags": [
+      "fintech",
+      "fixed-deposit",
+      "recurring-deposit",
+      "offline-first",
+      "chartjs",
+      "compounding"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-08",
+    "theme": "FinTech",
+    "number": 8,
+    "title": "Privacy-Preserving Recurring Subscription Auditor",
+    "problemStatement": "Users forget recurring software and media subscriptions, draining monthly balances unnoticed.",
+    "restrictions": [
+      "Must not collect or store any personal data."
+    ],
+    "resourcesProvided": [
+      "A mock bank statement in JSON format containing 60 recurring and one-off debits over 6 months."
+    ],
+    "tags": [
+      "fintech",
+      "subscriptions",
+      "recurring-payments",
+      "privacy",
+      "audit",
+      "bank-statement"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-09",
+    "theme": "FinTech",
+    "number": 9,
+    "title": "Campus Time-Credit Barter & Skill Exchange Ledger",
+    "problemStatement": "Students want to trade tutoring and design services without exchanging real money, but struggle to value skills fairly.",
+    "restrictions": [
+      "Purely fictional time-credit ledger; no conversion to real-world fiat currency or crypto tokens."
+    ],
+    "resourcesProvided": [
+      "20 sample student profiles with offered skills, benchmark task-hour values, and 15 simulated barter exchange records."
+    ],
+    "tags": [
+      "fintech",
+      "time-banking",
+      "barter",
+      "skill-exchange",
+      "credits",
+      "campus"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "fintech-10",
+    "theme": "FinTech",
+    "number": 10,
+    "title": "Lightweight Portfolio Risk & Concentration Analyzer",
+    "problemStatement": "Amateur investors over-concentrate investments into volatile assets without realizing their overall portfolio risk exposure.",
+    "restrictions": [
+      "Must load fast on a slow connection (total page size under 1 MB)."
+    ],
+    "resourcesProvided": [
+      "A CSV file of 30-day historical prices for 6 mock assets (equities, gold, bonds, crypto) and a risk-weighting matrix."
+    ],
+    "tags": [
+      "fintech",
+      "portfolio-risk",
+      "asset-allocation",
+      "performance",
+      "lightweight",
+      "investing"
+    ],
+    "difficulty": "hard",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "sustainability-01",
+    "theme": "Sustainability",
+    "number": 1,
+    "title": "Campus Mess Food Waste & Attendance Forecaster",
+    "problemStatement": "Campus messes and event canteens generate excessive food waste because preparation quantities are not aligned with past attendance.",
+    "restrictions": [
+      "Use simulated mess records only; no live hardware scale integration."
+    ],
+    "resourcesProvided": [
+      "A CSV dataset of 30 days of campus mess logs (attendance, meal type, kg prepared, kg wasted) and Chart.js."
+    ],
+    "tags": [
+      "sustainability",
+      "food-waste",
+      "attendance-forecasting",
+      "campus",
+      "chartjs",
+      "analytics"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-02",
+    "theme": "Sustainability",
+    "number": 2,
+    "title": "Mobile Off-Hours Campus Energy Audit Dashboard",
+    "problemStatement": "Classrooms and computer labs consume unnecessary electricity during off-hours due to appliances left running on standby.",
+    "restrictions": [
+      "Must be mobile-first and fully usable on a 5-inch phone screen."
+    ],
+    "resourcesProvided": [
+      "A simulated JSON sensor feed with 24-hour smart meter readings across 6 campus blocks and appliance ratings."
+    ],
+    "tags": [
+      "sustainability",
+      "energy-efficiency",
+      "smart-meter",
+      "mobile-first",
+      "sensor-simulation",
+      "campus"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-03",
+    "theme": "Sustainability",
+    "number": 3,
+    "title": "Rooftop Rainwater Harvesting & Runoff Calculator",
+    "problemStatement": "Property owners do not know how much rainwater their rooftops can harvest to replenish groundwater tables.",
+    "restrictions": [
+      "Transparent mathematical formula implementation only; no paid external GIS APIs."
+    ],
+    "resourcesProvided": [
+      "5-year average monthly rainfall data for 5 regional zones and rooftop runoff coefficient reference tables."
+    ],
+    "tags": [
+      "sustainability",
+      "rainwater-harvesting",
+      "water-conservation",
+      "groundwater",
+      "hydrology",
+      "calculator"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-04",
+    "theme": "Sustainability",
+    "number": 4,
+    "title": "Privacy-Safe Certified E-Waste Kiosk Locator",
+    "problemStatement": "Households store obsolete electronics and batteries indefinitely because certified recycling drop-off centers are difficult to locate.",
+    "restrictions": [
+      "Must use only supplied facility records; no personal contact data collection or live GPS tracking."
+    ],
+    "resourcesProvided": [
+      "A free map library and tiles (OpenStreetMap with Leaflet) and a GeoJSON dataset of 15 certified e-waste kiosks."
+    ],
+    "tags": [
+      "sustainability",
+      "e-waste",
+      "recycling",
+      "leaflet",
+      "openstreetmap",
+      "geojson",
+      "privacy"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-05",
+    "theme": "Sustainability",
+    "number": 5,
+    "title": "Accessible Urban Tree Growth & Carbon Sequestration Tracker",
+    "problemStatement": "Urban institutions plant saplings but fail to monitor their growth and calculate cumulative lifetime carbon offset.",
+    "restrictions": [
+      "Must meet WCAG AA colour contrast and support screen-reader navigation."
+    ],
+    "resourcesProvided": [
+      "A dataset of 50 campus trees (species, girth, estimated age, coordinates) and standard carbon sequestration formulas."
+    ],
+    "tags": [
+      "sustainability",
+      "carbon-offset",
+      "tree-inventory",
+      "wcag-aa",
+      "accessibility",
+      "sequestration"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-06",
+    "theme": "Sustainability",
+    "number": 6,
+    "title": "Public Facility Water Leakage & Loss Estimator",
+    "problemStatement": "Minor dripping taps and pipe seepages in public buildings are ignored, leading to thousands of liters of potable water loss weekly.",
+    "restrictions": [
+      "Only free-tier tools and APIs may be used; the budget is zero."
+    ],
+    "resourcesProvided": [
+      "20 simulated leak incident logs with drip rates, location metadata, and fluid loss estimation formula tables."
+    ],
+    "tags": [
+      "sustainability",
+      "water-conservation",
+      "leak-detection",
+      "loss-estimation",
+      "zero-budget",
+      "facilities"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-07",
+    "theme": "Sustainability",
+    "number": 7,
+    "title": "Zero-Cash Academic Equipment & Textbook Reuse Hub",
+    "problemStatement": "Graduating students discard gently used textbooks, lab coats, and engineering tools that juniors must purchase at full price.",
+    "restrictions": [
+      "No cash transactions allowed; items must be exchanged as free donations or barters only."
+    ],
+    "resourcesProvided": [
+      "A sample catalog of 35 academic items with category tagging and modal-based claim requests."
+    ],
+    "tags": [
+      "sustainability",
+      "circular-economy",
+      "reuse",
+      "textbooks",
+      "barter",
+      "campus-sharing"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-08",
+    "theme": "Sustainability",
+    "number": 8,
+    "title": "Offline Commuter Multi-Modal Carbon Disparity Calculator",
+    "problemStatement": "Commuters are unaware of the carbon footprint disparity between private vehicles, shared transport, and metro commuting.",
+    "restrictions": [
+      "Must run completely offline after the first load."
+    ],
+    "resourcesProvided": [
+      "Standard transport emission factors (grams CO₂ per passenger-km for bus, metro, two-wheeler) and 10 common route templates."
+    ],
+    "tags": [
+      "sustainability",
+      "carbon-footprint",
+      "transportation",
+      "offline-first",
+      "emissions",
+      "mobility"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-09",
+    "theme": "Sustainability",
+    "number": 9,
+    "title": "Rooftop Solar Insolation & Net-Metering Payback Estimator",
+    "problemStatement": "Homeowners hesitate to adopt rooftop solar panels because net-metering savings and capital payback timelines seem opaque.",
+    "restrictions": [
+      "Static web application; do not claim real-time solar irradiance or certified utility contracts."
+    ],
+    "resourcesProvided": [
+      "Regional solar insolation tables (average peak sun hours per month) and system sizing benchmarks (watts per sq. ft.)."
+    ],
+    "tags": [
+      "sustainability",
+      "solar-energy",
+      "net-metering",
+      "payback-period",
+      "renewable-energy",
+      "insolation"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "sustainability-10",
+    "theme": "Sustainability",
+    "number": 10,
+    "title": "Lightweight Packaging Material Life-Cycle Trade-off Evaluator",
+    "problemStatement": "Campus cafeterias struggle to replace single-use plastic packaging with truly compostable alternatives due to unclear life-cycle trade-offs.",
+    "restrictions": [
+      "Total application asset size must remain under 1.5 MB."
+    ],
+    "resourcesProvided": [
+      "A comparative dataset of 12 packaging materials (expanded polystyrene, PLA, bagasse, areca leaf) with life-cycle metrics."
+    ],
+    "tags": [
+      "sustainability",
+      "packaging",
+      "life-cycle-analysis",
+      "compostable",
+      "single-use-plastic",
+      "lightweight"
+    ],
+    "difficulty": "hard",
+    "source": {
+      "document": "Chaos to Solution - FinTech & Sustainability.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "edtech-01",
+    "theme": "EdTech",
+    "number": 1,
+    "title": "Dual-Pane Academic Note Simplifier & Key-Point Summarizer",
+    "problemStatement": "Students struggle to understand complex academic material written in dense language. Build an AI-assisted tool that converts supplied notes into simpler explanations and key-point summaries.",
+    "restrictions": [
+      "Must work with supplied text and display the original alongside the simplified version."
+    ],
+    "resourcesProvided": [
+      "Ready-made React and Tailwind starter template; sample notes from 3 subjects; free-tier text-generation API key."
+    ],
+    "tags": [
+      "edtech",
+      "summarization",
+      "note-taking",
+      "dual-pane",
+      "comprehension",
+      "ai-assisted"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-02",
+    "theme": "EdTech",
+    "number": 2,
+    "title": "Accessible Diagram Explainer & Speech Interface",
+    "problemStatement": "Students with visual impairments struggle to access learning diagrams and educational images without descriptions. Build a learning interface that generates accessible descriptions and reads them aloud.",
+    "restrictions": [
+      "Every supplied image must have a text alternative; keyboard navigation must work."
+    ],
+    "resourcesProvided": [
+      "10 educational diagrams; browser Web Speech API; free AI vision API or prepared descriptions."
+    ],
+    "tags": [
+      "edtech",
+      "accessibility",
+      "visual-impairment",
+      "web-speech",
+      "keyboard-navigation",
+      "alt-text"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-03",
+    "theme": "EdTech",
+    "number": 3,
+    "title": "Rule-Based Exam Revision Prioritizer & Schedule Planner",
+    "problemStatement": "Students do not know which topics to revise first when an examination is approaching. Build a revision assistant that prioritises topics using difficulty, confidence, and available study time.",
+    "restrictions": [
+      "Must use transparent rule-based prioritisation; no paid APIs or external AI services."
+    ],
+    "resourcesProvided": [
+      "Sample syllabus of 12 topics; difficulty and confidence scores; exam date and study-time inputs."
+    ],
+    "tags": [
+      "edtech",
+      "exam-prep",
+      "revision",
+      "rule-based",
+      "study-planner",
+      "prioritization"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-04",
+    "theme": "EdTech",
+    "number": 4,
+    "title": "Quiz Performance Knowledge-Gap Analyzer & Topic Recommender",
+    "problemStatement": "Learners struggle to identify knowledge gaps after studying a topic. Build a tool that analyses quiz results and recommends which supplied topics to revisit.",
+    "restrictions": [
+      "Recommendations must be based only on quiz performance and the supplied topic mapping."
+    ],
+    "resourcesProvided": [
+      "20 sample questions with answers, topic tags, and difficulty levels; Chart.js library."
+    ],
+    "tags": [
+      "edtech",
+      "quiz-analysis",
+      "knowledge-gaps",
+      "chartjs",
+      "recommendations",
+      "learning-analytics"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-05",
+    "theme": "EdTech",
+    "number": 5,
+    "title": "Bilingual Lesson Viewer with Technical Term Preservation",
+    "problemStatement": "Students in multilingual classrooms struggle when learning material is available only in English. Build a tool that displays supplied lesson content in English and one regional language.",
+    "restrictions": [
+      "Must provide a language switch and preserve the meaning of technical terms; no paid translation services."
+    ],
+    "resourcesProvided": [
+      "Sample lesson in English, verified regional-language translations, and a free UI component library."
+    ],
+    "tags": [
+      "edtech",
+      "multilingual",
+      "regional-language",
+      "technical-glossary",
+      "language-switch"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-06",
+    "theme": "EdTech",
+    "number": 6,
+    "title": "Assignment Requirement Extractor & Task Checklist Generator",
+    "problemStatement": "Students receive assignments in different formats and struggle to extract requirements and deadlines. Build a tool that organises supplied assignment instructions into tasks, dates, and a completion checklist.",
+    "restrictions": [
+      "Process only the supplied sample documents; no student login or LMS integration."
+    ],
+    "resourcesProvided": [
+      "5 sample assignment briefs in text or PDF format; sample deadline data; PDF text-extraction library."
+    ],
+    "tags": [
+      "edtech",
+      "assignment-tracker",
+      "checklist",
+      "pdf-extraction",
+      "deadlines",
+      "organization"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-07",
+    "theme": "EdTech",
+    "number": 7,
+    "title": "Anonymous Subject-Grouped Classroom Doubt Tracker",
+    "problemStatement": "Students hesitate to ask questions during class and later forget their doubts. Build an anonymous question board that groups questions by subject and helps instructors track unresolved doubts.",
+    "restrictions": [
+      "No personal identifiers, public popularity rankings, or direct messaging."
+    ],
+    "resourcesProvided": [
+      "30 sample classroom questions; subject labels; a React starter template."
+    ],
+    "tags": [
+      "edtech",
+      "classroom-interaction",
+      "anonymous-doubts",
+      "q-and-a",
+      "doubt-resolution",
+      "privacy"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-08",
+    "theme": "EdTech",
+    "number": 8,
+    "title": "Beginner Compiler Error Explainer & Hint Guide",
+    "problemStatement": "Students find it difficult to learn programming by understanding compiler errors. Build a beginner-friendly interface that explains common errors and provides hints using supplied examples.",
+    "restrictions": [
+      "Must use the supplied error library; do not execute arbitrary submitted code on a server."
+    ],
+    "resourcesProvided": [
+      "20 common programming errors with explanations and fixes; sample code snippets; syntax-highlighting library."
+    ],
+    "tags": [
+      "edtech",
+      "programming-pedagogy",
+      "compiler-errors",
+      "syntax-highlighting",
+      "code-hints",
+      "safe-sandbox"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-09",
+    "theme": "EdTech",
+    "number": 9,
+    "title": "Offline-First Bite-Sized Revision & Flashcard Engine",
+    "problemStatement": "Students with limited internet access cannot depend on online learning platforms. Build an offline-first revision application that stores a small lesson collection and tracks progress locally.",
+    "restrictions": [
+      "After the initial load, core learning features must work offline; total application size must remain under 2 MB."
+    ],
+    "resourcesProvided": [
+      "5 short lessons, 20 flashcards, sample quiz questions, and a service-worker starter template."
+    ],
+    "tags": [
+      "edtech",
+      "offline-first",
+      "service-worker",
+      "flashcards",
+      "microlearning",
+      "low-bandwidth"
+    ],
+    "difficulty": "hard",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "edtech-10",
+    "theme": "EdTech",
+    "number": 10,
+    "title": "Anonymized Classroom Topic-Performance Diagnostic Dashboard",
+    "problemStatement": "Teachers struggle to identify patterns in classroom assessment results. Build a dashboard that displays topic-wise performance and identifies topics where the class needs additional support.",
+    "restrictions": [
+      "Use anonymised sample data; no student ranking or external database."
+    ],
+    "resourcesProvided": [
+      "CSV file containing 30 fictional student records and scores across 5 topics; free chart library."
+    ],
+    "tags": [
+      "edtech",
+      "teacher-dashboard",
+      "learning-analytics",
+      "anonymization",
+      "chartjs",
+      "pedagogy"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 1
+    }
+  },
+  {
+    "id": "open-innovation-01",
+    "theme": "Open Innovation",
+    "number": 1,
+    "title": "Community Hazard-Aware Walking Route Alternative Explorer",
+    "problemStatement": "People cannot easily identify safer walking routes when some streets are poorly lit or have reported hazards. Build a route-information prototype that displays reported hazards and suggests alternatives using supplied map data.",
+    "restrictions": [
+      "Must use only supplied route data; clearly label simulated safety information and do not guarantee a route is safe."
+    ],
+    "resourcesProvided": [
+      "Simplified GeoJSON street network, 20 fictional hazard reports, and Leaflet with OpenStreetMap-compatible map tiles."
+    ],
+    "tags": [
+      "open-innovation",
+      "walking-routes",
+      "civic-safety",
+      "leaflet",
+      "geojson",
+      "hazard-mapping"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-02",
+    "theme": "Open Innovation",
+    "number": 2,
+    "title": "Simulated Sensor Waste Bin Fill-Level & Priority Dispatch Board",
+    "problemStatement": "Public waste bins overflow because collection teams lack visibility into which bins need attention first. Build a dashboard that ranks bins by fill level and flags urgent collections.",
+    "restrictions": [
+      "Use simulated sensor data only; no live hardware integration."
+    ],
+    "resourcesProvided": [
+      "JSON feed containing readings for 25 bins, location coordinates, fill percentages, and collection thresholds."
+    ],
+    "tags": [
+      "open-innovation",
+      "waste-management",
+      "sensor-simulation",
+      "priority-ranking",
+      "civic-operations"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-03",
+    "theme": "Open Innovation",
+    "number": 3,
+    "title": "Static Civic Issue Organizer & Repair Status Board",
+    "problemStatement": "Community members report potholes, broken lights, and water leaks, but authorities struggle to organise and prioritise the reports. Build a civic-issue dashboard with categories, severity, and repair status.",
+    "restrictions": [
+      "Must work as a static web app using supplied records; no personal data collection."
+    ],
+    "resourcesProvided": [
+      "40 fictional citizen reports, 15 geotagged issue photos, and a React starter template."
+    ],
+    "tags": [
+      "open-innovation",
+      "civic-tech",
+      "issue-tracking",
+      "urban-maintenance",
+      "static-web",
+      "prioritization"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-04",
+    "theme": "Open Innovation",
+    "number": 4,
+    "title": "Campus Parking Zone Availability & Occupancy Estimator",
+    "problemStatement": "Students waste time searching for available parking spaces around crowded campuses. Build a parking availability dashboard that estimates space availability from sample occupancy records.",
+    "restrictions": [
+      "No live camera feeds, facial recognition, or vehicle tracking."
+    ],
+    "resourcesProvided": [
+      "JSON dataset containing 5 parking zones, capacity, occupied spaces, and timestamped sample readings."
+    ],
+    "tags": [
+      "open-innovation",
+      "parking",
+      "campus-mobility",
+      "occupancy-estimation",
+      "privacy-preserving"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-05",
+    "theme": "Open Innovation",
+    "number": 5,
+    "title": "Surplus Food Redistribution Matcher & Allergen Flagging Board",
+    "problemStatement": "Small organisations struggle to redistribute surplus food before it becomes unavailable for collection. Build a matching dashboard that prioritises listings by collection deadline and requested quantity.",
+    "restrictions": [
+      "Use sample data only; display known allergens and collection deadlines without guaranteeing food safety."
+    ],
+    "resourcesProvided": [
+      "20 surplus-food listings, 10 fictional requests, quantities, deadlines, and dietary requirement fields."
+    ],
+    "tags": [
+      "open-innovation",
+      "food-recovery",
+      "surplus-redistribution",
+      "allergen-awareness",
+      "matching-engine"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-06",
+    "theme": "Open Innovation",
+    "number": 6,
+    "title": "Step-Free Accessible Facility Route Navigator",
+    "problemStatement": "People with mobility needs struggle to identify step-free paths between public facilities. Build an accessible-route explorer that filters paths based on stairs, ramps, and lifts.",
+    "restrictions": [
+      "Only recommend paths supported by supplied accessibility data; no unsupported accessibility claims."
+    ],
+    "resourcesProvided": [
+      "Small GeoJSON map with 12 locations, 20 route segments, and accessibility attributes; Leaflet library."
+    ],
+    "tags": [
+      "open-innovation",
+      "accessibility",
+      "step-free",
+      "mobility",
+      "geojson",
+      "leaflet",
+      "inclusive-design"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-07",
+    "theme": "Open Innovation",
+    "number": 7,
+    "title": "Community Resource & Equipment Reservation Conflict Detector",
+    "problemStatement": "Community centres and student clubs have difficulty sharing equipment because booking information is scattered. Build a resource-booking interface that detects overlapping reservations and shows availability.",
+    "restrictions": [
+      "Must prevent overlapping confirmed bookings using local data; no external calendar integration."
+    ],
+    "resourcesProvided": [
+      "CSV dataset with 10 resources, 30 booking requests, and predefined time slots."
+    ],
+    "tags": [
+      "open-innovation",
+      "resource-sharing",
+      "booking-calendar",
+      "conflict-detection",
+      "local-data"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-08",
+    "theme": "Open Innovation",
+    "number": 8,
+    "title": "Emergency Relief Essential Supply Inventory & Shortage Balancer",
+    "problemStatement": "During local disruptions, organisers cannot quickly identify shortages of essential supplies across collection points. Build a dashboard that highlights low stock and matches requests with available inventory.",
+    "restrictions": [
+      "Use fictional records and aggregate quantities only; no personal details or emergency medical advice."
+    ],
+    "resourcesProvided": [
+      "Dataset containing 5 collection points, 8 supply categories, stock thresholds, and 20 sample requests."
+    ],
+    "tags": [
+      "open-innovation",
+      "relief-supplies",
+      "inventory-balancer",
+      "shortage-alert",
+      "crisis-response",
+      "aggregates"
+    ],
+    "difficulty": "medium",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-09",
+    "theme": "Open Innovation",
+    "number": 9,
+    "title": "Neighbourhood Air Quality Visualizer & Plain-Language Explainer",
+    "problemStatement": "Residents often struggle to understand changing air-quality conditions and what the recorded measurements mean. Build a neighbourhood dashboard that visualises pollution readings and explains the supplied categories in plain language.",
+    "restrictions": [
+      "Use only supplied readings; do not claim live monitoring or provide medical diagnoses."
+    ],
+    "resourcesProvided": [
+      "CSV dataset of 7 days of simulated readings for 5 locations; air-quality category reference; Chart.js library."
+    ],
+    "tags": [
+      "open-innovation",
+      "air-quality",
+      "environmental-health",
+      "chartjs",
+      "plain-language",
+      "data-visualization"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  },
+  {
+    "id": "open-innovation-10",
+    "theme": "Open Innovation",
+    "number": 10,
+    "title": "Public Service Announcement Simplifier & Multilingual Assistant",
+    "problemStatement": "Public service announcements are often difficult to understand for people who speak different languages or have limited literacy. Build a notice assistant that presents supplied announcements in simpler language and a selected regional language.",
+    "restrictions": [
+      "Preserve key dates, deadlines, and instructions; label translations as draft if not verified."
+    ],
+    "resourcesProvided": [
+      "15 sample public notices, verified translations of selected notices, and a free UI component library."
+    ],
+    "tags": [
+      "open-innovation",
+      "civic-notices",
+      "plain-language",
+      "multilingual",
+      "accessibility",
+      "public-information"
+    ],
+    "difficulty": "easy",
+    "source": {
+      "document": "Chaos to Solution - EdTech & Open Innovation Challenges.pdf",
+      "page": 2
+    }
+  }
+]
