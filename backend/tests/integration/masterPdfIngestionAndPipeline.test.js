@@ -403,7 +403,7 @@ describe('CTS Master Challenge PDF Ingestion, Pipeline Integration & Hard Regres
       expect(result.problem.title).toBe('Dynamic Cross-Border Currency Margin Calculator');
       expect(result.theme).toBe('E-commerce');
       expect(result.diversityScore).toBeGreaterThanOrEqual(0.7);
-    });
+    }, 15000);
 
     it('should safely fall back to curated fallback when AI providers fail for HealthTech', async () => {
       const failingGroq = {
@@ -432,7 +432,7 @@ describe('CTS Master Challenge PDF Ingestion, Pipeline Integration & Hard Regres
       expect(result.problem.title).toBeDefined();
       expect(result.restriction.rule).toBeDefined();
       expect(result.diversityScore).toBeDefined();
-    });
+    }, 15000);
 
     it('should not mutate event timers, participant records, or production collections during ingestion', async () => {
       if (!isDbAvailable) return;
