@@ -6,7 +6,7 @@ import { validateChallenge, APPROVED_THEMES } from '../../src/utils/challengeVal
 import { validateThemeConstraints } from '../../src/utils/themeConstraintValidator.js';
 import officialCuratedChallenges from '../../src/data/officialCuratedChallenges.json' with { type: 'json' };
 
-describe('3-Hour Hackathon Challenge Scope & Feasibility Invariants', () => {
+describe('3-Hour Hackathon Challenge Scope & Concise Deliverable Invariants', () => {
   describe('1. Prompt Directives & Structure Consistency (Groq vs Gemini)', () => {
     const groqPrompt = buildGroqSystemPrompt('FinTech');
     const geminiPrompt = buildGeminiSystemPrompt('FinTech');
@@ -18,54 +18,60 @@ describe('3-Hour Hackathon Challenge Scope & Feasibility Invariants', () => {
       expect(geminiPrompt).not.toContain('2 hours');
     });
 
-    it('both prompts must enforce the 3-tier scope model: Level 1 (Core MVP), Level 2 (Enhancements), Level 3 (Stretch Goals)', () => {
-      const tiers = [
-        'LEVEL 1 — MUST BUILD (Core MVP)',
-        'LEVEL 2 — SHOULD IMPROVE (Enhancements)',
-        'LEVEL 3 — BONUS CHALLENGE (Stretch Goals)'
+    it('both prompts must enforce concise, natural deliverable writing style and forbid multi-level sections', () => {
+      expect(groqPrompt).toContain('DELIVERABLE WRITING STYLE');
+      expect(geminiPrompt).toContain('DELIVERABLE WRITING STYLE');
+      expect(groqPrompt).toContain('DO NOT INTRODUCE SEPARATE SECTIONS');
+      expect(geminiPrompt).toContain('DO NOT INTRODUCE SEPARATE SECTIONS');
+
+      // Prohibit rigid multi-tier headers from being prescribed in output
+      const forbiddenSectionNames = [
+        '"Must Build"',
+        '"Should Improve"',
+        '"Bonus Challenges"',
+        '"Stretch Goals"'
       ];
 
-      for (const tier of tiers) {
-        expect(groqPrompt).toContain(tier);
-        expect(geminiPrompt).toContain(tier);
+      for (const section of forbiddenSectionNames) {
+        expect(groqPrompt).toContain(section);
+        expect(geminiPrompt).toContain(section);
       }
     });
 
-    it('both prompts must clearly differentiate mandatory Core MVP from optional stretch goals', () => {
-      expect(groqPrompt).toContain('[Mandatory]');
-      expect(geminiPrompt).toContain('[Mandatory]');
-      expect(groqPrompt).toContain('[Optional]');
-      expect(geminiPrompt).toContain('[Optional]');
-      expect(groqPrompt).toContain('Never make stretch goals mandatory');
-      expect(geminiPrompt).toContain('Never make stretch goals mandatory');
+    it('both prompts must emphasize 3–5 meaningful features and demonstrable functionality over static mockups', () => {
+      expect(groqPrompt).toContain('approximately 3–5 meaningful features');
+      expect(geminiPrompt).toContain('approximately 3–5 meaningful features');
+      expect(groqPrompt).toContain('functional and demonstrable');
+      expect(geminiPrompt).toContain('functional and demonstrable');
+      expect(groqPrompt).toContain('not just a UI mockup or static prototype');
+      expect(geminiPrompt).toContain('not just a UI mockup or static prototype');
     });
 
     it('both prompts must forbid unrealistic enterprise-scale scope', () => {
       const forbiddenAntiPatterns = [
-        'Full production authentication',
+        'full production authentication',
         'Complex multi-role administration',
         'Multiple independent backend services or microservices',
         'Large-scale machine learning model training',
-        'Enterprise security infrastructure'
+        'External integrations requiring lengthy setup'
       ];
 
       for (const pattern of forbiddenAntiPatterns) {
-        expect(groqPrompt).toContain(pattern);
-        expect(geminiPrompt).toContain(pattern);
+        expect(groqPrompt.toLowerCase()).toContain(pattern.toLowerCase());
+        expect(geminiPrompt.toLowerCase()).toContain(pattern.toLowerCase());
       }
     });
 
-    it('both prompts must demand deliverable specifications matching the 3-hour contract', () => {
-      expect(groqPrompt).toContain('DELIVERABLE SPECIFICATION');
-      expect(geminiPrompt).toContain('DELIVERABLE SPECIFICATION');
-      expect(groqPrompt).toContain('Product Objective');
-      expect(geminiPrompt).toContain('Expected Working Outcome');
-      expect(groqPrompt).toContain('Evaluation Criteria');
+    it('both prompts must demand technical depth through useful algorithms, data processing, and optimization', () => {
+      expect(groqPrompt).toContain('MAINTAIN TECHNICAL DEPTH');
+      expect(geminiPrompt).toContain('MAINTAIN TECHNICAL DEPTH');
+      expect(groqPrompt).toContain('Do NOT make every challenge a basic CRUD application');
+      expect(geminiPrompt).toContain('Do NOT make every challenge a basic CRUD application');
     });
   });
 
   describe('2. Curated Fallback Deliverable Structure & 3-Hour Scope', () => {
-    it('buildRichDeliverable must output a deliverable matching the 3-level model within 3 hours', () => {
+    it('buildRichDeliverable must output a concise natural deliverable within 3 hours without multi-level sections', () => {
       const deliverable = buildRichDeliverable({
         title: 'Micro-Savings Round-Up Simulator',
         theme: 'FinTech',
@@ -74,25 +80,28 @@ describe('3-Hour Hackathon Challenge Scope & Feasibility Invariants', () => {
         resourceName: 'Web Storage API'
       });
 
-      expect(deliverable).toContain('within 3 hours');
-      expect(deliverable).toContain('Product Objective');
-      expect(deliverable).toContain('LEVEL 1 — MUST BUILD (Core MVP) [Mandatory]:');
-      expect(deliverable).toContain('LEVEL 2 — SHOULD IMPROVE (Enhancements) [Optional]:');
-      expect(deliverable).toContain('LEVEL 3 — BONUS CHALLENGE (Stretch Goals) [Optional]:');
-      expect(deliverable).toContain('Expected Working Outcome');
-      expect(deliverable).toContain('Evaluation Criteria');
-      expect(deliverable.length).toBeGreaterThanOrEqual(300);
-      expect(deliverable.length).toBeLessThanOrEqual(1800);
+      expect(deliverable).toContain('3-hour MVP');
+      expect(deliverable).not.toContain('LEVEL 1');
+      expect(deliverable).not.toContain('MUST BUILD');
+      expect(deliverable).not.toContain('LEVEL 2');
+      expect(deliverable).not.toContain('SHOULD IMPROVE');
+      expect(deliverable).not.toContain('LEVEL 3');
+      expect(deliverable).not.toContain('BONUS CHALLENGE');
+      expect(deliverable).not.toContain('Stretch Goals');
+      expect(deliverable.length).toBeGreaterThanOrEqual(150);
+      expect(deliverable.length).toBeLessThanOrEqual(800);
     });
 
-    it('generateOfficialFallback across all 8 themes must produce valid challenges under 1800 chars', () => {
+    it('generateOfficialFallback across all 8 themes must produce valid challenges with concise deliverables', () => {
       for (const theme of APPROVED_THEMES) {
         const fallback = generateOfficialFallback(theme);
         const validation = validateChallenge(fallback, theme);
         expect(validation.isValid).toBe(true);
         expect(validation.errors).toHaveLength(0);
-        expect(fallback.deliverable.length).toBeLessThanOrEqual(1800);
-        expect(fallback.deliverable).toContain('within 3 hours');
+        expect(fallback.deliverable.length).toBeLessThanOrEqual(800);
+        expect(fallback.deliverable).toContain('3-hour');
+        expect(fallback.deliverable).not.toContain('LEVEL 1');
+        expect(fallback.deliverable).not.toContain('MUST BUILD');
       }
     });
   });

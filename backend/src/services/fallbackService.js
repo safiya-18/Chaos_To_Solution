@@ -28,14 +28,12 @@ export const getOfficialCuratedChallenges = (theme) => {
 };
 
 /**
- * Constructs a rich, multi-component deliverable tailored for a realistic 3-hour hackathon MVP.
- * Follows the strict 3-tier structure:
- * - Product Objective
- * - LEVEL 1 — MUST BUILD (Core MVP) [Mandatory]
- * - LEVEL 2 — SHOULD IMPROVE (Enhancements) [Optional]
- * - LEVEL 3 — BONUS CHALLENGE (Stretch Goals) [Optional]
- * - Expected Working Outcome
- * - Evaluation Criteria
+ * Constructs a concise, natural deliverable tailored for a realistic 3-hour hackathon.
+ * Naturally explains:
+ * 1. What the team needs to build.
+ * 2. What important functionality it should contain (approximately 3–5 meaningful features).
+ * 3. What the expected working solution should demonstrate.
+ * Avoids separate sections (Must Build, Should Improve, Stretch Goals).
  * Preserves 100% of official technical constraints (client-side only, simulated data, no paid APIs).
  */
 export const buildRichDeliverable = ({ title, theme, statement, restrictionRule, resourceName }) => {
@@ -43,49 +41,26 @@ export const buildRichDeliverable = ({ title, theme, statement, restrictionRule,
   const isSimulatedOnly = /simulated|no live|sample records|no hardware/i.test(restrictionRule);
   const isOfflineOnly = /offline|zero internet|no internet/i.test(restrictionRule);
 
-  let componentDesc = 'Responsive client application with modular state management';
+  let archDesc = 'responsive client application';
   if (!isClientSideOnly && !isOfflineOnly) {
-    componentDesc += ', lightweight REST API, and local persistence';
+    archDesc += ' with lightweight local persistence';
   } else {
-    componentDesc += ' and persistent browser storage (LocalStorage/IndexedDB)';
+    archDesc += ' with client-side browser storage';
   }
 
-  const coreInputs = isSimulatedOnly
-    ? 'Input parsing & validation for simulated datasets'
-    : 'User data input capture with field validation';
+  const inputAction = isSimulatedOnly
+    ? 'ingests and validates the supplied simulated dataset'
+    : 'captures and validates user inputs';
 
-  const coreProcessing = isSimulatedOnly
-    ? 'Core algorithmic processing on supplied records'
-    : 'Core business logic execution and calculation';
+  const processingAction = isSimulatedOnly
+    ? 'executes core analytical algorithms on the records'
+    : 'applies business calculation logic in real time';
 
   const cleanTitle = title.length > 50 ? `${title.slice(0, 47)}...` : title;
   const cleanRes = resourceName.length > 40 ? `${resourceName.slice(0, 37)}...` : resourceName;
+  const cleanStatement = statement.trim().endsWith('.') ? statement.trim() : `${statement.trim()}.`;
 
-  return `Build a functional, demonstrable MVP of ${cleanTitle} for ${theme} within 3 hours.
-
-Product Objective: Solve: ${statement.slice(0, 75)}...
-
-System Components: ${componentDesc} leveraging ${cleanRes}.
-
-Functional Requirements:
-LEVEL 1 — MUST BUILD (Core MVP) [Mandatory]:
-- ${coreInputs}
-- ${coreProcessing}
-- Interactive interface displaying computed results and feedback
-- Persistent state using ${cleanRes}
-- End-to-end working demonstration using supplied/permitted data
-
-LEVEL 2 — SHOULD IMPROVE (Enhancements) [Optional]:
-- Advanced filtering and multi-criteria search
-- Data visualization charts and summary metrics
-- Error boundaries and accessible navigation
-
-LEVEL 3 — BONUS CHALLENGE (Stretch Goals) [Optional]:
-- Algorithmic performance optimization or heuristic recommendation
-- Data export in JSON/CSV format
-
-Expected Working Outcome: Demonstrable, testable application providing an interactive end-to-end user journey with zero runtime errors.
-Evaluation Criteria: Core MVP completeness, algorithmic correctness, clean UX, and 100% adherence to: ${restrictionRule.slice(0, 50)}.`;
+  return `Build a functional 3-hour MVP of ${cleanTitle} for ${theme} as a ${archDesc} powered by ${cleanRes}. The solution directly addresses the challenge where ${cleanStatement} It should provide an interactive interface that ${inputAction}, ${processingAction}, renders actionable results and summary visualizations, and demonstrates a reliable working workflow strictly adhering to ${restrictionRule.slice(0, 60)}.`;
 };
 
 /**

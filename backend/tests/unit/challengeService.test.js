@@ -161,16 +161,16 @@ describe('Phase 3: Curated Fallback Service', () => {
     expect(validateChallenge(challenge, theme).isValid).toBe(true);
   });
 
-  it('should generate structured 5-part deliverables across all approved themes', () => {
+  it('should generate concise, natural 3-hour deliverables without multi-level sections across all approved themes', () => {
     APPROVED_THEMES.forEach((theme) => {
       const challenge = generateFallback(theme);
-      expect(challenge.deliverable).toContain('Product Objective:');
-      expect(challenge.deliverable).toContain('Functional Requirements:');
-      expect(challenge.deliverable).toContain('System Components:');
-      expect(challenge.deliverable).toContain('Expected Working Outcome:');
-      expect(challenge.deliverable).toContain('Evaluation Criteria:');
+      expect(challenge.deliverable).toContain('3-hour MVP');
+      expect(challenge.deliverable).not.toContain('LEVEL 1');
+      expect(challenge.deliverable).not.toContain('MUST BUILD');
+      expect(challenge.deliverable).not.toContain('Bonus Challenges');
+      expect(challenge.deliverable).not.toContain('Stretch Goals');
       expect(challenge.deliverable.length).toBeGreaterThan(150);
-      expect(challenge.deliverable.length).toBeLessThanOrEqual(1500);
+      expect(challenge.deliverable.length).toBeLessThanOrEqual(800);
     });
   });
 

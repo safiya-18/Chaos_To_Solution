@@ -32,10 +32,8 @@ describe('Phase 6: GroqService Unit Tests', () => {
       expect(prompt).toContain('IEEE Computer Society hackathon');
       expect(prompt).toContain('theme: "EdTech"');
       expect(prompt).toContain('within 3 hours');
-      expect(prompt).toContain('LEVEL 1 — MUST BUILD (Core MVP)');
-      expect(prompt).toContain('LEVEL 2 — SHOULD IMPROVE (Enhancements)');
-      expect(prompt).toContain('LEVEL 3 — BONUS CHALLENGE (Stretch Goals)');
-      expect(prompt).toContain('DELIVERABLE SPECIFICATION');
+      expect(prompt).toContain('DELIVERABLE WRITING STYLE');
+      expect(prompt).toContain('DO NOT INTRODUCE SEPARATE SECTIONS');
       expect(prompt).toContain('JSON object');
     });
 
