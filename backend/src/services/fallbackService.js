@@ -27,13 +27,14 @@ export const getOfficialCuratedChallenges = (theme) => {
 };
 
 /**
- * Constructs a rich, multi-component deliverable tailored for an ambitious 2-hour hackathon sprint.
- * Adheres strictly to the 5-part structure:
- * 1. Product Objective
- * 2. Functional Requirements
- * 3. System Components
- * 4. Expected Working Outcome
- * 5. Evaluation Criteria
+ * Constructs a rich, multi-component deliverable tailored for a realistic 3-hour hackathon sprint.
+ * Adheres strictly to the 3-level scope model:
+ * - Product Objective
+ * - Core MVP (Must Build)
+ * - Enhancements (Should Improve)
+ * - Bonus (Stretch Goals)
+ * - Expected Working Outcome
+ * - Evaluation Criteria
  * Preserves all official technical constraints (client-side only, simulated data, no paid APIs).
  */
 export const buildRichDeliverable = ({ title, theme, statement, restrictionRule, resourceName }) => {
@@ -41,24 +42,36 @@ export const buildRichDeliverable = ({ title, theme, statement, restrictionRule,
   const isSimulatedOnly = /simulated|no live|sample records|no hardware/i.test(restrictionRule);
   const isOfflineOnly = /offline|zero internet|no internet/i.test(restrictionRule);
 
-  let componentDesc = 'Responsive client application with modular state management';
+  let coreArchitecture = 'responsive client application with modular state management';
   if (!isClientSideOnly && !isOfflineOnly) {
-    componentDesc += ', lightweight REST API service, and local persistence layer';
+    coreArchitecture += ' and lightweight local REST handler';
   } else {
-    componentDesc += ' and persistent browser storage (LocalStorage/IndexedDB)';
+    coreArchitecture += ' and persistent browser storage (LocalStorage/IndexedDB)';
   }
 
-  const functionalDesc = isSimulatedOnly
-    ? 'Interactive input validation, algorithmic analysis of simulated records, status visualization, and data export'
-    : 'User data input and validation, real-time calculations and analysis, visual progress feedback, and export/summary features';
+  const coreFlow = isSimulatedOnly
+    ? 'load provided simulated records, validate input parameters, execute deterministic core calculations/analysis, and render status summaries'
+    : 'accept structured user inputs, validate data invariants, execute core processing/calculation algorithms, and render interactive results';
 
-  return `Build a functional ${title} to solve the core friction: ${statement.slice(0, 100)}...
+  return `Product Objective: Build a functional, demonstrable ${title} addressing ${theme.toLowerCase()} problem: ${statement.slice(0, 110)}...
 
-1. Product Objective: Deliver an accessible, high-reliability solution addressing ${title.toLowerCase()} for the ${theme} domain.
-2. Functional Requirements: ${functionalDesc}.
-3. System Components: ${componentDesc} leveraging ${resourceName}.
-4. Expected Working Outcome: A demonstrable, testable application providing end-to-end interactive workflows with zero runtime errors.
-5. Evaluation Criteria: Functional completeness, algorithmic correctness, clean user experience, and 100% adherence to: ${restrictionRule.slice(0, 80)}.`;
+Core MVP (Must Build):
+- Primary user flow: ${coreFlow}.
+- Complete functional interface built with ${coreArchitecture} leveraging ${resourceName}.
+- 3 to 5 core functional capabilities with full data validation and demonstrable output states (zero static mockups).
+
+Enhancements (Should Improve):
+- Dynamic search/filtering across records and interactive visual trend feedback.
+- Tabular reporting and structured data export (JSON/CSV).
+- Enhanced keyboard accessibility and resilient error boundaries.
+
+Bonus (Stretch Goals):
+- Algorithmic optimization for enhanced calculation efficiency or heuristic ranking.
+- Advanced automated recommendations or anomaly detection rules based on processed data.
+
+Expected Working Outcome: Fully operational solution demonstrable end-to-end within 3 hours, adhering strictly to technical constraints.
+
+Evaluation Criteria: Functional completeness of Core MVP, algorithmic correctness, clean user experience, and 100% compliance with: ${restrictionRule.slice(0, 80)}.`;
 };
 
 /**
