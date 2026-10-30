@@ -58,7 +58,10 @@ export const buildRichDeliverable = ({ title, theme, statement, restrictionRule,
 
   const cleanTitle = title.length > 50 ? `${title.slice(0, 47)}...` : title;
   const cleanRes = resourceName.length > 40 ? `${resourceName.slice(0, 37)}...` : resourceName;
-  const cleanStatement = statement.trim().endsWith('.') ? statement.trim() : `${statement.trim()}.`;
+  const trimmedStmt = statement.trim();
+  const cleanStatement = trimmedStmt.length > 140
+    ? `${trimmedStmt.slice(0, 137)}...`
+    : (trimmedStmt.endsWith('.') ? trimmedStmt : `${trimmedStmt}.`);
 
   return `Build a functional 3-hour MVP of ${cleanTitle} for ${theme} as a ${archDesc} powered by ${cleanRes}. The solution directly addresses the challenge where ${cleanStatement} It should provide an interactive interface that ${inputAction}, ${processingAction}, renders actionable results and summary visualizations, and demonstrates a reliable working workflow strictly adhering to ${restrictionRule.slice(0, 60)}.`;
 };

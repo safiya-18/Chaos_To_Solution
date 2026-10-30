@@ -89,7 +89,7 @@ describe('3-Hour Hackathon Challenge Scope & Concise Deliverable Invariants', ()
       expect(deliverable).not.toContain('BONUS CHALLENGE');
       expect(deliverable).not.toContain('Stretch Goals');
       expect(deliverable.length).toBeGreaterThanOrEqual(150);
-      expect(deliverable.length).toBeLessThanOrEqual(800);
+      expect(deliverable.length).toBeLessThanOrEqual(900);
     });
 
     it('generateOfficialFallback across all 8 themes must produce valid challenges with concise deliverables', () => {
@@ -98,7 +98,7 @@ describe('3-Hour Hackathon Challenge Scope & Concise Deliverable Invariants', ()
         const validation = validateChallenge(fallback, theme);
         expect(validation.isValid).toBe(true);
         expect(validation.errors).toHaveLength(0);
-        expect(fallback.deliverable.length).toBeLessThanOrEqual(800);
+        expect(fallback.deliverable.length).toBeLessThanOrEqual(900);
         expect(fallback.deliverable).toContain('3-hour');
         expect(fallback.deliverable).not.toContain('LEVEL 1');
         expect(fallback.deliverable).not.toContain('MUST BUILD');

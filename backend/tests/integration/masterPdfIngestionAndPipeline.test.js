@@ -144,7 +144,7 @@ describe('CTS Master Challenge PDF Ingestion, Pipeline Integration & Hard Regres
     });
 
     it('should idempotently ingest into MongoDB and preserve deliverables and resourceTags', async () => {
-      if (!isDbAvailable) return;
+      if (!isDbAvailable || mongoose.connection.readyState !== 1) return;
 
       const report1 = await ingestReferenceChallenges({ dryRun: false });
       expect(report1.totalInspected).toBe(76);
