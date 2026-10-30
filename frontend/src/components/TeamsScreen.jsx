@@ -319,12 +319,12 @@ export function TeamsScreen() {
                         className="hover:bg-[#F7F3EA]/40 transition-colors print:border-b print:border-gray-300 print:align-top"
                       >
                         {/* # */}
-                        <td className="py-3 px-3 text-center font-mono font-bold text-[#8C8477] text-xs print:py-2 print:px-1.5 print:text-[9.5px] print:border-r print:border-gray-300 print:text-gray-700">
+                        <td className="py-3 px-3 text-center font-mono font-bold text-[#8C8477] text-xs align-middle print:py-2 print:px-1.5 print:text-[9.5px] print:border-r print:border-gray-300 print:text-gray-700">
                           {item.index || idx + 1}
                         </td>
 
                         {/* Team Name */}
-                        <td className="py-3 px-4 font-black text-[#111820] text-sm tracking-tight print:py-2 print:px-2 print:text-[10px] print:border-r print:border-gray-300">
+                        <td className="py-3 px-4 font-black text-[#111820] text-sm tracking-tight align-middle print:py-2 print:px-2 print:text-[10px] print:border-r print:border-gray-300">
                           <div className="flex items-center gap-1.5">
                             <span>{item.teamName}</span>
                             {item.source === 'ai' ? (
@@ -337,16 +337,13 @@ export function TeamsScreen() {
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] font-mono text-[#8C8477] block mt-0.5 print:text-[8.5px] print:text-gray-500">
-                            {new Date(item.generatedAt || item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
                           <span className="hidden print:inline-block text-[8px] font-mono uppercase text-gray-400 mt-0.5">
                             {item.source === 'ai' ? 'AI' : 'Curated'}
                           </span>
                         </td>
 
                         {/* Theme */}
-                        <td className="py-3 px-3 print:py-2 print:px-2 print:border-r print:border-gray-300">
+                        <td className="py-3 px-3 align-middle print:py-2 print:px-2 print:border-r print:border-gray-300">
                           <span
                             className="inline-block px-2.5 py-1 rounded-full text-[11px] font-extrabold border border-[#111820]/10 whitespace-nowrap shadow-2xs print:text-[9.5px] print:border-none print:p-0 print:bg-transparent"
                             style={{ backgroundColor: themeConf.bgColor, color: '#111820' }}
@@ -411,7 +408,7 @@ export function TeamsScreen() {
                         </td>
 
                         {/* Action: View Modal & Delete */}
-                        <td className="py-3 px-3 text-center print:hidden">
+                        <td className="py-3 px-3 text-center align-middle print:hidden">
                           <div className="flex items-center justify-center gap-1.5">
                             <button
                               type="button"

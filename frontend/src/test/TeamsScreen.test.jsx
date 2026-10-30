@@ -295,4 +295,75 @@ describe('TeamsScreen Component', () => {
     expect(screen.getByText('Micro-loans fraud in rural cooperatives.')).toBeInTheDocument();
     expect(screen.getByText('A verifiable transaction auditor.')).toBeInTheDocument();
   });
+
+  it('does not render generation timestamps in team rows while preserving team name styling', async () => {
+    render(
+      <RouterProvider>
+        <TeamsScreen />
+      </RouterProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Binary Beasts')).toBeInTheDocument();
+      expect(screen.getByText('Cyber Phoenix')).toBeInTheDocument();
+    });
+
+    // Formatted time strings for the mock items
+    const time1 = new Date(MOCK_TEAMS_RESPONSE.teams[0].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const time2 = new Date(MOCK_TEAMS_RESPONSE.teams[1].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Assert neither timestamp is rendered anywhere in team rows
+    expect(screen.queryByText(time1)).not.toBeInTheDocument();
+    expect(screen.queryByText(time2)).not.toBeInTheDocument();
+
+    // Verify team name cells contain team name text and properly styled badges without timestamp subtext
+    const binaryBeastsCell = screen.getByText('Binary Beasts').closest('td');
+    expect(binaryBeastsCell).toBeInTheDocument();
+    expect(binaryBeastsCell).toHaveClass('align-middle');
+    expect(binaryBeastsCell).not.toHaveTextContent(time1);
+
+    const cyberPhoenixCell = screen.getByText('Cyber Phoenix').closest('td');
+    expect(cyberPhoenixCell).toBeInTheDocument();
+    expect(cyberPhoenixCell).toHaveClass('align-middle');
+    expect(cyberPhoenixCell).not.toHaveTextContent(time2);
+  });
+
+  it('preserves sorting by Newest First and Oldest First using internal createdAt timestamp', async () => {
+    render(
+      <RouterProvider>
+        <TeamsScreen />
+      </RouterProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Binary Beasts')).toBeInTheDocument();
+    });
+
+    const sortSelect = screen.getByDisplayValue('Newest First');
+    expect(sortSelect).toBeInTheDocument();
+
+    // Sort by Oldest First
+    fireEvent.change(sortSelect, { target: { value: 'createdAt-asc' } });
+    await waitFor(() => {
+      expect(challengeApi.fetchTeamsList).toHaveBeenCalledWith(
+        expect.objectContaining({ sortBy: 'createdAt', sortOrder: 'asc' })
+      );
+    });
+
+    // Sort by Newest First
+    fireEvent.change(sortSelect, { target: { value: 'createdAt-desc' } });
+    await waitFor(() => {
+      expect(challengeApi.fetchTeamsList).toHaveBeenCalledWith(
+        expect.objectContaining({ sortBy: 'createdAt', sortOrder: 'desc' })
+      );
+    });
+
+    // Sort by Team Name (A-Z)
+    fireEvent.change(sortSelect, { target: { value: 'teamName-asc' } });
+    await waitFor(() => {
+      expect(challengeApi.fetchTeamsList).toHaveBeenCalledWith(
+        expect.objectContaining({ sortBy: 'teamName', sortOrder: 'asc' })
+      );
+    });
+  });
 });
