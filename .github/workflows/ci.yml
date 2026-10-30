@@ -1,70 +1,68 @@
-name: Continuous Integration
+name: CTS CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: cts-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  backend-test:
-    name: Backend Tests & Lint
+  backend-tests:
+    name: Backend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      NODE_ENV: test
+      GROQ_API_KEY: mock-groq-key-for-ci
+      GEMINI_API_KEY: mock-gemini-key-for-ci
+      EVENT_ADMIN_TOKEN: mock-ci-admin-token
+      MONGODB_URI: mongodb://127.0.0.1:27017/cts_ci
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
-          cache: 'npm'
+          node-version: 22
+          cache: npm
           cache-dependency-path: backend/package-lock.json
-
-      - name: Install Backend Dependencies
+      - name: Install backend dependencies
         run: npm ci
-        working-directory: backend
-
-      - name: Run Backend Vitest Suite
+      - name: Run backend tests
         run: npm test
-        working-directory: backend
-        env:
-          NODE_ENV: test
-          AI_PROVIDER: groq
-          GROQ_API_KEY: ''
-          GEMINI_API_KEY: ''
-          MONGODB_URI: ''
-          EVENT_ID: cts-2026-test
-          EVENT_ADMIN_TOKEN: test-token-for-ci
 
-  frontend-test:
-    name: Frontend Tests & Production Build
+  frontend-tests:
+    name: Frontend Tests & Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
-          cache: 'npm'
+          node-version: 22
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
-
-      - name: Install Frontend Dependencies
+      - name: Install frontend dependencies
         run: npm ci
-        working-directory: frontend
-
-      - name: Run Frontend Tests
+      - name: Run frontend tests
         run: npm test -- --run
-        working-directory: frontend
-
-      - name: Build Frontend Application
+      - name: Build production frontend
         run: npm run build
-        working-directory: frontend
-        env:
-          VITE_API_URL: https://cts-backend-iywa.onrender.com
