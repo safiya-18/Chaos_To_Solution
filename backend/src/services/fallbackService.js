@@ -28,14 +28,15 @@ export const getOfficialCuratedChallenges = (theme) => {
 };
 
 /**
- * Constructs a rich, multi-component deliverable tailored for an ambitious 2-hour hackathon sprint.
- * Adheres strictly to the 5-part structure:
- * 1. Product Objective
- * 2. Functional Requirements
- * 3. System Components
- * 4. Expected Working Outcome
- * 5. Evaluation Criteria
- * Preserves all official technical constraints (client-side only, simulated data, no paid APIs).
+ * Constructs a rich, multi-component deliverable tailored for a realistic 3-hour hackathon MVP.
+ * Follows the strict 3-tier structure:
+ * - Product Objective
+ * - LEVEL 1 — MUST BUILD (Core MVP) [Mandatory]
+ * - LEVEL 2 — SHOULD IMPROVE (Enhancements) [Optional]
+ * - LEVEL 3 — BONUS CHALLENGE (Stretch Goals) [Optional]
+ * - Expected Working Outcome
+ * - Evaluation Criteria
+ * Preserves 100% of official technical constraints (client-side only, simulated data, no paid APIs).
  */
 export const buildRichDeliverable = ({ title, theme, statement, restrictionRule, resourceName }) => {
   const isClientSideOnly = /client-side|purely on the client|no backend|zero backend/i.test(restrictionRule);
@@ -44,22 +45,47 @@ export const buildRichDeliverable = ({ title, theme, statement, restrictionRule,
 
   let componentDesc = 'Responsive client application with modular state management';
   if (!isClientSideOnly && !isOfflineOnly) {
-    componentDesc += ', lightweight REST API service, and local persistence layer';
+    componentDesc += ', lightweight REST API, and local persistence';
   } else {
     componentDesc += ' and persistent browser storage (LocalStorage/IndexedDB)';
   }
 
-  const functionalDesc = isSimulatedOnly
-    ? 'Interactive input validation, algorithmic analysis of simulated records, status visualization, and data export'
-    : 'User data input and validation, real-time calculations and analysis, visual progress feedback, and export/summary features';
+  const coreInputs = isSimulatedOnly
+    ? 'Input parsing & validation for simulated datasets'
+    : 'User data input capture with field validation';
 
-  return `Build a functional ${title} to solve the core friction: ${statement.slice(0, 100)}...
+  const coreProcessing = isSimulatedOnly
+    ? 'Core algorithmic processing on supplied records'
+    : 'Core business logic execution and calculation';
 
-1. Product Objective: Deliver an accessible, high-reliability solution addressing ${title.toLowerCase()} for the ${theme} domain.
-2. Functional Requirements: ${functionalDesc}.
-3. System Components: ${componentDesc} leveraging ${resourceName}.
-4. Expected Working Outcome: A demonstrable, testable application providing end-to-end interactive workflows with zero runtime errors.
-5. Evaluation Criteria: Functional completeness, algorithmic correctness, clean user experience, and 100% adherence to: ${restrictionRule.slice(0, 80)}.`;
+  const cleanTitle = title.length > 50 ? `${title.slice(0, 47)}...` : title;
+  const cleanRes = resourceName.length > 40 ? `${resourceName.slice(0, 37)}...` : resourceName;
+
+  return `Build a functional, demonstrable MVP of ${cleanTitle} for ${theme} within 3 hours.
+
+Product Objective: Solve: ${statement.slice(0, 75)}...
+
+System Components: ${componentDesc} leveraging ${cleanRes}.
+
+Functional Requirements:
+LEVEL 1 — MUST BUILD (Core MVP) [Mandatory]:
+- ${coreInputs}
+- ${coreProcessing}
+- Interactive interface displaying computed results and feedback
+- Persistent state using ${cleanRes}
+- End-to-end working demonstration using supplied/permitted data
+
+LEVEL 2 — SHOULD IMPROVE (Enhancements) [Optional]:
+- Advanced filtering and multi-criteria search
+- Data visualization charts and summary metrics
+- Error boundaries and accessible navigation
+
+LEVEL 3 — BONUS CHALLENGE (Stretch Goals) [Optional]:
+- Algorithmic performance optimization or heuristic recommendation
+- Data export in JSON/CSV format
+
+Expected Working Outcome: Demonstrable, testable application providing an interactive end-to-end user journey with zero runtime errors.
+Evaluation Criteria: Core MVP completeness, algorithmic correctness, clean UX, and 100% adherence to: ${restrictionRule.slice(0, 50)}.`;
 };
 
 /**

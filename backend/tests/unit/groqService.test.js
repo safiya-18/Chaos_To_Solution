@@ -31,7 +31,10 @@ describe('Phase 6: GroqService Unit Tests', () => {
       const prompt = buildGroqSystemPrompt('EdTech');
       expect(prompt).toContain('IEEE Computer Society hackathon');
       expect(prompt).toContain('theme: "EdTech"');
-      expect(prompt).toContain('2 hours of AI-assisted development');
+      expect(prompt).toContain('within 3 hours');
+      expect(prompt).toContain('LEVEL 1 — MUST BUILD (Core MVP)');
+      expect(prompt).toContain('LEVEL 2 — SHOULD IMPROVE (Enhancements)');
+      expect(prompt).toContain('LEVEL 3 — BONUS CHALLENGE (Stretch Goals)');
       expect(prompt).toContain('DELIVERABLE SPECIFICATION');
       expect(prompt).toContain('JSON object');
     });
