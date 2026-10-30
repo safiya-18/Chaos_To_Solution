@@ -104,6 +104,26 @@ describe('Phase 3: Challenge Validator', () => {
       expect(result.errors.some((e) => e.includes('disallowed paid/proprietary'))).toBe(true);
     });
   });
+
+  it('should accept rich, multi-component deliverables up to 1500 characters', () => {
+    const richDeliverable = `Product Objective: Build a complete expense settlement platform.
+Functional Requirements: Add expenses, compute minimal debt transactions, and export reports.
+System Components: Client-side calculation engine, interactive dashboard, and local persistence.
+Expected Working Outcome: Fully demonstratable zero-server settlement app.
+Evaluation Criteria: Functional completeness, settlement accuracy, and constraint compliance.`;
+    const challenge = createValidChallenge({ deliverable: richDeliverable });
+    const result = validateChallenge(challenge, 'HealthTech');
+    expect(result.isValid).toBe(true);
+    expect(result.errors).toEqual([]);
+  });
+
+  it('should reject deliverables exceeding 1500 characters', () => {
+    const tooLong = 'A'.repeat(1501);
+    const challenge = createValidChallenge({ deliverable: tooLong });
+    const result = validateChallenge(challenge, 'HealthTech');
+    expect(result.isValid).toBe(false);
+    expect(result.errors.some((e) => e.includes('deliverable must be a string between 10 and 1500 characters'))).toBe(true);
+  });
 });
 
 describe('Phase 3: Curated Fallback Service', () => {
@@ -139,6 +159,28 @@ describe('Phase 3: Curated Fallback Service', () => {
     expect(challenge.theme).toBe(theme);
     expect(challenge.source).toBe('curated-fallback');
     expect(validateChallenge(challenge, theme).isValid).toBe(true);
+  });
+
+  it('should generate structured 5-part deliverables across all approved themes', () => {
+    APPROVED_THEMES.forEach((theme) => {
+      const challenge = generateFallback(theme);
+      expect(challenge.deliverable).toContain('Product Objective:');
+      expect(challenge.deliverable).toContain('Functional Requirements:');
+      expect(challenge.deliverable).toContain('System Components:');
+      expect(challenge.deliverable).toContain('Expected Working Outcome:');
+      expect(challenge.deliverable).toContain('Evaluation Criteria:');
+      expect(challenge.deliverable.length).toBeGreaterThan(150);
+      expect(challenge.deliverable.length).toBeLessThanOrEqual(1500);
+    });
+  });
+
+  it('should preserve client-side restrictions and avoid prescribing backend servers in deliverables', () => {
+    // Generate fallbacks for FinTech and check restrictions containing client-side only
+    const challenge = generateFallback('FinTech');
+    if (challenge.restriction.rule.toLowerCase().includes('client-side')) {
+      expect(challenge.deliverable.toLowerCase()).not.toContain('backend api');
+      expect(challenge.deliverable.toLowerCase()).not.toContain('server-side database');
+    }
   });
 });
 

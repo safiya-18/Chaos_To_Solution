@@ -250,4 +250,49 @@ describe('TeamsScreen Component', () => {
       expect(challengeApi.fetchTeamsList).toHaveBeenCalledTimes(2);
     });
   });
+
+  it('renders Print / Export PDF button and triggers window.print when clicked', async () => {
+    const printSpy = vi.spyOn(window, 'print').mockImplementation(() => {});
+
+    render(
+      <RouterProvider>
+        <TeamsScreen />
+      </RouterProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Binary Beasts')).toBeInTheDocument();
+    });
+
+    const printBtn = screen.getByRole('button', { name: /Print \/ Export PDF/i });
+    expect(printBtn).toBeInTheDocument();
+
+    fireEvent.click(printBtn);
+    expect(printSpy).toHaveBeenCalledTimes(1);
+
+    printSpy.mockRestore();
+  });
+
+  it('renders printable allocation report containing IEEE COMPUTER SOCIETY header and full records', async () => {
+    render(
+      <RouterProvider>
+        <TeamsScreen />
+      </RouterProvider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Binary Beasts')).toBeInTheDocument();
+    });
+
+    // Check report header elements
+    expect(screen.getByText('IEEE COMPUTER SOCIETY')).toBeInTheDocument();
+    expect(screen.getByText('TEAM CHALLENGE ALLOCATION REPORT')).toBeInTheDocument();
+
+    // Check that print container contains full problem and deliverable text without truncation
+    expect(screen.getByText('STEM Learning Dropouts')).toBeInTheDocument();
+    expect(screen.getByText('High student dropouts in rural STEM learning.')).toBeInTheDocument();
+    expect(screen.getByText('A working offline browser quiz engine.')).toBeInTheDocument();
+    expect(screen.getByText('Micro-loans fraud in rural cooperatives.')).toBeInTheDocument();
+    expect(screen.getByText('A verifiable transaction auditor.')).toBeInTheDocument();
+  });
 });

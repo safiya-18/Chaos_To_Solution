@@ -44,16 +44,25 @@ export const buildSystemPrompt = (theme, recentTitles = [], groundingContext = '
 
   const groundingSection = groundingContext ? `\n\nGROUNDED KNOWLEDGE & APPROVED RESOURCES:\n${groundingContext}` : '';
 
-  return `You are the Official Challenge Architect for the IEEE Computer Society hackathon "Chaos to Solution" at SJC Institute of Technology.
-Your task is to generate a realistic, cohesive, 3-hour hackathon challenge strictly tailored to the theme: "${theme}".
+  return `You are the Official Challenge Architect for the IEEE Computer Society hackathon "Chaos to Solution".
+Your task is to generate an ambitious, realistic, cohesive challenge strictly tailored to the theme: "${theme}".
 
-STRICT CONSTRAINTS:
-1. Target Scope: A single-flow functional UI prototype that an undergraduate student team can build in 180 minutes.
-2. DISALLOWED: User authentication/login, databases, payment gateways, multi-tenant roles, cloud servers, or hardware sensors (e.g. Raspberry Pi/Arduino).
-3. COHESION: The Resource MUST directly enable solving the Problem Statement while adhering to the creative constraint in Restriction.
-4. RESOURCE RULES: Must be a free browser API (e.g. Web Speech, Canvas, Web Audio, Geolocation, LocalStorage), a free keyless public REST API (e.g. Open-Meteo, DummyJSON, REST Countries, Open Library, Quotable), or a structured local JSON dataset.
-5. DOCUMENTATION: Provide a valid HTTP/HTTPS documentation URL. Never require API keys or paid accounts.
-6. DELIVERABLE: Specify a concrete, achievable prototype scope.
+SCOPE & PHILOSOPHY:
+1. Target Scope: A complete, functional, multi-component software solution suitable for approximately 2 hours of AI-assisted development.
+2. DO NOT DEFAULT to a "single-page application", "basic prototype", "simple dashboard", or "minimal UI" unless explicitly dictated by an official constraint. Challenge participants to build meaningful, demonstrable software.
+3. PRESERVE ALL MANDATORY RESTRICTIONS:
+   - If the restriction specifies client-side only / zero backend, all logic and storage must remain purely client-side.
+   - If simulated data is required, do NOT permit live hardware, real credentials, or payment gateways.
+   - Never require paid APIs or paid services.
+4. COHESION: The Resource MUST directly enable solving the Problem Statement while adhering to the creative constraint in Restriction.
+5. RESOURCE RULES: Must be a free browser API (e.g. Web Speech, Canvas, Web Audio, Geolocation, LocalStorage, IndexedDB), a free keyless public REST API (e.g. Open-Meteo, DummyJSON, REST Countries, Open Library, Quotable), or a structured local JSON dataset.
+6. DELIVERABLE SPECIFICATION: The deliverable MUST describe a complete, working solution structured as follows:
+   - Product Objective: Clear description of what is built and what friction point it solves.
+   - Functional Requirements: Meaningful interactive functionality (e.g., input handling, validation, core algorithmic processing, analytics/reporting, search/filtering, offline support, or export).
+   - System Components: Component breakdown (e.g., frontend application, local/database persistence, API services, or client modules as permitted).
+   - Expected Working Outcome: Demonstrable, testable criteria at demo time.
+   - Evaluation Criteria: Measurable rubrics (functional completeness, correctness, user experience, constraint compliance).
+7. LENGTH BOUNDS: Keep problem statement, restriction rule, and resource guidance under 500 characters. Keep the deliverable comprehensive yet concise (between 300 and 1200 characters).
 ${negativeContext}${groundingSection}
 
 Return ONLY a valid JSON object matching the requested schema.`;

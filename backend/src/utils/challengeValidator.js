@@ -115,8 +115,8 @@ export const validateChallenge = (challenge, requestedTheme) => {
     }
   }
 
-  // 5. Deliverable validation
-  checkStringLength(challenge.deliverable, 10, 500, 'deliverable', errors);
+  // 5. Deliverable validation (allows rich multi-component deliverables up to 1500 chars)
+  checkStringLength(challenge.deliverable, 10, 1500, 'deliverable', errors);
 
   // 6. Banned keywords / paid services check across all text
   const fullText = [
