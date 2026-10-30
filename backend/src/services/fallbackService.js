@@ -42,6 +42,10 @@ export const generateOfficialFallback = (theme, recentHistory = []) => {
   const pool = unseen.length > 0 ? unseen : matches;
   const selected = pool[Math.floor(Math.random() * pool.length)];
 
+  const primaryResource = selected.resourcesProvided[0] || 'Official Dataset';
+  const resourceName = primaryResource.length > 80 ? `${primaryResource.slice(0, 77)}...` : primaryResource;
+  const isBrowserApi = /web speech|canvas|storage|indexeddb|notification|worker|clipboard/i.test(primaryResource);
+
   return {
     theme: selected.theme,
     problem: {
@@ -53,8 +57,8 @@ export const generateOfficialFallback = (theme, recentHistory = []) => {
       rule: selected.restrictions.join('; ')
     },
     resource: {
-      name: selected.resourcesProvided[0] || 'Official Challenge Dataset',
-      type: 'open-source-dataset',
+      name: resourceName,
+      type: isBrowserApi ? 'browser-api' : 'local-dataset',
       guidance: `Utilize provided resource: ${selected.resourcesProvided.join('; ')}`,
       docsUrl: 'https://github.com/safiya-18/Chaos_To_Solution'
     },
