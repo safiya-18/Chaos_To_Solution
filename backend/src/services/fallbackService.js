@@ -1,6 +1,7 @@
 import problems from '../data/problems.json' with { type: 'json' };
 import restrictions from '../data/restrictions.json' with { type: 'json' };
 import resources from '../data/resources.json' with { type: 'json' };
+import officialCuratedChallenges from '../data/officialCuratedChallenges.json' with { type: 'json' };
 import { validateTheme } from '../utils/challengeValidator.js';
 
 export const THEME_PROBLEM_AFFINITY = Object.freeze({
@@ -15,6 +16,54 @@ export const THEME_PROBLEM_AFFINITY = Object.freeze({
 });
 
 const problemsMap = new Map(problems.map((p) => [p.id, p]));
+
+/**
+ * Retrieves official curated challenge records filtered by theme.
+ */
+export const getOfficialCuratedChallenges = (theme) => {
+  if (!theme) return officialCuratedChallenges;
+  const tLower = theme.toLowerCase();
+  return officialCuratedChallenges.filter((c) => c.theme.toLowerCase() === tLower);
+};
+
+/**
+ * Generates fallback challenge directly from official curated challenge dataset when available.
+ */
+export const generateOfficialFallback = (theme, recentHistory = []) => {
+  const validatedTheme = validateTheme(theme);
+  const matches = getOfficialCuratedChallenges(validatedTheme);
+
+  if (matches.length === 0) {
+    return generateFallback(validatedTheme, recentHistory);
+  }
+
+  const recentSet = new Set(recentHistory);
+  const unseen = matches.filter((m) => !recentSet.has(`${validatedTheme}:${m.title}`));
+  const pool = unseen.length > 0 ? unseen : matches;
+  const selected = pool[Math.floor(Math.random() * pool.length)];
+
+  return {
+    theme: selected.theme,
+    problem: {
+      title: selected.title,
+      statement: selected.problemStatement
+    },
+    restriction: {
+      name: `${selected.theme} Official Constraint`,
+      rule: selected.restrictions.join('; ')
+    },
+    resource: {
+      name: selected.resourcesProvided[0] || 'Official Challenge Dataset',
+      type: 'open-source-dataset',
+      guidance: `Utilize provided resource: ${selected.resourcesProvided.join('; ')}`,
+      docsUrl: 'https://github.com/safiya-18/Chaos_To_Solution'
+    },
+    deliverable: `A functional 3-hour prototype solving: ${selected.problemStatement.slice(0, 80)}... strictly conforming to all official restrictions.`,
+    source: 'curated-fallback',
+    isOfficialCurated: true,
+    curatedId: selected.id
+  };
+};
 
 export const generateFallback = (theme, recentHistory = []) => {
   const validatedTheme = validateTheme(theme);
@@ -82,5 +131,7 @@ export const generateFallback = (theme, recentHistory = []) => {
 
 export default {
   THEME_PROBLEM_AFFINITY,
-  generateFallback
+  generateFallback,
+  getOfficialCuratedChallenges,
+  generateOfficialFallback
 };

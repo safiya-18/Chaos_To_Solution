@@ -101,13 +101,26 @@ export function ChallengeScreen({ challengeData, onBackToThemes }) {
 
           <div
             className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border select-none ${
-              source === 'ai'
-                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                : 'bg-amber-50 text-amber-900 border-amber-300'
+              challengeData.isOfficialCurated || challenge?.isOfficialCurated
+                ? 'bg-purple-50 text-purple-900 border-purple-300'
+                : source === 'ai'
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                  : 'bg-amber-50 text-amber-900 border-amber-300'
             }`}
-            title={source === 'ai' ? 'Generated dynamically via AI' : 'Reliable curated fallback challenge'}
+            title={
+              challengeData.isOfficialCurated || challenge?.isOfficialCurated
+                ? 'Official CTS Curated Challenge from Knowledge Base'
+                : source === 'ai'
+                  ? 'Generated dynamically via AI'
+                  : 'Reliable curated fallback challenge'
+            }
           >
-            {source === 'ai' ? (
+            {challengeData.isOfficialCurated || challenge?.isOfficialCurated ? (
+              <>
+                <ShieldCheck className="w-3.5 h-3.5 text-purple-700" aria-hidden="true" />
+                <span>Official Curated Challenge</span>
+              </>
+            ) : source === 'ai' ? (
               <>
                 <Sparkles className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true" />
                 <span>AI Generated</span>

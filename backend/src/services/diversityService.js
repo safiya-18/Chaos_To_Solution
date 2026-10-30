@@ -1,5 +1,6 @@
 import { validateChallenge, BANNED_SERVICE_KEYWORDS } from '../utils/challengeValidator.js';
 import { categorizeRestriction } from './ingestionService.js';
+import { validateThemeConstraints } from '../utils/themeConstraintValidator.js';
 
 export const SCORING_WEIGHTS = Object.freeze({
   PROBLEM_NOVELTY: 0.35,
@@ -56,6 +57,12 @@ export function validateHardRules(candidate) {
     if (deliverableLower.includes(token) || problemLower.includes(token)) {
       rejections.push(`Impossible 3-hour hackathon feasibility: requires '${token}'.`);
     }
+  }
+
+  // 6. Official Theme-Specific Constraint Policy
+  const themeConstraintCheck = validateThemeConstraints(candidate, candidate.theme || candidate.domain);
+  if (!themeConstraintCheck.passed) {
+    rejections.push(...themeConstraintCheck.violations);
   }
 
   return {
