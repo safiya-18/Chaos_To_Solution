@@ -166,8 +166,12 @@ export async function verifyResource(targetResource, options = {}) {
     cacheTtlMs = DEFAULT_CACHE_TTL_MS,
     forceRefresh = false,
     customFetch,
+    mockFetcher,
     dnsLookup
   } = options;
+
+  const effectiveFetch = customFetch || mockFetcher;
+  const effectiveDnsLookup = dnsLookup || (effectiveFetch ? async () => [{ address: '93.184.216.34', family: 4 }] : undefined);
 
   const resourceInfo = typeof targetResource === 'string'
     ? { canonicalUrl: targetResource, name: targetResource }
@@ -305,8 +309,8 @@ export async function verifyResource(targetResource, options = {}) {
         method: 'GET',
         timeoutMs: 5000,
         maxBytes: 524288,
-        customFetch,
-        dnsLookup
+        customFetch: effectiveFetch,
+        dnsLookup: effectiveDnsLookup
       });
     } catch (err) {
       const isSecurityError = err instanceof FetchSecurityError;
