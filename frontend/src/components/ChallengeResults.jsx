@@ -123,7 +123,7 @@ export function ChallengeResults({ challengeData }) {
         >
           <div className="p-3.5 rounded-xl bg-[#DCFCE7] border border-[#11151C]/20 text-[#111820] text-xs sm:text-sm leading-relaxed flex items-start gap-2.5">
             <CheckCircle className="w-4 h-4 text-[#16A34A] shrink-0 mt-0.5" aria-hidden="true" />
-            <span className="font-medium whitespace-pre-line">{deliverable}</span>
+            <span className="font-medium">{deliverable}</span>
           </div>
           <p className="mt-3 text-xs text-[#6B6358]">
             Demonstrate this working feature live to the judges at the end of the 3-hour sprint.

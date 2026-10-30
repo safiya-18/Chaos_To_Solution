@@ -27,15 +27,11 @@ describe('Phase 6: GroqService Unit Tests', () => {
   };
 
   describe('Prompt Construction & Schema Invariants', () => {
-    it('should build a concise system prompt incorporating the theme, 3-hour scope, and tiered deliverable model', () => {
+    it('should build a concise system prompt incorporating the theme and rules', () => {
       const prompt = buildGroqSystemPrompt('EdTech');
       expect(prompt).toContain('IEEE Computer Society hackathon');
       expect(prompt).toContain('theme: "EdTech"');
-      expect(prompt).toContain('Build a functional, demonstrable MVP within 3 hours');
-      expect(prompt).toContain('STRICT 3-HOUR SCOPE MODEL:');
-      expect(prompt).toContain('LEVEL 1 — MUST BUILD (Core MVP)');
-      expect(prompt).toContain('LEVEL 2 — SHOULD IMPROVE (Enhancements)');
-      expect(prompt).toContain('LEVEL 3 — BONUS CHALLENGE (Stretch Goals)');
+      expect(prompt).toContain('2 hours of AI-assisted development');
       expect(prompt).toContain('DELIVERABLE SPECIFICATION');
       expect(prompt).toContain('JSON object');
     });

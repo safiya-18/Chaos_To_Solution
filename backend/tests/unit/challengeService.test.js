@@ -105,15 +105,10 @@ describe('Phase 3: Challenge Validator', () => {
     });
   });
 
-  it('should accept rich, 3-hour tiered deliverables up to 1800 characters', () => {
+  it('should accept rich, multi-component deliverables up to 1500 characters', () => {
     const richDeliverable = `Product Objective: Build a complete expense settlement platform.
-Core MVP (Must Build):
-- Primary user flow: add expenses, calculate optimal transactions, and export reports.
-- Functional interface with LocalStorage persistence.
-Enhancements (Should Improve):
-- Dynamic search and visual balances.
-Bonus (Stretch Goals):
-- Heuristic settlement optimization.
+Functional Requirements: Add expenses, compute minimal debt transactions, and export reports.
+System Components: Client-side calculation engine, interactive dashboard, and local persistence.
 Expected Working Outcome: Fully demonstratable zero-server settlement app.
 Evaluation Criteria: Functional completeness, settlement accuracy, and constraint compliance.`;
     const challenge = createValidChallenge({ deliverable: richDeliverable });
@@ -122,12 +117,12 @@ Evaluation Criteria: Functional completeness, settlement accuracy, and constrain
     expect(result.errors).toEqual([]);
   });
 
-  it('should reject deliverables exceeding 1800 characters', () => {
-    const tooLong = 'A'.repeat(1801);
+  it('should reject deliverables exceeding 1500 characters', () => {
+    const tooLong = 'A'.repeat(1501);
     const challenge = createValidChallenge({ deliverable: tooLong });
     const result = validateChallenge(challenge, 'HealthTech');
     expect(result.isValid).toBe(false);
-    expect(result.errors.some((e) => e.includes('deliverable must be a string between 10 and 1800 characters'))).toBe(true);
+    expect(result.errors.some((e) => e.includes('deliverable must be a string between 10 and 1500 characters'))).toBe(true);
   });
 });
 
@@ -166,17 +161,16 @@ describe('Phase 3: Curated Fallback Service', () => {
     expect(validateChallenge(challenge, theme).isValid).toBe(true);
   });
 
-  it('should generate structured 3-hour deliverables with Core MVP, Enhancements, and Bonus tiers across all approved themes', () => {
+  it('should generate structured 5-part deliverables across all approved themes', () => {
     APPROVED_THEMES.forEach((theme) => {
       const challenge = generateFallback(theme);
       expect(challenge.deliverable).toContain('Product Objective:');
-      expect(challenge.deliverable).toContain('Core MVP (Must Build):');
-      expect(challenge.deliverable).toContain('Enhancements (Should Improve):');
-      expect(challenge.deliverable).toContain('Bonus (Stretch Goals):');
+      expect(challenge.deliverable).toContain('Functional Requirements:');
+      expect(challenge.deliverable).toContain('System Components:');
       expect(challenge.deliverable).toContain('Expected Working Outcome:');
       expect(challenge.deliverable).toContain('Evaluation Criteria:');
-      expect(challenge.deliverable.length).toBeGreaterThan(200);
-      expect(challenge.deliverable.length).toBeLessThanOrEqual(1800);
+      expect(challenge.deliverable.length).toBeGreaterThan(150);
+      expect(challenge.deliverable.length).toBeLessThanOrEqual(1500);
     });
   });
 
