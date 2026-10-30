@@ -107,9 +107,17 @@ The deliverable MUST be concise, well-structured, and explicitly contain:
 LENGTH BOUNDS:
 Keep problem statement, restriction rule, and resource guidance under 500 characters. Keep the deliverable comprehensive yet concise (between 300 and 1500 characters).
 
-DIVERSITY & NON-REPETITION:
-- Generate a genuinely distinct problem across: subdomain, user persona, friction point, primary workflow, solution archetype, and technical approach.
-- Do NOT generate superficial clones of popular patterns.
+DIVERSITY & FUNCTIONAL NON-REPETITION:
+- Generate a genuinely distinct problem across: subdomain, user persona, core algorithm, engineering task, primary workflow, solution archetype, input/output structures, and technical approach.
+- FORBID SUPERFICIAL VARIATIONS:
+  * Do NOT simply rename an existing dashboard or visualizer.
+  * Do NOT replace a calculator with a visualizer while implementing the same arithmetic.
+  * Do NOT swap the user persona (e.g., student to merchant) while preserving the same workflow.
+  * Do NOT swap the dataset while preserving the exact same algorithm, calculations, and UI.
+  * Do NOT reword an existing challenge title or statement.
+- ENCOURAGE ALGORITHMIC & ENGINEERING DIVERSITY:
+  * Emphasize different computational approaches: graph optimization, time-series forecasting, constraint satisfaction, simulation, rule engines, classification, bipartite matching, or structured transformation.
+  * Vary the data structures: tabular records, event streams, hierarchical trees, or relational graphs.
 ${negativeContext}${groundingSection}${diversitySection}
 
 Return ONLY a valid JSON object matching the requested schema.`;

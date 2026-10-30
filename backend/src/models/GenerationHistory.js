@@ -41,7 +41,8 @@ const GenerationHistorySchema = new mongoose.Schema(
       resourceOverlap: { type: Number, default: 0 },
       combinationNoveltyScore: { type: Number, default: 1 },
       overallSimilarity: { type: Number, default: 0 },
-      semanticDiversitySimilarity: { type: Number, default: 0 }
+      semanticDiversitySimilarity: { type: Number, default: 0 },
+      functionalEquivalenceScore: { type: Number, default: 0 }
     },
     diversityProfile: {
       subdomain: { type: String, trim: true, default: null },
@@ -50,7 +51,14 @@ const GenerationHistorySchema = new mongoose.Schema(
       primaryWorkflow: { type: String, trim: true, default: null },
       technicalApproach: { type: String, trim: true, default: null },
       datasetType: { type: String, trim: true, default: null },
-      problemCategory: { type: String, trim: true, default: null }
+      problemCategory: { type: String, trim: true, default: null },
+      coreAlgorithm: { type: String, trim: true, default: null },
+      engineeringTask: { type: String, trim: true, default: null },
+      inputStructure: { type: String, trim: true, default: null },
+      outputStructure: { type: String, trim: true, default: null },
+      dataProcessingStrategy: { type: String, trim: true, default: null },
+      technicalConstraints: { type: String, trim: true, default: null },
+      deliverableType: { type: String, trim: true, default: null }
     },
     provider: {
       type: String,

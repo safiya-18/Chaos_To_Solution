@@ -6,7 +6,8 @@ import referenceChallenges from '../data/referenceChallenges.json' with { type: 
 import officialCuratedChallenges from '../data/officialCuratedChallenges.json' with { type: 'json' };
 import {
   extractDiversityProfile,
-  computeWeightedDiversitySimilarity
+  computeWeightedDiversitySimilarity,
+  computeFunctionalEquivalence
 } from './diversityProfileService.js';
 
 /**
@@ -20,6 +21,8 @@ export const DEFAULT_NOVELTY_THRESHOLDS = Object.freeze({
   RESOURCE_OVERLAP_MAX: 0.80,        // Max allowed resource overlap
   OVERALL_SIMILARITY_MAX: 0.65,      // Composite weighted similarity threshold
   SEMANTIC_DIVERSITY_MAX: 0.65,      // Multi-dimensional semantic diversity threshold (problem+workflow+archetype+persona)
+  FUNCTIONAL_EQUIVALENCE_MAX: 0.75,  // Phase 13: Functional equivalence regeneration threshold
+  FUNCTIONAL_EQUIVALENCE_HARD_REJECT: 0.82, // Phase 13: Hard duplicate rejection threshold
   COMBINATION_REPEAT_PENALTY: 0.30   // Score deduction when domain + restrictionCat + resource repeats
 });
 
@@ -117,6 +120,7 @@ export async function gatherHistoricalChallenges(domain) {
       problemStatement: r.problemStatement,
       restriction: r.restriction,
       resource: r.resource,
+      deliverable: r.deliverable || '',
       domain: r.domain,
       source: 'reference_benchmark',
       diversityProfile: extractDiversityProfile({
@@ -140,6 +144,7 @@ export async function gatherHistoricalChallenges(domain) {
       problemStatement: o.problemStatement,
       restriction: Array.isArray(o.restrictions) ? o.restrictions.join('; ') : (o.restrictions || ''),
       resource: Array.isArray(o.resourcesProvided) ? o.resourcesProvided.join('; ') : (o.resourcesProvided || ''),
+      deliverable: o.deliverable || '',
       domain: o.theme,
       source: 'official_curated_pdf',
       diversityProfile: extractDiversityProfile(o)
@@ -151,7 +156,7 @@ export async function gatherHistoricalChallenges(domain) {
     try {
       const bankDocs = await ChallengeBank.find(
         domain ? { domain } : {}
-      ).select('title problemStatement restriction resourceText domain');
+      ).select('title problemStatement restriction resourceText domain deliverable');
 
       for (const b of bankDocs) {
         historical.push({
@@ -160,6 +165,7 @@ export async function gatherHistoricalChallenges(domain) {
           problemStatement: b.problemStatement,
           restriction: b.restriction,
           resource: b.resourceText,
+          deliverable: b.deliverable || '',
           domain: b.domain,
           source: 'challenge_bank',
           diversityProfile: extractDiversityProfile({
@@ -184,6 +190,7 @@ export async function gatherHistoricalChallenges(domain) {
             problemStatement: t.challenge.problem.statement,
             restriction: t.challenge.restriction?.rule || '',
             resource: t.challenge.resource?.name || '',
+            deliverable: t.challenge.deliverable || '',
             domain: t.theme,
             source: 'team_assignment',
             diversityProfile: t.diversityProfile || extractDiversityProfile(t.challenge)
@@ -215,6 +222,7 @@ export async function evaluateNovelty(candidate, options = {}) {
   const problemTitle = candidate.problem?.title || candidate.title || '';
   const restrictionRule = candidate.restriction?.rule || candidate.restriction || '';
   const resourceName = candidate.resource?.name || candidate.resourceText || candidate.resource || '';
+  const candidateDeliverable = candidate.deliverable || '';
 
   // 1. Exact Fingerprint Hash
   const candidateFp = computeFingerprint(domain, problemStatement, restrictionRule);
@@ -235,6 +243,11 @@ export async function evaluateNovelty(candidate, options = {}) {
   let highestDiversityBreakdown = null;
   let sameSubdomainAndArchetypeCount = 0;
 
+  // Phase 13: Functional Equivalence Tracking
+  let maxFunctionalEquivalence = 0;
+  let mostSimilarFunctionalItem = null;
+  let highestFunctionalBreakdown = null;
+
   const candidateCombKey = getCombinationKey(domain, restrictionRule, resourceName);
   let combinationRepeatCount = 0;
 
@@ -242,6 +255,7 @@ export async function evaluateNovelty(candidate, options = {}) {
     const itemProblem = item.problemStatement || '';
     const itemRest = item.restriction || '';
     const itemRes = item.resource || '';
+    const itemDeliverable = item.deliverable || '';
 
     // Exact fingerprint match
     const itemFp = computeFingerprint(item.domain, itemProblem, itemRest);
@@ -256,6 +270,7 @@ export async function evaluateNovelty(candidate, options = {}) {
     const probSim = computeTextSimilarity(problemStatement, itemProblem);
     const restSim = computeTextSimilarity(restrictionRule, itemRest);
     const resSim = computeTextSimilarity(resourceName, itemRes);
+    const delivSim = computeTextSimilarity(candidateDeliverable, itemDeliverable);
 
     if (probSim > maxProblemSim) {
       maxProblemSim = probSim;
@@ -274,6 +289,14 @@ export async function evaluateNovelty(candidate, options = {}) {
       maxWeightedDiversitySim = weightedDiv.compositeSimilarity;
       mostSimilarDiversityItem = item;
       highestDiversityBreakdown = weightedDiv.breakdown;
+    }
+
+    // Phase 13: Functional Equivalence Scoring
+    const funcEq = computeFunctionalEquivalence(candidate, item, probSim, delivSim, options.functionalWeights);
+    if (funcEq.functionalEquivalenceScore > maxFunctionalEquivalence) {
+      maxFunctionalEquivalence = funcEq.functionalEquivalenceScore;
+      mostSimilarFunctionalItem = item;
+      highestFunctionalBreakdown = funcEq.breakdown;
     }
 
     // Subdomain and archetype frequency tracking
@@ -308,20 +331,44 @@ export async function evaluateNovelty(candidate, options = {}) {
     ? Math.min(0.95, options.thresholds.SEMANTIC_DIVERSITY_MAX + 0.15)
     : 0.85;
 
+  const functionalHardRejectThreshold = options.thresholds?.FUNCTIONAL_EQUIVALENCE_HARD_REJECT || thresholds.FUNCTIONAL_EQUIVALENCE_HARD_REJECT || 0.82;
+  const functionalRegenThreshold = options.thresholds?.FUNCTIONAL_EQUIVALENCE_MAX || thresholds.FUNCTIONAL_EQUIVALENCE_MAX || 0.70;
+
   if (isExactDuplicate) {
     decision = 'REJECT';
     reasons.push(`Exact duplicate detected matching record '${mostSimilarItem?.title || mostSimilarItem?.id}'.`);
   } else if (maxProblemSim >= 0.85) {
     decision = 'REJECT';
     reasons.push(`Problem statement is an extreme near-duplicate (similarity: ${(maxProblemSim * 100).toFixed(1)}% >= 85%).`);
-  } else if (maxProblemSim >= thresholds.PROBLEM_SIMILARITY_MAX && maxProblemSim < 0.85 && (!options.thresholds?.SEMANTIC_DIVERSITY_MAX && !options.thresholds?.OVERALL_SIMILARITY_MAX)) {
-    // When problem similarity is borderline and no custom multi-dimensional thresholds were set
+  } else if (maxProblemSim >= thresholds.PROBLEM_SIMILARITY_MAX && maxProblemSim < 0.85 && (!options.thresholds?.SEMANTIC_DIVERSITY_MAX && !options.thresholds?.OVERALL_SIMILARITY_MAX && !options.thresholds?.FUNCTIONAL_EQUIVALENCE_MAX)) {
+    // When caller specifically evaluates problem similarity alone
     decision = 'REGENERATE';
     reasons.push(`Problem statement similarity (${(maxProblemSim * 100).toFixed(1)}%) exceeds threshold of ${(thresholds.PROBLEM_SIMILARITY_MAX * 100).toFixed(0)}%.`);
+  } else if (maxFunctionalEquivalence >= functionalHardRejectThreshold) {
+    decision = 'REJECT';
+    reasons.push(
+      `Functional equivalence check failed: candidate is an extreme functional clone of '${mostSimilarFunctionalItem?.title || mostSimilarFunctionalItem?.id}' (functional equivalence: ${(maxFunctionalEquivalence * 100).toFixed(1)}% >= ${(functionalHardRejectThreshold * 100).toFixed(0)}%). Engineering task: '${candidateProfile.engineeringTask}', algorithm: '${candidateProfile.coreAlgorithm}'.`
+    );
+  } else if (
+    maxFunctionalEquivalence >= 0.78 &&
+    candidateProfile.coreAlgorithm !== 'not_applicable' &&
+    candidateProfile.coreAlgorithm !== 'unknown' &&
+    highestFunctionalBreakdown?.coreAlgorithmSim >= 0.90 &&
+    (!options.thresholds?.FUNCTIONAL_EQUIVALENCE_MAX || options.thresholds?.FUNCTIONAL_EQUIVALENCE_MAX <= 0.78)
+  ) {
+    decision = 'REJECT';
+    reasons.push(
+      `Functional equivalence check failed: candidate shares identical core algorithm ('${candidateProfile.coreAlgorithm}') and high functional overlap with '${mostSimilarFunctionalItem?.title || mostSimilarFunctionalItem?.id}' (functional equivalence: ${(maxFunctionalEquivalence * 100).toFixed(1)}%).`
+    );
   } else if (maxWeightedDiversitySim >= semanticDiversityHardRejectThreshold) {
     decision = 'REJECT';
     reasons.push(
       `Semantic diversity check failed: candidate is an extreme functional clone of '${mostSimilarDiversityItem?.title || mostSimilarDiversityItem?.id}' (weighted similarity: ${(maxWeightedDiversitySim * 100).toFixed(1)}% >= ${(semanticDiversityHardRejectThreshold * 100).toFixed(0)}%).`
+    );
+  } else if (maxFunctionalEquivalence >= functionalRegenThreshold) {
+    decision = 'REGENERATE';
+    reasons.push(
+      `Functional equivalence check: candidate shares substantial engineering task and workflow overlap with '${mostSimilarFunctionalItem?.title || mostSimilarFunctionalItem?.id}' (functional equivalence: ${(maxFunctionalEquivalence * 100).toFixed(1)}% >= ${(functionalRegenThreshold * 100).toFixed(0)}%). Task: '${candidateProfile.engineeringTask}', algorithm: '${candidateProfile.coreAlgorithm}'.`
     );
   } else if (maxWeightedDiversitySim >= thresholds.SEMANTIC_DIVERSITY_MAX) {
     decision = 'REGENERATE';
@@ -351,8 +398,10 @@ export async function evaluateNovelty(candidate, options = {}) {
       combinationNoveltyScore: parseFloat(combinationNoveltyScore.toFixed(4)),
       overallSimilarity: parseFloat(overallSimilarity.toFixed(4)),
       semanticDiversitySimilarity: parseFloat(maxWeightedDiversitySim.toFixed(4)),
+      functionalEquivalenceScore: parseFloat(maxFunctionalEquivalence.toFixed(4)),
       diversityProfile: candidateProfile,
-      diversityBreakdown: highestDiversityBreakdown
+      diversityBreakdown: highestDiversityBreakdown,
+      functionalBreakdown: highestFunctionalBreakdown
     },
     mostSimilarItem: mostSimilarItem ? {
       id: mostSimilarItem.id,
@@ -365,6 +414,12 @@ export async function evaluateNovelty(candidate, options = {}) {
       title: mostSimilarDiversityItem.title,
       source: mostSimilarDiversityItem.source,
       similarity: parseFloat(maxWeightedDiversitySim.toFixed(4))
+    } : null,
+    mostSimilarFunctionalItem: mostSimilarFunctionalItem ? {
+      id: mostSimilarFunctionalItem.id,
+      title: mostSimilarFunctionalItem.title,
+      source: mostSimilarFunctionalItem.source,
+      functionalEquivalence: parseFloat(maxFunctionalEquivalence.toFixed(4))
     } : null,
     reasons
   };

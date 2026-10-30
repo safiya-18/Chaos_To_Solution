@@ -194,10 +194,11 @@ export function scoreCandidate(candidate, noveltyResult, context = {}) {
     };
   }
 
-  // 1. Novelty & Semantic Diversity (35%)
+  // 1. Novelty, Functional Equivalence & Semantic Diversity (35%)
   const probSim = noveltyResult?.similarityScores?.problemSimilarity || 0;
   const weightedDivSim = noveltyResult?.similarityScores?.semanticDiversitySimilarity || 0;
-  const effectiveSimilarity = Math.max(probSim, weightedDivSim);
+  const funcEqSim = noveltyResult?.similarityScores?.functionalEquivalenceScore || 0;
+  const effectiveSimilarity = Math.max(probSim, weightedDivSim, funcEqSim);
   const noveltyScore = Math.max(0, 1.0 - effectiveSimilarity);
 
   // 2. Resource Diversity (20%) — adjusted by usage recency AND verification status
@@ -223,7 +224,7 @@ export function scoreCandidate(candidate, noveltyResult, context = {}) {
   // 5. Clarity (10%)
   const clarityScore = calculateClarityScore(candidate);
 
-  // 6. Archetype & Subdomain Frequency Penalties (Soft Diversity Gate)
+  // 6. Archetype, Subdomain & Algorithmic Frequency Penalties (Soft Diversity Gate)
   const profile = candidate.diversityProfile || extractDiversityProfile(candidate);
   const recentArchetypeCounts = context.recentArchetypeCounts || {};
   const archCount = recentArchetypeCounts[profile.solutionArchetype] || 0;
@@ -233,6 +234,12 @@ export function scoreCandidate(candidate, noveltyResult, context = {}) {
   const subCount = recentSubdomainCounts[profile.subdomain] || 0;
   const subdomainPenalty = Math.min(0.15, subCount * 0.05);
 
+  const recentAlgorithmCounts = context.recentAlgorithmCounts || {};
+  const algoCount = profile.coreAlgorithm && profile.coreAlgorithm !== 'not_applicable'
+    ? (recentAlgorithmCounts[profile.coreAlgorithm] || 0)
+    : 0;
+  const algorithmPenalty = Math.min(0.15, algoCount * 0.05);
+
   // Composite Weighted Score
   const baseScore =
     SCORING_WEIGHTS.PROBLEM_NOVELTY * noveltyScore +
@@ -241,7 +248,7 @@ export function scoreCandidate(candidate, noveltyResult, context = {}) {
     SCORING_WEIGHTS.FEASIBILITY * feasibilityScore +
     SCORING_WEIGHTS.CLARITY * clarityScore;
 
-  const totalScore = Math.max(0.05, baseScore - archetypePenalty - subdomainPenalty);
+  const totalScore = Math.max(0.05, baseScore - archetypePenalty - subdomainPenalty - algorithmPenalty);
 
   return {
     candidate,
@@ -256,6 +263,8 @@ export function scoreCandidate(candidate, noveltyResult, context = {}) {
       clarity: parseFloat(clarityScore.toFixed(4)),
       archetypeDiversity: parseFloat((1.0 - archetypePenalty).toFixed(4)),
       subdomainDiversity: parseFloat((1.0 - subdomainPenalty).toFixed(4)),
+      algorithmDiversity: parseFloat((1.0 - algorithmPenalty).toFixed(4)),
+      functionalEquivalence: parseFloat(funcEqSim.toFixed(4)),
       resourceStatus: status
     },
     resourcePolicy: {
