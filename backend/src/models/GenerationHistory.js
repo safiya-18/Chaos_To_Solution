@@ -40,7 +40,17 @@ const GenerationHistorySchema = new mongoose.Schema(
       restrictionSimilarity: { type: Number, default: 0 },
       resourceOverlap: { type: Number, default: 0 },
       combinationNoveltyScore: { type: Number, default: 1 },
-      overallSimilarity: { type: Number, default: 0 }
+      overallSimilarity: { type: Number, default: 0 },
+      semanticDiversitySimilarity: { type: Number, default: 0 }
+    },
+    diversityProfile: {
+      subdomain: { type: String, trim: true, default: null },
+      solutionArchetype: { type: String, trim: true, default: null },
+      userPersona: { type: String, trim: true, default: null },
+      primaryWorkflow: { type: String, trim: true, default: null },
+      technicalApproach: { type: String, trim: true, default: null },
+      datasetType: { type: String, trim: true, default: null },
+      problemCategory: { type: String, trim: true, default: null }
     },
     provider: {
       type: String,

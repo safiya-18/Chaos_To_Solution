@@ -4,6 +4,10 @@ import ChallengeBank from '../models/ChallengeBank.js';
 import TeamAssignment from '../models/TeamAssignment.js';
 import referenceChallenges from '../data/referenceChallenges.json' with { type: 'json' };
 import officialCuratedChallenges from '../data/officialCuratedChallenges.json' with { type: 'json' };
+import {
+  extractDiversityProfile,
+  computeWeightedDiversitySimilarity
+} from './diversityProfileService.js';
 
 /**
  * Configurable thresholds for novelty detection.
@@ -15,6 +19,7 @@ export const DEFAULT_NOVELTY_THRESHOLDS = Object.freeze({
   RESTRICTION_SIMILARITY_MAX: 0.75,  // Max allowed restriction similarity
   RESOURCE_OVERLAP_MAX: 0.80,        // Max allowed resource overlap
   OVERALL_SIMILARITY_MAX: 0.65,      // Composite weighted similarity threshold
+  SEMANTIC_DIVERSITY_MAX: 0.65,      // Multi-dimensional semantic diversity threshold (problem+workflow+archetype+persona)
   COMBINATION_REPEAT_PENALTY: 0.30   // Score deduction when domain + restrictionCat + resource repeats
 });
 
@@ -113,7 +118,14 @@ export async function gatherHistoricalChallenges(domain) {
       restriction: r.restriction,
       resource: r.resource,
       domain: r.domain,
-      source: 'reference_benchmark'
+      source: 'reference_benchmark',
+      diversityProfile: extractDiversityProfile({
+        theme: r.domain,
+        title: r.title,
+        problemStatement: r.problemStatement,
+        restrictions: [r.restriction],
+        resourcesProvided: [r.resource]
+      })
     });
   }
 
@@ -129,7 +141,8 @@ export async function gatherHistoricalChallenges(domain) {
       restriction: Array.isArray(o.restrictions) ? o.restrictions.join('; ') : (o.restrictions || ''),
       resource: Array.isArray(o.resourcesProvided) ? o.resourcesProvided.join('; ') : (o.resourcesProvided || ''),
       domain: o.theme,
-      source: 'official_curated_pdf'
+      source: 'official_curated_pdf',
+      diversityProfile: extractDiversityProfile(o)
     });
   }
 
@@ -148,13 +161,20 @@ export async function gatherHistoricalChallenges(domain) {
           restriction: b.restriction,
           resource: b.resourceText,
           domain: b.domain,
-          source: 'challenge_bank'
+          source: 'challenge_bank',
+          diversityProfile: extractDiversityProfile({
+            theme: b.domain,
+            title: b.title,
+            problemStatement: b.problemStatement,
+            restrictions: [b.restriction],
+            resourcesProvided: [b.resourceText]
+          })
         });
       }
 
       const teamDocs = await TeamAssignment.find(
         domain ? { theme: domain } : {}
-      ).select('challenge theme challengeId');
+      ).select('challenge theme challengeId diversityProfile');
 
       for (const t of teamDocs) {
         if (t.challenge?.problem?.statement) {
@@ -165,7 +185,8 @@ export async function gatherHistoricalChallenges(domain) {
             restriction: t.challenge.restriction?.rule || '',
             resource: t.challenge.resource?.name || '',
             domain: t.theme,
-            source: 'team_assignment'
+            source: 'team_assignment',
+            diversityProfile: t.diversityProfile || extractDiversityProfile(t.challenge)
           });
         }
       }
@@ -197,6 +218,8 @@ export async function evaluateNovelty(candidate, options = {}) {
 
   // 1. Exact Fingerprint Hash
   const candidateFp = computeFingerprint(domain, problemStatement, restrictionRule);
+  const candidateProfile = candidate.diversityProfile || extractDiversityProfile(candidate);
+  candidate.diversityProfile = candidateProfile;
 
   // 2. Load historical comparison pool
   const history = options.comparisonPool || (await gatherHistoricalChallenges(domain));
@@ -206,6 +229,11 @@ export async function evaluateNovelty(candidate, options = {}) {
   let maxResourceOverlap = 0;
   let mostSimilarItem = null;
   let isExactDuplicate = false;
+
+  let maxWeightedDiversitySim = 0;
+  let mostSimilarDiversityItem = null;
+  let highestDiversityBreakdown = null;
+  let sameSubdomainAndArchetypeCount = 0;
 
   const candidateCombKey = getCombinationKey(domain, restrictionRule, resourceName);
   let combinationRepeatCount = 0;
@@ -240,6 +268,23 @@ export async function evaluateNovelty(candidate, options = {}) {
       maxResourceOverlap = resSim;
     }
 
+    // Semantic Diversity Weighted Similarity
+    const weightedDiv = computeWeightedDiversitySimilarity(candidate, item, probSim, resSim);
+    if (weightedDiv.compositeSimilarity > maxWeightedDiversitySim) {
+      maxWeightedDiversitySim = weightedDiv.compositeSimilarity;
+      mostSimilarDiversityItem = item;
+      highestDiversityBreakdown = weightedDiv.breakdown;
+    }
+
+    // Subdomain and archetype frequency tracking
+    const itemProfile = item.diversityProfile || extractDiversityProfile(item);
+    if (
+      itemProfile.subdomain === candidateProfile.subdomain &&
+      itemProfile.solutionArchetype === candidateProfile.solutionArchetype
+    ) {
+      sameSubdomainAndArchetypeCount++;
+    }
+
     // Combination novelty check
     const itemCombKey = getCombinationKey(item.domain, itemRest, itemRes);
     if (candidateCombKey === itemCombKey) {
@@ -259,12 +304,30 @@ export async function evaluateNovelty(candidate, options = {}) {
   const reasons = [];
   let decision = 'ACCEPT';
 
+  const semanticDiversityHardRejectThreshold = options.thresholds?.SEMANTIC_DIVERSITY_MAX
+    ? Math.min(0.95, options.thresholds.SEMANTIC_DIVERSITY_MAX + 0.15)
+    : 0.85;
+
   if (isExactDuplicate) {
     decision = 'REJECT';
     reasons.push(`Exact duplicate detected matching record '${mostSimilarItem?.title || mostSimilarItem?.id}'.`);
   } else if (maxProblemSim >= 0.85) {
     decision = 'REJECT';
     reasons.push(`Problem statement is an extreme near-duplicate (similarity: ${(maxProblemSim * 100).toFixed(1)}% >= 85%).`);
+  } else if (maxProblemSim >= thresholds.PROBLEM_SIMILARITY_MAX && maxProblemSim < 0.85 && (!options.thresholds?.SEMANTIC_DIVERSITY_MAX && !options.thresholds?.OVERALL_SIMILARITY_MAX)) {
+    // When problem similarity is borderline and no custom multi-dimensional thresholds were set
+    decision = 'REGENERATE';
+    reasons.push(`Problem statement similarity (${(maxProblemSim * 100).toFixed(1)}%) exceeds threshold of ${(thresholds.PROBLEM_SIMILARITY_MAX * 100).toFixed(0)}%.`);
+  } else if (maxWeightedDiversitySim >= semanticDiversityHardRejectThreshold) {
+    decision = 'REJECT';
+    reasons.push(
+      `Semantic diversity check failed: candidate is an extreme functional clone of '${mostSimilarDiversityItem?.title || mostSimilarDiversityItem?.id}' (weighted similarity: ${(maxWeightedDiversitySim * 100).toFixed(1)}% >= ${(semanticDiversityHardRejectThreshold * 100).toFixed(0)}%).`
+    );
+  } else if (maxWeightedDiversitySim >= thresholds.SEMANTIC_DIVERSITY_MAX) {
+    decision = 'REGENERATE';
+    reasons.push(
+      `Semantic diversity check: candidate shares substantial workflow and problem overlap with '${mostSimilarDiversityItem?.title || mostSimilarDiversityItem?.id}' (weighted similarity: ${(maxWeightedDiversitySim * 100).toFixed(1)}% >= ${(thresholds.SEMANTIC_DIVERSITY_MAX * 100).toFixed(0)}%). Subdomain: ${candidateProfile.subdomain}, Archetype: ${candidateProfile.solutionArchetype}.`
+    );
   } else if (maxProblemSim >= thresholds.PROBLEM_SIMILARITY_MAX) {
     decision = 'REGENERATE';
     reasons.push(`Problem statement similarity (${(maxProblemSim * 100).toFixed(1)}%) exceeds threshold of ${(thresholds.PROBLEM_SIMILARITY_MAX * 100).toFixed(0)}%.`);
@@ -286,13 +349,22 @@ export async function evaluateNovelty(candidate, options = {}) {
       restrictionSimilarity: parseFloat(maxRestrictionSim.toFixed(4)),
       resourceOverlap: parseFloat(maxResourceOverlap.toFixed(4)),
       combinationNoveltyScore: parseFloat(combinationNoveltyScore.toFixed(4)),
-      overallSimilarity: parseFloat(overallSimilarity.toFixed(4))
+      overallSimilarity: parseFloat(overallSimilarity.toFixed(4)),
+      semanticDiversitySimilarity: parseFloat(maxWeightedDiversitySim.toFixed(4)),
+      diversityProfile: candidateProfile,
+      diversityBreakdown: highestDiversityBreakdown
     },
     mostSimilarItem: mostSimilarItem ? {
       id: mostSimilarItem.id,
       title: mostSimilarItem.title,
       source: mostSimilarItem.source,
       similarity: parseFloat(maxProblemSim.toFixed(4))
+    } : null,
+    mostSimilarDiversityItem: mostSimilarDiversityItem ? {
+      id: mostSimilarDiversityItem.id,
+      title: mostSimilarDiversityItem.title,
+      source: mostSimilarDiversityItem.source,
+      similarity: parseFloat(maxWeightedDiversitySim.toFixed(4))
     } : null,
     reasons
   };
