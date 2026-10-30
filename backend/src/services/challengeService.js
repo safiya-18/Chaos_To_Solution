@@ -10,6 +10,7 @@ import { verifyResource } from './resourceVerifier.js';
 import GenerationHistory from '../models/GenerationHistory.js';
 import { computeFingerprint } from './ingestionService.js';
 import { getGroundingContext } from './groundingService.js';
+import { THEME_SUBDOMAINS, extractDiversityProfile } from './diversityProfileService.js';
 
 export class ChallengeService {
   constructor({
@@ -84,11 +85,17 @@ export class ChallengeService {
           candidate?.problem?.statement || '',
           candidate?.restriction?.rule || ''
         );
+        const diversityProfile =
+          candidate?.diversityProfile ||
+          similarityScores?.diversityProfile ||
+          extractDiversityProfile(candidate || {});
+
         await GenerationHistory.create({
           domain,
           candidateChallenge: candidate,
           fingerprint: fp,
           similarityScores: similarityScores || {},
+          diversityProfile,
           provider,
           decision,
           rejectionReason: rejectionReason || null
@@ -114,9 +121,41 @@ export class ChallengeService {
       console.warn(`[ChallengeService] Failed to load grounding context: ${gErr.message}`);
     }
 
-    const genOptions = { ...options, groundingContext };
+    // 3. Compute diversity context & pattern frequency from recent history
+    const recentArchetypeCounts = {};
+    const recentSubdomainCounts = {};
+    const themeSubdomains = THEME_SUBDOMAINS[validatedTheme] || [];
 
-    // 3. Identify primary and alternative secondary provider
+    for (const item of this.recentHistory) {
+      if (typeof item === 'string') {
+        const parts = item.split(':');
+        if (parts[0] === validatedTheme && parts[1] === 'archetype' && parts[2]) {
+          recentArchetypeCounts[parts[2]] = (recentArchetypeCounts[parts[2]] || 0) + 1;
+        } else if (parts[0] === validatedTheme && parts[1] === 'subdomain' && parts[2]) {
+          recentSubdomainCounts[parts[2]] = (recentSubdomainCounts[parts[2]] || 0) + 1;
+        }
+      }
+    }
+
+    const overusedArchetypes = Object.keys(recentArchetypeCounts).filter(k => recentArchetypeCounts[k] >= 2);
+    const underrepresentedSubdomains = themeSubdomains.filter(s => !recentSubdomainCounts[s] || recentSubdomainCounts[s] === 0);
+
+    const diversityContext = {
+      recentArchetypes: recentArchetypeCounts,
+      recentSubdomains: recentSubdomainCounts,
+      overusedArchetypes,
+      underrepresentedSubdomains
+    };
+
+    const genOptions = {
+      ...options,
+      groundingContext,
+      diversityContext,
+      recentArchetypeCounts,
+      recentSubdomainCounts
+    };
+
+    // 4. Identify primary and alternative secondary provider
     const isGroqPrimary = this.provider !== 'gemini';
     const primary = isGroqPrimary
       ? { name: 'Groq', providerId: 'groq', service: this.groqService, hasKey: this.hasGroqKey }
@@ -126,7 +165,7 @@ export class ChallengeService {
       ? { name: 'Gemini', providerId: 'gemini', service: this.geminiService, hasKey: this.hasGeminiKey }
       : { name: 'Groq', providerId: 'groq', service: this.groqService, hasKey: this.hasGroqKey };
 
-    // 4. Attempt Primary Provider with Bounded Novelty Retries
+    // 5. Attempt Primary Provider with Bounded Novelty Retries
     if (primary.hasKey) {
       let attempts = 0;
       while (attempts <= this.maxNoveltyRetries) {
@@ -226,9 +265,21 @@ export class ChallengeService {
           }
 
           // Diversity scoring
-          const scored = scoreCandidate(aiChallenge, novelty, options);
+          const scored = scoreCandidate(aiChallenge, novelty, genOptions);
+
+          const profile =
+            aiChallenge.diversityProfile ||
+            novelty.similarityScores?.diversityProfile ||
+            extractDiversityProfile(aiChallenge);
 
           this.recordHistory(`${validatedTheme}:${aiChallenge.problem.title}`);
+          if (profile?.subdomain) {
+            this.recordHistory(`${validatedTheme}:subdomain:${profile.subdomain}`);
+          }
+          if (profile?.solutionArchetype) {
+            this.recordHistory(`${validatedTheme}:archetype:${profile.solutionArchetype}`);
+          }
+
           const fp = computeFingerprint(validatedTheme, aiChallenge.problem.statement, aiChallenge.restriction.rule);
 
           await this.logGenerationHistory({
@@ -243,6 +294,7 @@ export class ChallengeService {
             ...aiChallenge,
             source: 'ai',
             challengeSignature: fp,
+            diversityProfile: profile,
             noveltyScores: novelty.similarityScores,
             diversityScore: scored.totalScore
           };
@@ -296,9 +348,21 @@ export class ChallengeService {
             const novelty = await evaluateNovelty(aiChallenge, options);
 
             if (novelty.decision !== 'REJECT') {
-              const scored = scoreCandidate(aiChallenge, novelty, options);
+              const scored = scoreCandidate(aiChallenge, novelty, genOptions);
+
+              const profile =
+                aiChallenge.diversityProfile ||
+                novelty.similarityScores?.diversityProfile ||
+                extractDiversityProfile(aiChallenge);
 
               this.recordHistory(`${validatedTheme}:${aiChallenge.problem.title}`);
+              if (profile?.subdomain) {
+                this.recordHistory(`${validatedTheme}:subdomain:${profile.subdomain}`);
+              }
+              if (profile?.solutionArchetype) {
+                this.recordHistory(`${validatedTheme}:archetype:${profile.solutionArchetype}`);
+              }
+
               const fp = computeFingerprint(validatedTheme, aiChallenge.problem.statement, aiChallenge.restriction.rule);
 
               await this.logGenerationHistory({
@@ -313,6 +377,7 @@ export class ChallengeService {
                 ...aiChallenge,
                 source: 'ai',
                 challengeSignature: fp,
+                diversityProfile: profile,
                 noveltyScores: novelty.similarityScores,
                 diversityScore: scored.totalScore
               };
@@ -339,10 +404,20 @@ export class ChallengeService {
       `[ChallengeService] Engaging curated fallback for theme '${validatedTheme}'.`
     );
     const fallback = this.fallbackGenerator(validatedTheme, this.recentHistory);
+    const fallbackProfile =
+      fallback.diversityProfile ||
+      extractDiversityProfile(fallback);
+
     this.recordHistory(`${validatedTheme}:${fallback.problem.title}`);
+    if (fallbackProfile?.subdomain) {
+      this.recordHistory(`${validatedTheme}:subdomain:${fallbackProfile.subdomain}`);
+    }
+    if (fallbackProfile?.solutionArchetype) {
+      this.recordHistory(`${validatedTheme}:archetype:${fallbackProfile.solutionArchetype}`);
+    }
 
     const fallbackNovelty = await evaluateNovelty(fallback, options);
-    const fallbackScored = scoreCandidate(fallback, fallbackNovelty, options);
+    const fallbackScored = scoreCandidate(fallback, fallbackNovelty, genOptions);
     if (!fallbackScored.eligible) {
       throw new Error(
         `Curated fallback for '${validatedTheme}' failed hard validation: ${fallbackScored.hardRejections.join('; ')}`
@@ -362,6 +437,7 @@ export class ChallengeService {
       ...fallback,
       source: 'curated-fallback',
       challengeSignature: fallbackFp,
+      diversityProfile: fallbackProfile,
       noveltyScores: fallbackNovelty.similarityScores,
       diversityScore: fallbackScored.totalScore
     };

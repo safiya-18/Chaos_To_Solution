@@ -37,12 +37,13 @@ export const challengeResponseSchema = Object.freeze({
   required: ['theme', 'problem', 'restriction', 'resource', 'deliverable']
 });
 
-export const buildSystemPrompt = (theme, recentTitles = [], groundingContext = '') => {
+export const buildSystemPrompt = (theme, recentTitles = [], groundingContext = '', diversityContext = '') => {
   const negativeContext = recentTitles.length > 0
     ? `AVOID repeating these recently used problem titles: ${recentTitles.slice(-5).join(', ')}.`
     : '';
 
   const groundingSection = groundingContext ? `\n\nGROUNDED KNOWLEDGE & APPROVED RESOURCES:\n${groundingContext}` : '';
+  const diversitySection = diversityContext ? `\n\nCHALLENGE DIVERSITY & ARCHETYPE ROTATION:\n${diversityContext}` : '';
 
   return `You are the Official Challenge Architect for the IEEE Computer Society hackathon "Chaos to Solution".
 Your task is to generate an ambitious, realistic, cohesive challenge strictly tailored to the theme: "${theme}".
@@ -63,7 +64,10 @@ SCOPE & PHILOSOPHY:
    - Expected Working Outcome: Demonstrable, testable criteria at demo time.
    - Evaluation Criteria: Measurable rubrics (functional completeness, correctness, user experience, constraint compliance).
 7. LENGTH BOUNDS: Keep problem statement, restriction rule, and resource guidance under 500 characters. Keep the deliverable comprehensive yet concise (between 300 and 1200 characters).
-${negativeContext}${groundingSection}
+8. DIVERSITY & NON-REPETITION:
+   - Generate a genuinely distinct problem across: subdomain, user persona, friction point, primary workflow, solution archetype, and technical approach.
+   - Do NOT generate superficial clones of popular patterns (e.g. changing only the title or mock data for another basic personal finance tracker or simple CRUD dashboard).
+${negativeContext}${groundingSection}${diversitySection}
 
 Return ONLY a valid JSON object matching the requested schema.`;
 };
@@ -104,7 +108,8 @@ export class GeminiService {
       .map((sig) => sig.split(':')[1]);
 
     const groundingContext = options?.groundingContext || '';
-    const systemPrompt = buildSystemPrompt(validatedTheme, recentTitles, groundingContext);
+    const diversityContext = options?.diversityContext || '';
+    const systemPrompt = buildSystemPrompt(validatedTheme, recentTitles, groundingContext, diversityContext);
 
     const callApi = async () => {
       const response = await client.models.generateContent({

@@ -1,6 +1,7 @@
 import { validateChallenge, BANNED_SERVICE_KEYWORDS } from '../utils/challengeValidator.js';
 import { categorizeRestriction } from './ingestionService.js';
 import { validateThemeConstraints } from '../utils/themeConstraintValidator.js';
+import { extractDiversityProfile } from './diversityProfileService.js';
 
 export const SCORING_WEIGHTS = Object.freeze({
   PROBLEM_NOVELTY: 0.35,
@@ -193,9 +194,11 @@ export function scoreCandidate(candidate, noveltyResult, context = {}) {
     };
   }
 
-  // 1. Novelty (35%)
+  // 1. Novelty & Semantic Diversity (35%)
   const probSim = noveltyResult?.similarityScores?.problemSimilarity || 0;
-  const noveltyScore = Math.max(0, 1.0 - probSim);
+  const weightedDivSim = noveltyResult?.similarityScores?.semanticDiversitySimilarity || 0;
+  const effectiveSimilarity = Math.max(probSim, weightedDivSim);
+  const noveltyScore = Math.max(0, 1.0 - effectiveSimilarity);
 
   // 2. Resource Diversity (20%) — adjusted by usage recency AND verification status
   const resourceKey = candidate.resource?.name || '';
@@ -220,13 +223,25 @@ export function scoreCandidate(candidate, noveltyResult, context = {}) {
   // 5. Clarity (10%)
   const clarityScore = calculateClarityScore(candidate);
 
+  // 6. Archetype & Subdomain Frequency Penalties (Soft Diversity Gate)
+  const profile = candidate.diversityProfile || extractDiversityProfile(candidate);
+  const recentArchetypeCounts = context.recentArchetypeCounts || {};
+  const archCount = recentArchetypeCounts[profile.solutionArchetype] || 0;
+  const archetypePenalty = Math.min(0.20, archCount * 0.05);
+
+  const recentSubdomainCounts = context.recentSubdomainCounts || {};
+  const subCount = recentSubdomainCounts[profile.subdomain] || 0;
+  const subdomainPenalty = Math.min(0.15, subCount * 0.05);
+
   // Composite Weighted Score
-  const totalScore =
+  const baseScore =
     SCORING_WEIGHTS.PROBLEM_NOVELTY * noveltyScore +
     SCORING_WEIGHTS.RESOURCE_DIVERSITY * resourceDiversityScore +
     SCORING_WEIGHTS.RESTRICTION_DIVERSITY * restrictionDiversityScore +
     SCORING_WEIGHTS.FEASIBILITY * feasibilityScore +
     SCORING_WEIGHTS.CLARITY * clarityScore;
+
+  const totalScore = Math.max(0.05, baseScore - archetypePenalty - subdomainPenalty);
 
   return {
     candidate,
@@ -239,6 +254,8 @@ export function scoreCandidate(candidate, noveltyResult, context = {}) {
       restrictionDiversity: parseFloat(restrictionDiversityScore.toFixed(4)),
       feasibility: parseFloat(feasibilityScore.toFixed(4)),
       clarity: parseFloat(clarityScore.toFixed(4)),
+      archetypeDiversity: parseFloat((1.0 - archetypePenalty).toFixed(4)),
+      subdomainDiversity: parseFloat((1.0 - subdomainPenalty).toFixed(4)),
       resourceStatus: status
     },
     resourcePolicy: {

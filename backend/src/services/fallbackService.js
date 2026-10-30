@@ -3,6 +3,7 @@ import restrictions from '../data/restrictions.json' with { type: 'json' };
 import resources from '../data/resources.json' with { type: 'json' };
 import officialCuratedChallenges from '../data/officialCuratedChallenges.json' with { type: 'json' };
 import { validateTheme } from '../utils/challengeValidator.js';
+import { extractDiversityProfile } from './diversityProfileService.js';
 
 export const THEME_PROBLEM_AFFINITY = Object.freeze({
   EdTech: ['prob_prod_04', 'prob_access_03', 'prob_prod_01'],
@@ -63,6 +64,7 @@ export const buildRichDeliverable = ({ title, theme, statement, restrictionRule,
 
 /**
  * Generates fallback challenge directly from official curated challenge dataset when available.
+ * Rotates systematically across distinct subdomains and solution archetypes.
  */
 export const generateOfficialFallback = (theme, recentHistory = []) => {
   const validatedTheme = validateTheme(theme);
@@ -73,14 +75,42 @@ export const generateOfficialFallback = (theme, recentHistory = []) => {
   }
 
   const recentSet = new Set(recentHistory);
-  const unseen = matches.filter((m) => !recentSet.has(`${validatedTheme}:${m.title}`));
-  const pool = unseen.length > 0 ? unseen : matches;
+  // Extract recent subdomains from history strings formatted as "theme:subdomain:*"
+  const recentSubdomains = new Set(
+    recentHistory
+      .filter((h) => h.includes(':subdomain:'))
+      .map((h) => h.split(':subdomain:')[1])
+  );
+  const recentArchetypes = new Set(
+    recentHistory
+      .filter((h) => h.includes(':archetype:'))
+      .map((h) => h.split(':archetype:')[1])
+  );
+
+  // Filter 1: Exclude already seen titles
+  let candidates = matches.filter((m) => !recentSet.has(`${validatedTheme}:${m.title}`));
+
+  // Filter 2: If we have diverse candidates remaining, avoid immediately repeating subdomains & archetypes
+  if (candidates.length > 1 && (recentSubdomains.size > 0 || recentArchetypes.size > 0)) {
+    const varied = candidates.filter((m) => {
+      const prof = extractDiversityProfile(m);
+      const subRepeats = recentSubdomains.has(prof.subdomain);
+      const archRepeats = recentArchetypes.has(prof.solutionArchetype);
+      return !subRepeats && !archRepeats;
+    });
+    if (varied.length > 0) {
+      candidates = varied;
+    }
+  }
+
+  const pool = candidates.length > 0 ? candidates : matches;
   const selected = pool[Math.floor(Math.random() * pool.length)];
 
   const primaryResource = selected.resourcesProvided[0] || 'Official Dataset';
   const resourceName = primaryResource.length > 80 ? `${primaryResource.slice(0, 77)}...` : primaryResource;
   const isBrowserApi = /web speech|canvas|storage|indexeddb|notification|worker|clipboard/i.test(primaryResource);
   const restrictionRule = selected.restrictions.join('; ');
+  const profile = extractDiversityProfile(selected);
 
   return {
     theme: selected.theme,
@@ -107,7 +137,8 @@ export const generateOfficialFallback = (theme, recentHistory = []) => {
     }),
     source: 'curated-fallback',
     isOfficialCurated: true,
-    curatedId: selected.id
+    curatedId: selected.id,
+    diversityProfile: profile
   };
 };
 
@@ -177,7 +208,14 @@ export const generateFallback = (theme, recentHistory = []) => {
       restrictionRule: restriction.rule,
       resourceName: resource.name
     }),
-    source: 'curated-fallback'
+    source: 'curated-fallback',
+    diversityProfile: extractDiversityProfile({
+      theme: validatedTheme,
+      title: problem.title,
+      problemStatement: problem.description,
+      restrictions: [restriction.rule],
+      resourcesProvided: [resource.name]
+    })
   };
 };
 

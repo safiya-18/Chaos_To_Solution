@@ -71,20 +71,20 @@ describe('Phase 3 & 4: Four Themes Grounding, Constraint Enforcement & Pipeline 
           return {
             theme: 'FinTech',
             problem: {
-              title: 'Graph-Minimizing Dorm Bill Settlement Board',
-              statement: 'Student project teammates need to track shared supplies and resolve group debts with minimal total payment transactions.'
+              title: 'Freelance Project Milestone Settlement Board',
+              statement: 'Freelance contractors working on joint client projects struggle to track multi-party billable milestones and calculate net final disbursements without exposing confidential accounting spreadsheets.'
             },
             restriction: {
-              name: 'Pure Client-Side Graph Reducer',
+              name: 'Pure Client-Side Calculation',
               rule: 'Calculate settlements purely on the client side; zero external payment gateways or backend servers allowed.'
             },
             resource: {
               name: 'IndexedDB API',
               type: 'browser-api',
-              guidance: 'Persist roommate debts locally in browser storage and execute debt minimization offline.',
+              guidance: 'Persist milestone debts locally in browser storage and execute contractor disbursement reconciliation offline.',
               docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API'
             },
-            deliverable: 'A client-side interactive debt settlement dashboard with minimum transaction reconciliation.'
+            deliverable: 'A client-side interactive freelance milestone settlement dashboard with minimum transaction reconciliation.'
           };
         })
       };
@@ -98,7 +98,7 @@ describe('Phase 3 & 4: Four Themes Grounding, Constraint Enforcement & Pipeline 
 
       const result = await service.generateChallenge('FinTech');
       expect(result.source).toBe('ai');
-      expect(result.problem.title).toBe('Graph-Minimizing Dorm Bill Settlement Board');
+      expect(result.problem.title).toBe('Freelance Project Milestone Settlement Board');
       expect(result.restriction.rule).toContain('purely on the client side');
       expect(validateChallenge(result, 'FinTech').isValid).toBe(true);
 
@@ -111,8 +111,8 @@ describe('Phase 3 & 4: Four Themes Grounding, Constraint Enforcement & Pipeline 
         generate: vi.fn().mockImplementation(async () => ({
           theme: 'FinTech',
           problem: {
-            title: 'Virtual Pocket Change Round-Up Vault',
-            statement: 'College students struggle to save pocket money consistently without disrupting everyday food and transit spending.'
+            title: 'Gig Courier Spare-Change Fuel Reserve Vault',
+            statement: 'Food delivery couriers struggle to set aside emergency vehicle maintenance reserves from unpredictable daily delivery payouts without affecting weekly earnings.'
           },
           restriction: {
             name: 'Simulated Wallet Only',
@@ -121,10 +121,10 @@ describe('Phase 3 & 4: Four Themes Grounding, Constraint Enforcement & Pipeline 
           resource: {
             name: 'Web Storage API',
             type: 'browser-api',
-            guidance: 'Store simulated transaction logs and accumulated round-up pennies in local storage.',
+            guidance: 'Store simulated transaction logs and accumulated round-up reserves in local storage.',
             docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API'
           },
-          deliverable: 'A dashboard that simulates debit transactions and rounds up each amount to the nearest ten rupees.'
+          deliverable: 'An interactive simulation engine that models delivery trip debit transactions and calculates round-up allocations for an emergency fuel reserve.'
         }))
       };
 
@@ -137,7 +137,7 @@ describe('Phase 3 & 4: Four Themes Grounding, Constraint Enforcement & Pipeline 
 
       const result = await service.generateChallenge('FinTech');
       expect(result.source).toBe('ai');
-      expect(result.problem.title).toBe('Virtual Pocket Change Round-Up Vault');
+      expect(result.problem.title).toBe('Gig Courier Spare-Change Fuel Reserve Vault');
       expect(validateThemeConstraints(result, 'FinTech').passed).toBe(true);
     });
 
@@ -378,20 +378,20 @@ describe('Phase 3 & 4: Four Themes Grounding, Constraint Enforcement & Pipeline 
           return {
             theme: 'FinTech',
             problem: {
-              title: 'Client-Side Group Expense Splitter',
-              statement: 'Roommates calculate settlement transactions without servers or payment gateways.'
+              title: 'Merchant SKU Invoice Discrepancy Matcher',
+              statement: 'Small retail merchants struggle to reconcile end-of-day point-of-sale summaries against supplier delivery receipts to catch billing overcharges.'
             },
             restriction: {
               name: 'Pure Client Calculations',
-              rule: 'Must calculate settlements purely on the client side; zero payment gateways.'
+              rule: 'Must calculate invoice reconciliations purely on the client side; zero payment gateways or live banking credentials.'
             },
             resource: {
               name: 'Web Storage API',
               type: 'browser-api',
-              guidance: 'Store roommate ledger locally.',
+              guidance: 'Store merchant ledger locally in browser storage.',
               docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API'
             },
-            deliverable: 'An offline-capable group expense settlement dashboard.'
+            deliverable: 'A client-side matching engine that correlates itemized SKU receipts against wholesale invoices and flags price mismatches.'
           };
         })
       };
@@ -406,7 +406,7 @@ describe('Phase 3 & 4: Four Themes Grounding, Constraint Enforcement & Pipeline 
 
       const result = await service.generateChallenge('FinTech');
       expect(attempts).toBe(2);
-      expect(result.problem.title).toBe('Client-Side Group Expense Splitter');
+      expect(result.problem.title).toBe('Merchant SKU Invoice Discrepancy Matcher');
       expect(validateThemeConstraints(result, 'FinTech').passed).toBe(true);
     });
 

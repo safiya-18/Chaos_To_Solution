@@ -38,20 +38,20 @@ describe('Phase 4: End-to-End AI Generation Integration & Quality Pipeline', () 
           return {
             theme: 'EdTech',
             problem: {
-              title: 'Adaptive Micro-Quiz Generator',
-              statement: 'Students preparing for engineering competitive exams need immediate targeted diagnostic flashcards.'
+              title: 'Interactive Physics Simulation Workbench',
+              statement: 'High school students struggle to visualize projectile motion and pendulum oscillation through static textbook diagrams.'
             },
             restriction: {
               name: 'Zero External Frameworks',
-              rule: 'Implement using pure vanilla JavaScript, HTML5, and CSS with no bundlers.'
+              rule: 'Implement using pure vanilla JavaScript, HTML5 Canvas, and CSS with no bundlers.'
             },
             resource: {
-              name: 'Web Storage API',
+              name: 'Canvas API',
               type: 'browser-api',
-              guidance: 'Persist quiz state, score trends, and weak area tags in localStorage.',
-              docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage'
+              guidance: 'Render particle paths, trajectories, and force vectors directly on an HTML5 canvas element.',
+              docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API'
             },
-            deliverable: 'A responsive single-page web application featuring dynamic question rendering and instant local progress analytics.'
+            deliverable: 'A responsive single-page physics simulation workbench featuring dynamic vector rendering and instant local progress analytics.'
           };
         })
       };
@@ -66,7 +66,7 @@ describe('Phase 4: End-to-End AI Generation Integration & Quality Pipeline', () 
       const result = await service.generateChallenge('EdTech');
 
       expect(result.source).toBe('ai');
-      expect(result.problem.title).toBe('Adaptive Micro-Quiz Generator');
+      expect(result.problem.title).toBe('Interactive Physics Simulation Workbench');
       expect(result.challengeSignature).toBeDefined();
       expect(result.noveltyScores).toBeDefined();
       expect(result.diversityScore).toBeGreaterThan(0.5);
@@ -172,12 +172,12 @@ describe('Phase 4: End-to-End AI Generation Integration & Quality Pipeline', () 
           return {
             theme: 'FinTech',
             problem: {
-              title: 'Offline Expense Ledger',
-              statement: 'A student budget calculator highlighting daily dining expenses against monthly allowance.'
+              title: 'Merchant SKU Invoice Discrepancy Matcher',
+              statement: 'Small retail merchants struggle to reconcile end-of-day point-of-sale summaries against supplier delivery receipts to catch billing overcharges.'
             },
             restriction: {
               name: 'Zero Network Requests',
-              rule: 'All budget calculations and persistence must execute locally without making external HTTP requests.'
+              rule: 'All invoice comparisons and persistence must execute locally without making external HTTP requests.'
             },
             resource: {
               name: 'Web Storage API',
@@ -185,7 +185,7 @@ describe('Phase 4: End-to-End AI Generation Integration & Quality Pipeline', () 
               guidance: 'Store transactional arrays and category quotas directly in localStorage.',
               docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage'
             },
-            deliverable: 'A responsive single-page budgeting dashboard with interactive balance tracking.'
+            deliverable: 'A client-side matching engine that correlates itemized SKU receipts against wholesale invoices and flags price mismatches.'
           };
         })
       };
@@ -202,7 +202,7 @@ describe('Phase 4: End-to-End AI Generation Integration & Quality Pipeline', () 
 
       expect(callCount).toBe(2);
       expect(result.source).toBe('ai');
-      expect(result.problem.title).toBe('Offline Expense Ledger');
+      expect(result.problem.title).toBe('Merchant SKU Invoice Discrepancy Matcher');
     });
   });
 

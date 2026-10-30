@@ -99,6 +99,15 @@ const TeamAssignmentSchema = new mongoose.Schema(
       type: String,
       default: () => config.eventId,
       trim: true
+    },
+    diversityProfile: {
+      subdomain: { type: String, trim: true, default: null },
+      solutionArchetype: { type: String, trim: true, default: null },
+      userPersona: { type: String, trim: true, default: null },
+      primaryWorkflow: { type: String, trim: true, default: null },
+      technicalApproach: { type: String, trim: true, default: null },
+      datasetType: { type: String, trim: true, default: null },
+      problemCategory: { type: String, trim: true, default: null }
     }
   },
   {
