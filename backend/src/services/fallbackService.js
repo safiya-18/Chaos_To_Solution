@@ -112,17 +112,23 @@ export const generateOfficialFallback = (theme, recentHistory = []) => {
       .filter((h) => h.includes(':archetype:'))
       .map((h) => h.split(':archetype:')[1])
   );
+  const recentAlgorithms = new Set(
+    recentHistory
+      .filter((h) => h.includes(':algorithm:'))
+      .map((h) => h.split(':algorithm:')[1])
+  );
 
   // Filter 1: Exclude already seen titles
   let candidates = matches.filter((m) => !recentSet.has(`${validatedTheme}:${m.title}`));
 
-  // Filter 2: If we have diverse candidates remaining, avoid immediately repeating subdomains & archetypes
-  if (candidates.length > 1 && (recentSubdomains.size > 0 || recentArchetypes.size > 0)) {
+  // Filter 2: If we have diverse candidates remaining, avoid immediately repeating subdomains, archetypes & algorithms
+  if (candidates.length > 1 && (recentSubdomains.size > 0 || recentArchetypes.size > 0 || recentAlgorithms.size > 0)) {
     const varied = candidates.filter((m) => {
       const prof = extractDiversityProfile(m);
       const subRepeats = recentSubdomains.has(prof.subdomain);
       const archRepeats = recentArchetypes.has(prof.solutionArchetype);
-      return !subRepeats && !archRepeats;
+      const algoRepeats = prof.coreAlgorithm && prof.coreAlgorithm !== 'not_applicable' && recentAlgorithms.has(prof.coreAlgorithm);
+      return !subRepeats && !archRepeats && !algoRepeats;
     });
     if (varied.length > 0) {
       candidates = varied;

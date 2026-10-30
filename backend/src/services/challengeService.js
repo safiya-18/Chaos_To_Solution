@@ -124,35 +124,53 @@ export class ChallengeService {
     // 3. Compute diversity context & pattern frequency from recent history
     const recentArchetypeCounts = {};
     const recentSubdomainCounts = {};
+    const recentAlgorithmCounts = {};
+    const recentTaskCounts = {};
     const themeSubdomains = THEME_SUBDOMAINS[validatedTheme] || [];
 
     for (const item of this.recentHistory) {
       if (typeof item === 'string') {
         const parts = item.split(':');
-        if (parts[0] === validatedTheme && parts[1] === 'archetype' && parts[2]) {
-          recentArchetypeCounts[parts[2]] = (recentArchetypeCounts[parts[2]] || 0) + 1;
-        } else if (parts[0] === validatedTheme && parts[1] === 'subdomain' && parts[2]) {
-          recentSubdomainCounts[parts[2]] = (recentSubdomainCounts[parts[2]] || 0) + 1;
+        if (parts[0] === validatedTheme) {
+          if (parts[1] === 'archetype' && parts[2]) {
+            recentArchetypeCounts[parts[2]] = (recentArchetypeCounts[parts[2]] || 0) + 1;
+          } else if (parts[1] === 'subdomain' && parts[2]) {
+            recentSubdomainCounts[parts[2]] = (recentSubdomainCounts[parts[2]] || 0) + 1;
+          } else if (parts[1] === 'algorithm' && parts[2]) {
+            recentAlgorithmCounts[parts[2]] = (recentAlgorithmCounts[parts[2]] || 0) + 1;
+          } else if (parts[1] === 'task' && parts[2]) {
+            recentTaskCounts[parts[2]] = (recentTaskCounts[parts[2]] || 0) + 1;
+          }
         }
       }
     }
 
     const overusedArchetypes = Object.keys(recentArchetypeCounts).filter(k => recentArchetypeCounts[k] >= 2);
     const underrepresentedSubdomains = themeSubdomains.filter(s => !recentSubdomainCounts[s] || recentSubdomainCounts[s] === 0);
+    const overusedAlgorithms = Object.keys(recentAlgorithmCounts).filter(k => recentAlgorithmCounts[k] >= 2);
 
-    const diversityContext = {
-      recentArchetypes: recentArchetypeCounts,
-      recentSubdomains: recentSubdomainCounts,
-      overusedArchetypes,
-      underrepresentedSubdomains
-    };
+    const diversityLines = [];
+    if (overusedArchetypes.length > 0) {
+      diversityLines.push(`- OVERUSED ARCHETYPES to AVOID: ${overusedArchetypes.join(', ')}.`);
+    }
+    if (underrepresentedSubdomains.length > 0) {
+      diversityLines.push(`- ENCOURAGED SUBDOMAINS to EXPLORE: ${underrepresentedSubdomains.slice(0, 5).join(', ')}.`);
+    }
+    if (overusedAlgorithms.length > 0) {
+      diversityLines.push(`- OVERUSED ALGORITHMIC APPROACHES to AVOID: ${overusedAlgorithms.join(', ')}.`);
+    }
+    const diversityContextStr = diversityLines.length > 0
+      ? diversityLines.join('\n')
+      : 'Generate challenges featuring distinct computational algorithms, data structures, and functional tasks.';
 
     const genOptions = {
       ...options,
       groundingContext,
-      diversityContext,
+      diversityContext: diversityContextStr,
       recentArchetypeCounts,
-      recentSubdomainCounts
+      recentSubdomainCounts,
+      recentAlgorithmCounts,
+      recentTaskCounts
     };
 
     // 4. Identify primary and alternative secondary provider
@@ -279,6 +297,12 @@ export class ChallengeService {
           if (profile?.solutionArchetype) {
             this.recordHistory(`${validatedTheme}:archetype:${profile.solutionArchetype}`);
           }
+          if (profile?.coreAlgorithm && profile.coreAlgorithm !== 'not_applicable') {
+            this.recordHistory(`${validatedTheme}:algorithm:${profile.coreAlgorithm}`);
+          }
+          if (profile?.engineeringTask) {
+            this.recordHistory(`${validatedTheme}:task:${profile.engineeringTask}`);
+          }
 
           const fp = computeFingerprint(validatedTheme, aiChallenge.problem.statement, aiChallenge.restriction.rule);
 
@@ -362,6 +386,12 @@ export class ChallengeService {
               if (profile?.solutionArchetype) {
                 this.recordHistory(`${validatedTheme}:archetype:${profile.solutionArchetype}`);
               }
+              if (profile?.coreAlgorithm && profile.coreAlgorithm !== 'not_applicable') {
+                this.recordHistory(`${validatedTheme}:algorithm:${profile.coreAlgorithm}`);
+              }
+              if (profile?.engineeringTask) {
+                this.recordHistory(`${validatedTheme}:task:${profile.engineeringTask}`);
+              }
 
               const fp = computeFingerprint(validatedTheme, aiChallenge.problem.statement, aiChallenge.restriction.rule);
 
@@ -382,7 +412,15 @@ export class ChallengeService {
                 diversityScore: scored.totalScore
               };
             } else {
-              console.warn(`[ChallengeService] Alternative ${secondary.name} candidate rejected as duplicate.`);
+              console.warn(`[ChallengeService] Alternative ${secondary.name} candidate rejected as duplicate or borderline: ${novelty.reasons.join('; ')}`);
+              await this.logGenerationHistory({
+                candidate: aiChallenge,
+                domain: validatedTheme,
+                provider: secondary.providerId,
+                decision: 'rejected',
+                rejectionReason: novelty.reasons.join('; '),
+                similarityScores: novelty.similarityScores
+              });
             }
           } else {
             console.warn(`[ChallengeService] Alternative ${secondary.name} failed hard rules: ${hardRules.rejections.join('; ')}`);
@@ -414,6 +452,12 @@ export class ChallengeService {
     }
     if (fallbackProfile?.solutionArchetype) {
       this.recordHistory(`${validatedTheme}:archetype:${fallbackProfile.solutionArchetype}`);
+    }
+    if (fallbackProfile?.coreAlgorithm && fallbackProfile.coreAlgorithm !== 'not_applicable') {
+      this.recordHistory(`${validatedTheme}:algorithm:${fallbackProfile.coreAlgorithm}`);
+    }
+    if (fallbackProfile?.engineeringTask) {
+      this.recordHistory(`${validatedTheme}:task:${fallbackProfile.engineeringTask}`);
     }
 
     const fallbackNovelty = await evaluateNovelty(fallback, options);

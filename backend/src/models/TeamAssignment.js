@@ -107,7 +107,14 @@ const TeamAssignmentSchema = new mongoose.Schema(
       primaryWorkflow: { type: String, trim: true, default: null },
       technicalApproach: { type: String, trim: true, default: null },
       datasetType: { type: String, trim: true, default: null },
-      problemCategory: { type: String, trim: true, default: null }
+      problemCategory: { type: String, trim: true, default: null },
+      coreAlgorithm: { type: String, trim: true, default: null },
+      engineeringTask: { type: String, trim: true, default: null },
+      inputStructure: { type: String, trim: true, default: null },
+      outputStructure: { type: String, trim: true, default: null },
+      dataProcessingStrategy: { type: String, trim: true, default: null },
+      technicalConstraints: { type: String, trim: true, default: null },
+      deliverableType: { type: String, trim: true, default: null }
     }
   },
   {
