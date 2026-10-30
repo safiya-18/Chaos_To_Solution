@@ -37,10 +37,12 @@ export const challengeResponseSchema = Object.freeze({
   required: ['theme', 'problem', 'restriction', 'resource', 'deliverable']
 });
 
-export const buildSystemPrompt = (theme, recentTitles = []) => {
+export const buildSystemPrompt = (theme, recentTitles = [], groundingContext = '') => {
   const negativeContext = recentTitles.length > 0
     ? `AVOID repeating these recently used problem titles: ${recentTitles.slice(-5).join(', ')}.`
     : '';
+
+  const groundingSection = groundingContext ? `\n\nGROUNDED KNOWLEDGE & APPROVED RESOURCES:\n${groundingContext}` : '';
 
   return `You are the Official Challenge Architect for the IEEE Computer Society hackathon "Chaos to Solution" at SJC Institute of Technology.
 Your task is to generate a realistic, cohesive, 3-hour hackathon challenge strictly tailored to the theme: "${theme}".
@@ -52,7 +54,7 @@ STRICT CONSTRAINTS:
 4. RESOURCE RULES: Must be a free browser API (e.g. Web Speech, Canvas, Web Audio, Geolocation, LocalStorage), a free keyless public REST API (e.g. Open-Meteo, DummyJSON, REST Countries, Open Library, Quotable), or a structured local JSON dataset.
 5. DOCUMENTATION: Provide a valid HTTP/HTTPS documentation URL. Never require API keys or paid accounts.
 6. DELIVERABLE: Specify a concrete, achievable prototype scope.
-${negativeContext}
+${negativeContext}${groundingSection}
 
 Return ONLY a valid JSON object matching the requested schema.`;
 };
@@ -84,7 +86,7 @@ export class GeminiService {
     return this.client;
   }
 
-  async generate(theme, recentHistory = []) {
+  async generate(theme, recentHistory = [], options = {}) {
     const validatedTheme = validateTheme(theme);
     const client = this.getClient();
 
@@ -92,7 +94,8 @@ export class GeminiService {
       .filter((sig) => typeof sig === 'string' && sig.startsWith(`${validatedTheme}:`))
       .map((sig) => sig.split(':')[1]);
 
-    const systemPrompt = buildSystemPrompt(validatedTheme, recentTitles);
+    const groundingContext = options?.groundingContext || '';
+    const systemPrompt = buildSystemPrompt(validatedTheme, recentTitles, groundingContext);
 
     const callApi = async () => {
       const response = await client.models.generateContent({

@@ -27,7 +27,12 @@ const ResourceSchema = new mongoose.Schema(
       enum: ['browser-api', 'public-api', 'local-dataset']
     },
     guidance: { type: String, required: true, trim: true },
-    docsUrl: { type: String, required: true, trim: true }
+    docsUrl: { type: String, required: true, trim: true },
+    verificationStatus: {
+      type: String,
+      enum: ['verified', 'verification_pending', 'candidate', 'needs_manual_review', 'inaccessible'],
+      default: 'candidate'
+    }
   },
   { _id: false }
 );
@@ -84,6 +89,12 @@ const TeamAssignmentSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+    challengeSignature: {
+      type: String,
+      trim: true,
+      default: null,
+      set: (v) => (v && typeof v === 'string' && v.trim().length > 0 ? v.trim() : null)
+    },
     eventId: {
       type: String,
       default: () => config.eventId,
@@ -92,6 +103,22 @@ const TeamAssignmentSchema = new mongoose.Schema(
   },
   {
     timestamps: true
+  }
+);
+
+/**
+ * Atomic Unique Compound Index:
+ * Scoped to (eventId, challengeSignature).
+ * Uses partialFilterExpression to ignore documents where challengeSignature is null or missing,
+ * ensuring seamless compatibility with legacy records and preventing index collisions on nulls.
+ */
+TeamAssignmentSchema.index(
+  { eventId: 1, challengeSignature: 1 },
+  {
+    unique: true,
+    partialFilterExpression: {
+      challengeSignature: { $type: 'string' }
+    }
   }
 );
 

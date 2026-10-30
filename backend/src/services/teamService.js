@@ -72,33 +72,99 @@ export class TeamService {
     const challengeDoc = {
       problem: result.problem,
       restriction: result.restriction,
-      resource: result.resource,
+      resource: {
+        name: result.resource.name,
+        type: result.resource.type,
+        guidance: result.resource.guidance,
+        docsUrl: result.resource.docsUrl,
+        verificationStatus:
+          result.resource.verificationStatus ||
+          (result.resource.type === 'browser-api' ? 'verified' : 'candidate')
+      },
       deliverable: result.deliverable
     };
 
-    // 4. Persist to MongoDB
+    let finalResult = result;
+    let signature = result.challengeSignature;
+
+    // 4. Persist to MongoDB with atomic unique constraints and bounded collision retries
     let saved;
-    try {
-      saved = await this.model.create({
-        teamName,
-        normalizedTeamName,
-        theme: result.theme,
-        challenge: challengeDoc,
-        challengeSource: result.source,
-        challengeId,
-        eventId: config.eventId
-      });
-    } catch (dbErr) {
-      if (dbErr.code === 11000) {
-        const err = new Error(`Team name '${teamName}' is already registered for this event.`);
-        err.statusCode = 409;
-        err.code = 'TEAM_ALREADY_EXISTS';
+    let persistAttempts = 0;
+    const maxPersistAttempts = 3; // 1 initial attempt + up to 2 collision retries
+
+    while (persistAttempts < maxPersistAttempts) {
+      persistAttempts++;
+      try {
+        saved = await this.model.create({
+          teamName,
+          normalizedTeamName,
+          theme: finalResult.theme,
+          challenge: challengeDoc,
+          challengeSource: finalResult.source,
+          challengeSignature: signature || null,
+          challengeId,
+          eventId: config.eventId
+        });
+        break; // Successfully persisted atomically
+      } catch (dbErr) {
+        if (dbErr.code === 11000) {
+          const errMessage = String(dbErr.message || '');
+          const keyPattern = dbErr.keyPattern || {};
+          const isSignatureConflict =
+            Boolean(keyPattern.challengeSignature) ||
+            errMessage.includes('challengeSignature') ||
+            errMessage.includes('challengeSignature_1');
+
+          // Signature collision caught atomically by database partial unique index
+          if (isSignatureConflict && persistAttempts < maxPersistAttempts) {
+            console.warn(
+              `[TeamService] Atomic challengeSignature collision detected for event '${config.eventId}', regenerating candidate (attempt ${persistAttempts} of ${maxPersistAttempts - 1})...`
+            );
+            try {
+              const regenerated = await this.generatorService.generateChallenge(theme);
+              if (regenerated && validateChallenge(regenerated, theme).isValid) {
+                finalResult = regenerated;
+                signature = regenerated.challengeSignature || null;
+                challengeDoc.problem = regenerated.problem;
+                challengeDoc.restriction = regenerated.restriction;
+                challengeDoc.resource = {
+                  name: regenerated.resource.name,
+                  type: regenerated.resource.type,
+                  guidance: regenerated.resource.guidance,
+                  docsUrl: regenerated.resource.docsUrl,
+                  verificationStatus:
+                    regenerated.resource.verificationStatus ||
+                    (regenerated.resource.type === 'browser-api' ? 'verified' : 'candidate')
+                };
+                challengeDoc.deliverable = regenerated.deliverable;
+                continue; // Retry atomic insertion with regenerated candidate
+              }
+            } catch (regenErr) {
+              console.warn(`[TeamService] Regeneration after collision failed: ${regenErr.message}`);
+            }
+          }
+
+          // Team name collision or signature conflict retries exhausted
+          if (!isSignatureConflict || keyPattern.normalizedTeamName || errMessage.includes('normalizedTeamName')) {
+            const err = new Error(`Team name '${teamName}' is already registered for this event.`);
+            err.statusCode = 409;
+            err.code = 'TEAM_ALREADY_EXISTS';
+            throw err;
+          }
+
+          const err = new Error(
+            `Unable to assign unique challenge for team '${teamName}' due to concurrent collision. Please try again.`
+          );
+          err.statusCode = 409;
+          err.code = 'CHALLENGE_SIGNATURE_COLLISION';
+          throw err;
+        }
+
+        const err = new Error(`Failed to persist team challenge assignment: ${dbErr.message}`);
+        err.statusCode = 503;
+        err.code = 'DATABASE_SAVE_FAILED';
         throw err;
       }
-      const err = new Error(`Failed to persist team challenge assignment: ${dbErr.message}`);
-      err.statusCode = 503;
-      err.code = 'DATABASE_SAVE_FAILED';
-      throw err;
     }
 
     // 5. Build presentation envelope and WhatsApp copy

@@ -151,7 +151,9 @@ describe('Phase 3: Challenge Service Orchestration', () => {
       generate: vi.fn()
     };
     service = new ChallengeService({
+      provider: 'gemini',
       geminiService: mockGemini,
+      hasGeminiKey: true,
       fallbackGenerator: generateFallback,
       historyCapacity: 5
     });
@@ -169,10 +171,10 @@ describe('Phase 3: Challenge Service Orchestration', () => {
         rule: 'Use semantic HTML elements and inline styles with zero CSS libraries.'
       },
       resource: {
-        name: 'Open-Meteo Weather API',
-        type: 'public-api',
-        guidance: 'Compare solar production against cloud cover and solar irradiance metrics.',
-        docsUrl: 'https://open-meteo.com/en/docs'
+        name: 'HTML5 Canvas 2D API',
+        type: 'browser-api',
+        guidance: 'Render real-time animated power curves and panel state programmatically.',
+        docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API'
       },
       deliverable: 'A responsive dashboard displaying panel output and cloud-cover correlation.'
     };

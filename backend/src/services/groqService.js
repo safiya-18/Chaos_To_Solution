@@ -56,11 +56,13 @@ export const groqChallengeResponseSchema = Object.freeze({
  * Constructs the system prompt for Groq challenge generation.
  * Formulated to be concise to conserve token quotas while enforcing strict rules.
  */
-export const buildGroqSystemPrompt = (theme, recentTitles = []) => {
+export const buildGroqSystemPrompt = (theme, recentTitles = [], groundingContext = '') => {
   const negativeContext =
     recentTitles.length > 0
       ? `AVOID repeating these recently used problem titles: ${recentTitles.slice(-5).join(', ')}.`
       : '';
+
+  const groundingSection = groundingContext ? `\n\nGROUNDED KNOWLEDGE & APPROVED RESOURCES:\n${groundingContext}` : '';
 
   return `You are the Official Challenge Architect for the IEEE Computer Society hackathon "Chaos to Solution" at SJC Institute of Technology.
 Your task is to generate a realistic, cohesive, 3-hour hackathon challenge strictly tailored to the theme: "${theme}".
@@ -73,7 +75,7 @@ STRICT CONSTRAINTS:
 5. DOCUMENTATION: Provide a valid HTTP/HTTPS documentation URL. Never require API keys or paid accounts.
 6. DELIVERABLE: Specify a concrete, achievable prototype scope. Keep description concise (under 400 characters).
 7. LENGTH BOUNDS: Keep problem statement, restriction rule, resource guidance, and deliverable each concise (under 400 characters).
-${negativeContext}
+${negativeContext}${groundingSection}
 
 Return ONLY a valid JSON object matching the requested schema.`;
 };
@@ -116,7 +118,7 @@ export class GroqService {
     return this.client;
   }
 
-  async generate(theme, recentHistory = []) {
+  async generate(theme, recentHistory = [], options = {}) {
     const validatedTheme = validateTheme(theme);
     const client = this.getClient();
 
@@ -124,7 +126,8 @@ export class GroqService {
       .filter((sig) => typeof sig === 'string' && sig.startsWith(`${validatedTheme}:`))
       .map((sig) => sig.split(':')[1]);
 
-    const systemPrompt = buildGroqSystemPrompt(validatedTheme, recentTitles);
+    const groundingContext = options?.groundingContext || '';
+    const systemPrompt = buildGroqSystemPrompt(validatedTheme, recentTitles, groundingContext);
 
     const callApi = async () => {
       const completion = await client.chat.completions.create({
