@@ -1,4 +1,4 @@
-import { validateChallenge, BANNED_SERVICE_KEYWORDS } from '../utils/challengeValidator.js';
+import { validateChallenge, BANNED_SERVICE_KEYWORDS, isKeywordDisallowed } from '../utils/challengeValidator.js';
 import { categorizeRestriction } from './ingestionService.js';
 import { validateThemeConstraints } from '../utils/themeConstraintValidator.js';
 
@@ -31,16 +31,8 @@ export function validateHardRules(candidate) {
   // 3. Prohibited paid cloud/AI services check
   const candidateStr = JSON.stringify(candidate).toLowerCase();
   for (const keyword of BANNED_SERVICE_KEYWORDS) {
-    if (candidateStr.includes(keyword)) {
-      const matchIndex = candidateStr.indexOf(keyword);
-      const lookback = candidateStr.slice(Math.max(0, matchIndex - 35), matchIndex);
-      const isNegated = /\b(no|not|without|never|zero|free of|prevent)\b[\w\s,;-]*$/.test(lookback);
-      if (!isNegated && keyword === 'subscription' && /audit|track|cancel|unnoticed|drain/i.test(candidateStr)) {
-        continue;
-      }
-      if (!isNegated) {
-        rejections.push(`Candidate references prohibited paid service keyword '${keyword}' violating zero-budget policy.`);
-      }
+    if (isKeywordDisallowed(candidateStr, keyword)) {
+      rejections.push(`Candidate references prohibited paid service keyword '${keyword}' violating zero-budget policy.`);
     }
   }
 
