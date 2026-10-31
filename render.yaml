@@ -14,7 +14,7 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: CORS_ORIGIN
-        value: https://cts.vercel.app,https://ctschallenge.vercel.app,http://localhost:5173
+        value: https://cts-beta.vercel.app,https://cts.vercel.app,https://ctschallenge.vercel.app,http://localhost:5173
       - key: AI_PROVIDER
         value: groq
       - key: GROQ_MODEL

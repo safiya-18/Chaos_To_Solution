@@ -17,8 +17,16 @@ const resolveApiBaseUrl = () => {
   if (typeof window !== 'undefined' && window.location?.hostname && window.location.hostname.endsWith('trycloudflare.com')) {
     return 'https://fellow-realm-remarks-chairman.trycloudflare.com';
   }
+  // When accessed on Vercel production or preview domain, route to Render production backend
+  if (typeof window !== 'undefined' && window.location?.hostname && window.location.hostname.endsWith('vercel.app')) {
+    return 'https://cts-backend-iywa.onrender.com';
+  }
   // When accessed from a tablet or mobile device over LAN (e.g. 192.168.x.x), connect to backend on the same LAN IP
-  if (typeof window !== 'undefined' && window.location?.hostname && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+  const isLan =
+    typeof window !== 'undefined' &&
+    window.location?.hostname &&
+    (/^(\d{1,3}\.){3}\d{1,3}$/.test(window.location.hostname) || window.location.hostname.endsWith('.local'));
+  if (isLan && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
     return `${window.location.protocol}//${window.location.hostname}:5000`;
   }
   return envUrl || 'http://localhost:5000';
