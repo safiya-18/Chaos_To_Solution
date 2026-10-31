@@ -48,21 +48,16 @@ export const buildSystemPrompt = (theme, recentTitles = [], groundingContext = '
 Your task is to generate an ambitious, realistic, cohesive challenge strictly tailored to the theme: "${theme}".
 
 SCOPE & PHILOSOPHY:
-1. Target Scope: A complete, functional, multi-component software solution suitable for approximately 2 hours of AI-assisted development.
-2. DO NOT DEFAULT to a "single-page application", "basic prototype", "simple dashboard", or "minimal UI" unless explicitly dictated by an official constraint. Challenge participants to build meaningful, demonstrable software.
+1. Target Scope: A complete, functional, multi-component software solution suitable for approximately 3 hours of AI-assisted development by a team of two students.
+2. DO NOT DEFAULT to a "single-page application", "basic prototype", "simple dashboard", or "minimal UI" unless explicitly dictated by an official constraint. Challenge participants to build meaningful, demonstrable software with 3-5 functional features.
 3. PRESERVE ALL MANDATORY RESTRICTIONS:
    - If the restriction specifies client-side only / zero backend, all logic and storage must remain purely client-side.
    - If simulated data is required, do NOT permit live hardware, real credentials, or payment gateways.
-   - Never require paid APIs or paid services.
+   - Zero external cloud services: Use free browser APIs, supplied datasets, or keyless public APIs. When phrasing restrictions, state constraints simply (e.g. 'Pure client-side only using LocalStorage', 'Use only free keyless tools or supplied datasets', 'Zero external cloud services') — do NOT use the literal phrase 'paid API'.
 4. COHESION: The Resource MUST directly enable solving the Problem Statement while adhering to the creative constraint in Restriction.
 5. RESOURCE RULES: Must be a free browser API (e.g. Web Speech, Canvas, Web Audio, Geolocation, LocalStorage, IndexedDB), a free keyless public REST API (e.g. Open-Meteo, DummyJSON, REST Countries, Open Library, Quotable), or a structured local JSON dataset.
-6. DELIVERABLE SPECIFICATION: The deliverable MUST describe a complete, working solution structured as follows:
-   - Product Objective: Clear description of what is built and what friction point it solves.
-   - Functional Requirements: Meaningful interactive functionality (e.g., input handling, validation, core algorithmic processing, analytics/reporting, search/filtering, offline support, or export).
-   - System Components: Component breakdown (e.g., frontend application, local/database persistence, API services, or client modules as permitted).
-   - Expected Working Outcome: Demonstrable, testable criteria at demo time.
-   - Evaluation Criteria: Measurable rubrics (functional completeness, correctness, user experience, constraint compliance).
-7. LENGTH BOUNDS: Keep problem statement, restriction rule, and resource guidance under 500 characters. Keep the deliverable comprehensive yet concise (between 300 and 1200 characters).
+6. DELIVERABLE SPECIFICATION: The deliverable MUST be natural prose (between 150 and 600 characters, NEVER structured JSON). Clearly describe what participants build, 3-5 functional requirements, and the expected working demonstration outcome.
+7. LENGTH BOUNDS: Keep problem statement, restriction rule, and resource guidance under 400 characters. Keep the deliverable concise and easy to understand (between 150 and 600 characters).
 ${negativeContext}${groundingSection}
 
 Return ONLY a valid JSON object matching the requested schema.`;
@@ -128,7 +123,33 @@ export class GeminiService {
         throw new Error('Gemini API returned empty response text.');
       }
 
-      return JSON.parse(responseText);
+      const parsed = JSON.parse(responseText);
+      if (typeof parsed?.deliverable === 'string' && parsed.deliverable.trim().startsWith('{')) {
+        try {
+          const innerObj = JSON.parse(parsed.deliverable);
+          if (typeof innerObj === 'object' && innerObj !== null) {
+            parsed.deliverable = Object.entries(innerObj)
+              .map(([k, v]) => (Array.isArray(v) ? `${k}: ${v.join('; ')}` : `${k}: ${v}`))
+              .join('\n\n');
+          }
+        } catch {
+          // Keep raw string if not JSON
+        }
+      }
+      if (typeof parsed?.deliverable === 'string' && parsed.deliverable.length > 1500) {
+        parsed.deliverable = parsed.deliverable.slice(0, 1495) + '...';
+      }
+      if (typeof parsed?.problem?.statement === 'string' && parsed.problem.statement.length > 500) {
+        parsed.problem.statement = parsed.problem.statement.slice(0, 495) + '...';
+      }
+      if (typeof parsed?.restriction?.rule === 'string' && parsed.restriction.rule.length > 500) {
+        parsed.restriction.rule = parsed.restriction.rule.slice(0, 495) + '...';
+      }
+      if (typeof parsed?.resource?.guidance === 'string' && parsed.resource.guidance.length > 500) {
+        parsed.resource.guidance = parsed.resource.guidance.slice(0, 495) + '...';
+      }
+
+      return parsed;
     };
 
     // Execute with timeout and optional transient retry (never retry on timeout, 429, or 503)

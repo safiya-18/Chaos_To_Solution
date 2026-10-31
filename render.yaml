@@ -18,11 +18,11 @@ services:
       - key: AI_PROVIDER
         value: groq
       - key: GROQ_MODEL
-        value: openai/gpt-oss-20b
+        value: qwen/qwen3.8-27b
       - key: GEMINI_MODEL
         value: gemini-3.8-flash
       - key: AI_TIMEOUT_MS
-        value: "4000"
+        value: "12000"
       - key: EVENT_ID
         value: cts-2026
       - key: EVENT_TIMER_DURATION_MS

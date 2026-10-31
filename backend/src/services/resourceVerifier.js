@@ -308,7 +308,7 @@ export async function verifyResource(targetResource, options = {}) {
       fetchResult = await safeFetch(rawUrl, {
         method: 'GET',
         timeoutMs: 5000,
-        maxBytes: 524288,
+        maxBytes: 2097152,
         customFetch: effectiveFetch,
         dnsLookup: effectiveDnsLookup
       });
@@ -316,7 +316,6 @@ export async function verifyResource(targetResource, options = {}) {
       const isSecurityError = err instanceof FetchSecurityError;
       const permanentSecurityCodes = [
         'SSRF_PROHIBITED',
-        'OVERSIZED_RESPONSE',
         'INVALID_REDIRECT',
         'TOO_MANY_REDIRECTS'
       ];
@@ -336,6 +335,25 @@ export async function verifyResource(targetResource, options = {}) {
             httpStatus: null,
             notes: `Resource check failed: ${err.message}`,
             limitations: [err.code || 'inaccessible_error']
+          }
+        };
+      }
+
+      if (isSecurityError && err.code === 'OVERSIZED_RESPONSE') {
+        return {
+          name: resourceInfo.name,
+          canonicalUrl: rawUrl,
+          verificationStatus: 'verification_pending',
+          pricingStatus: 'unknown',
+          apiKeyRequired: false,
+          registrationRequired: false,
+          accessRequirements: 'unknown',
+          verificationEvidence: {
+            checkedUrl: rawUrl,
+            checkedAt: new Date(),
+            httpStatus: 200,
+            notes: 'Documentation page responded with content but exceeded size limit; host is reachable.',
+            limitations: ['OVERSIZED_RESPONSE']
           }
         };
       }

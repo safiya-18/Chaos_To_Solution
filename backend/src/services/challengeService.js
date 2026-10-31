@@ -21,7 +21,7 @@ export class ChallengeService {
     hasApiKey = undefined,
     hasGroqKey = undefined,
     hasGeminiKey = undefined,
-    maxNoveltyRetries = 2
+    maxNoveltyRetries = 3
   } = {}) {
     const isCustomGroq = groqService !== defaultGroqService;
     const isCustomGemini = geminiService !== defaultGeminiService;
@@ -161,13 +161,21 @@ export class ChallengeService {
                 name: aiChallenge.resource.name,
                 resourceType: aiChallenge.resource.type
               });
-              aiChallenge.resource.verificationStatus = resReport.verificationStatus;
+              aiChallenge.resource.verificationStatus =
+                aiChallenge.resource.type === 'browser-api' && resReport.verificationStatus === 'inaccessible'
+                  ? 'verification_pending'
+                  : resReport.verificationStatus;
               aiChallenge.resource.verificationEvidence = resReport.verificationEvidence;
             } catch (err) {
               const isInaccessible =
                 err?.name === 'FetchSecurityError' &&
-                ['SSRF_PROHIBITED', 'OVERSIZED_RESPONSE', 'INVALID_REDIRECT', 'TOO_MANY_REDIRECTS'].includes(err?.code);
-              aiChallenge.resource.verificationStatus = isInaccessible ? 'inaccessible' : 'verification_pending';
+                ['SSRF_PROHIBITED', 'INVALID_REDIRECT', 'TOO_MANY_REDIRECTS'].includes(err?.code);
+              aiChallenge.resource.verificationStatus =
+                aiChallenge.resource.type === 'browser-api'
+                  ? 'verification_pending'
+                  : isInaccessible
+                  ? 'inaccessible'
+                  : 'verification_pending';
             }
           }
 
@@ -281,13 +289,21 @@ export class ChallengeService {
                 name: aiChallenge.resource.name,
                 resourceType: aiChallenge.resource.type
               });
-              aiChallenge.resource.verificationStatus = resReport.verificationStatus;
+              aiChallenge.resource.verificationStatus =
+                aiChallenge.resource.type === 'browser-api' && resReport.verificationStatus === 'inaccessible'
+                  ? 'verification_pending'
+                  : resReport.verificationStatus;
               aiChallenge.resource.verificationEvidence = resReport.verificationEvidence;
             } catch (err) {
               const isInaccessible =
                 err?.name === 'FetchSecurityError' &&
-                ['SSRF_PROHIBITED', 'OVERSIZED_RESPONSE', 'INVALID_REDIRECT', 'TOO_MANY_REDIRECTS'].includes(err?.code);
-              aiChallenge.resource.verificationStatus = isInaccessible ? 'inaccessible' : 'verification_pending';
+                ['SSRF_PROHIBITED', 'INVALID_REDIRECT', 'TOO_MANY_REDIRECTS'].includes(err?.code);
+              aiChallenge.resource.verificationStatus =
+                aiChallenge.resource.type === 'browser-api'
+                  ? 'verification_pending'
+                  : isInaccessible
+                  ? 'inaccessible'
+                  : 'verification_pending';
             }
           }
 

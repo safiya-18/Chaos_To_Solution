@@ -56,6 +56,29 @@ const isValidUrl = (url) => {
   }
 };
 
+export function isKeywordDisallowed(fullText, bannedKeyword) {
+  if (typeof fullText !== 'string' || !fullText) return false;
+  const lower = fullText.toLowerCase();
+  let idx = 0;
+
+  while ((idx = lower.indexOf(bannedKeyword, idx)) !== -1) {
+    const lookback = lower.slice(Math.max(0, idx - 120), idx);
+    const lookahead = lower.slice(idx + bannedKeyword.length, Math.min(lower.length, idx + bannedKeyword.length + 80));
+
+    const isBackwardNegated = /\b(no|not|without|never|zero|free of|prevent|prevents|prohibit|prohibits|prohibited|disallow|disallows|disallowed|banned|forbidden|avoid|avoids|avoiding)\b[\w\s,;:'"()-]*$/.test(lookback);
+    const isForwardNegated = /^[\w\s,;:'"()-]*\b(is|are|shall be)?\s*(not allowed|prohibited|forbidden|banned|disallowed|avoided)\b/.test(lookahead);
+    const isSubscriptionTracker = bannedKeyword === 'subscription' && /audit|track|cancel|unnoticed|drain/i.test(lower);
+
+    if (!isBackwardNegated && !isForwardNegated && !isSubscriptionTracker) {
+      return true;
+    }
+
+    idx += bannedKeyword.length;
+  }
+
+  return false;
+}
+
 const checkStringLength = (val, min, max, fieldName, errors) => {
   if (typeof val !== 'string' || val.trim().length < min || val.trim().length > max) {
     errors.push(
@@ -133,18 +156,10 @@ export const validateChallenge = (challenge, requestedTheme) => {
     .toLowerCase();
 
   BANNED_SERVICE_KEYWORDS.forEach((bannedKeyword) => {
-    if (fullText.includes(bannedKeyword)) {
-      const matchIndex = fullText.indexOf(bannedKeyword);
-      const lookback = fullText.slice(Math.max(0, matchIndex - 35), matchIndex);
-      const isNegated = /\b(no|not|without|never|zero|free of|prevent)\b[\w\s,;-]*$/.test(lookback);
-      if (!isNegated && bannedKeyword === 'subscription' && /audit|track|cancel|unnoticed|drain/i.test(fullText)) {
-        return;
-      }
-      if (!isNegated) {
-        errors.push(
-          `Challenge references disallowed paid/proprietary or hardware dependency: '${bannedKeyword}'.`
-        );
-      }
+    if (isKeywordDisallowed(fullText, bannedKeyword)) {
+      errors.push(
+        `Challenge references disallowed paid/proprietary or hardware dependency: '${bannedKeyword}'.`
+      );
     }
   });
 
@@ -159,5 +174,6 @@ export default {
   BANNED_SERVICE_KEYWORDS,
   ValidationError,
   validateTheme,
-  validateChallenge
+  validateChallenge,
+  isKeywordDisallowed
 };
