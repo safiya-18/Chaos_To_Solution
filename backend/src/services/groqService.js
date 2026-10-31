@@ -83,6 +83,39 @@ ${negativeContext}${groundingSection}
 Return ONLY a valid JSON object matching the requested schema.`;
 };
 
+export const formatDeliverableProse = (raw) => {
+  if (typeof raw !== 'string') return '';
+  const trimmed = raw.trim();
+  if (trimmed.startsWith('{')) {
+    try {
+      const innerObj = JSON.parse(trimmed);
+      if (typeof innerObj === 'object' && innerObj !== null) {
+        return Object.entries(innerObj)
+          .map(([k, v]) => {
+            const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+            return `${label}: ${Array.isArray(v) ? v.join('; ') : v}`;
+          })
+          .join('\n\n');
+      }
+    } catch {
+      const matches = [...trimmed.matchAll(/"([^"]+)"\s*:\s*("(?:[^"\\]|\\.)*"|\[[^\]]*\]|[^,}\n]+)/g)];
+      if (matches.length > 0) {
+        return matches
+          .map(([, k, v]) => {
+            let val = v.trim();
+            if (val.startsWith('"') && val.endsWith('"')) {
+              val = val.slice(1, -1).replace(/\\"/g, '"');
+            }
+            const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+            return `${label}: ${val}`;
+          })
+          .join('\n\n');
+      }
+    }
+  }
+  return raw;
+};
+
 const withTimeout = (promise, ms) => {
   let timeoutId;
   const timeoutPromise = new Promise((_, reject) => {
@@ -150,7 +183,7 @@ export class GroqService {
             schema: groqChallengeResponseSchema
           }
         },
-        max_tokens: 1024,
+        max_tokens: 1536,
         temperature: 0.7
       });
 
@@ -160,17 +193,8 @@ export class GroqService {
       }
 
       const parsed = JSON.parse(responseText);
-      if (typeof parsed?.deliverable === 'string' && parsed.deliverable.trim().startsWith('{')) {
-        try {
-          const innerObj = JSON.parse(parsed.deliverable);
-          if (typeof innerObj === 'object' && innerObj !== null) {
-            parsed.deliverable = Object.entries(innerObj)
-              .map(([k, v]) => (Array.isArray(v) ? `${k}: ${v.join('; ')}` : `${k}: ${v}`))
-              .join('\n\n');
-          }
-        } catch {
-          // Keep raw string if not JSON
-        }
+      if (typeof parsed?.deliverable === 'string') {
+        parsed.deliverable = formatDeliverableProse(parsed.deliverable);
       }
       if (typeof parsed?.deliverable === 'string' && parsed.deliverable.length > 1500) {
         parsed.deliverable = parsed.deliverable.slice(0, 1495) + '...';

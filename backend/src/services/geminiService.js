@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import config from '../config/env.js';
 import { validateTheme } from '../utils/challengeValidator.js';
+import { formatDeliverableProse } from './groqService.js';
 
 export const challengeResponseSchema = Object.freeze({
   type: 'object',
@@ -124,17 +125,8 @@ export class GeminiService {
       }
 
       const parsed = JSON.parse(responseText);
-      if (typeof parsed?.deliverable === 'string' && parsed.deliverable.trim().startsWith('{')) {
-        try {
-          const innerObj = JSON.parse(parsed.deliverable);
-          if (typeof innerObj === 'object' && innerObj !== null) {
-            parsed.deliverable = Object.entries(innerObj)
-              .map(([k, v]) => (Array.isArray(v) ? `${k}: ${v.join('; ')}` : `${k}: ${v}`))
-              .join('\n\n');
-          }
-        } catch {
-          // Keep raw string if not JSON
-        }
+      if (typeof parsed?.deliverable === 'string') {
+        parsed.deliverable = formatDeliverableProse(parsed.deliverable);
       }
       if (typeof parsed?.deliverable === 'string' && parsed.deliverable.length > 1500) {
         parsed.deliverable = parsed.deliverable.slice(0, 1495) + '...';

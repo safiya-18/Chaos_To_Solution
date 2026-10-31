@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { validateChallenge, isKeywordDisallowed } from '../../src/utils/challengeValidator.js';
 import { validateHardRules } from '../../src/services/diversityService.js';
 import { ChallengeService } from '../../src/services/challengeService.js';
-import { buildGroqSystemPrompt } from '../../src/services/groqService.js';
+import { buildGroqSystemPrompt, formatDeliverableProse } from '../../src/services/groqService.js';
 import { buildSystemPrompt as buildGeminiSystemPrompt } from '../../src/services/geminiService.js';
 
 describe('AI Generation Fixes & Validation Regression Suite', () => {
@@ -252,6 +252,30 @@ describe('AI Generation Fixes & Validation Regression Suite', () => {
       const result = await service.generateChallenge('HealthTech');
       expect(result.source).toBe('curated-fallback');
       expect(result.problem.title).not.toBe('Train Custom LLM');
+    });
+
+    it('should format complete and truncated JSON string deliverables into readable prose', () => {
+      // 1. Complete JSON object string
+      const completeJson = JSON.stringify({
+        productObjective: 'Deliver an accessible exam simulator',
+        functionalRequirements: ['Voice input', 'Axe-core scan'],
+        systemComponents: 'Client application with LocalStorage'
+      });
+      const completeResult = formatDeliverableProse(completeJson);
+      expect(completeResult).toContain('Product Objective: Deliver an accessible exam simulator');
+      expect(completeResult).toContain('Functional Requirements: Voice input; Axe-core scan');
+      expect(completeResult.startsWith('{')).toBe(false);
+
+      // 2. Truncated JSON string (e.g. cut off by token limit before closing brace)
+      const truncatedJson = '{"title": "Accessible Exam", "problemStatement": "Visual impairment barrier", "productObjective": "Create offline exam simulator';
+      const truncatedResult = formatDeliverableProse(truncatedJson);
+      expect(truncatedResult).toContain('Title: Accessible Exam');
+      expect(truncatedResult).toContain('Problem Statement: Visual impairment barrier');
+      expect(truncatedResult.startsWith('{')).toBe(false);
+
+      // 3. Normal plain text passes through unchanged
+      const plainText = 'Build a multi-page web utility that solves food waste with 3 key features.';
+      expect(formatDeliverableProse(plainText)).toBe(plainText);
     });
   });
 });
