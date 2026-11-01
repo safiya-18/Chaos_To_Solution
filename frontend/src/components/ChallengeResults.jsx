@@ -1,28 +1,15 @@
 import React from 'react';
 import { ChallengeCard } from './ChallengeCard.jsx';
 import { ResourceLink } from './ResourceLink.jsx';
-import { Sparkles, Archive, Hash, Clock, CheckCircle } from 'lucide-react';
+import { Sparkles, Archive, Hash, CheckCircle } from 'lucide-react';
 
 export function ChallengeResults({ challengeData }) {
   if (!challengeData) return null;
 
-  const { id, theme, source, generatedAt, challenge } = challengeData;
+  const { id, theme, source, challenge } = challengeData;
   const { problem, restriction, resource, deliverable } = challenge;
 
   const isAiSource = source === 'ai';
-
-  // Format generated time if present
-  let formattedTime = '';
-  try {
-    if (generatedAt) {
-      formattedTime = new Date(generatedAt).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-  } catch {
-    formattedTime = '';
-  }
 
   return (
     <section
@@ -41,13 +28,6 @@ export function ChallengeResults({ challengeData }) {
             <span className="flex items-center gap-1 text-xs font-mono text-[#4A453E] px-2.5 py-1 rounded-full bg-[#F7F3EA] border border-[#11151C]/25 font-bold">
               <Hash className="w-3 h-3 text-[#111820]" />
               <span>{id}</span>
-            </span>
-          )}
-
-          {formattedTime && (
-            <span className="flex items-center gap-1 text-xs text-[#524B43] px-2.5 py-1 rounded-full bg-[#F7F3EA] border border-[#11151C]/25 font-medium">
-              <Clock className="w-3 h-3 text-[#111820]" />
-              <span>{formattedTime}</span>
             </span>
           )}
         </div>

@@ -27,7 +27,6 @@ export function TeamsScreen() {
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [lastRefreshed, setLastRefreshed] = useState(null);
 
   // Delete team state
   const [teamToDelete, setTeamToDelete] = useState(null);
@@ -57,7 +56,6 @@ export function TeamsScreen() {
 
       setTeams(data.teams || []);
       setTotal(data.total || 0);
-      setLastRefreshed(new Date().toLocaleTimeString());
     } catch (err) {
       setError(err.message || 'Failed to fetch registered teams.');
     } finally {
@@ -136,12 +134,6 @@ export function TeamsScreen() {
 
         {/* Actions: Print / Export PDF & Refresh */}
         <div className="flex items-center gap-2.5 sm:gap-3">
-          {lastRefreshed && (
-            <span className="hidden sm:inline-block text-[11px] font-mono text-[#78716C] mr-0.5">
-              Updated: {lastRefreshed}
-            </span>
-          )}
-
           <button
             type="button"
             onClick={() => window.print()}
@@ -184,8 +176,7 @@ export function TeamsScreen() {
               </h2>
             </div>
             <div className="text-right text-[10px] font-mono text-[#57534E]">
-              <div>Generated: {new Date().toLocaleString()}</div>
-              <div className="font-bold text-[#111820] mt-0.5">Official Hackathon Record</div>
+              <div className="font-bold text-[#111820]">Official Hackathon Record</div>
             </div>
           </div>
 
@@ -337,9 +328,6 @@ export function TeamsScreen() {
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] font-mono text-[#8C8477] block mt-0.5 print:text-[8.5px] print:text-gray-500">
-                            {new Date(item.generatedAt || item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
                           <span className="hidden print:inline-block text-[8px] font-mono uppercase text-gray-400 mt-0.5">
                             {item.source === 'ai' ? 'AI' : 'Curated'}
                           </span>
